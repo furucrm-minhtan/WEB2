@@ -7,7 +7,7 @@
     <router-view />
   </div>
 </template>
-
-<style lang="scss">
-
+<style lang="css">
+  @import './assets/css/plugins.css';
+  @import './assets/css/style.css';
 </style>

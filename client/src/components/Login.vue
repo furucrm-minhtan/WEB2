@@ -7,14 +7,14 @@
                 <div class="row">
                     <label for="username">
                         Username:
-                        <input type="text" name="username" id="username" placeholder="Hugh Jackman" pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{8,20}$" required="required" />
+                        <input type="text" name="username" id="username" v-model="userName" pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{8,20}$" required="required" />
                     </label>
                 </div>
             
                 <div class="row">
                     <label for="password">
                         Password:
-                        <input type="password" name="password" id="password" placeholder="******" pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required="required" />
+                        <input type="password" name="password" id="password" v-model="password" pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required="required" />
                     </label>
                 </div>
                 <div class="row">
@@ -39,3 +39,9 @@
         </div>
     </div>
 </template>
+
+<script lang="ts">
+import Login from './Login';
+
+export default class extends Login {}
+</script>

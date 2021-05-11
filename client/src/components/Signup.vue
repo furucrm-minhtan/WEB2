@@ -7,26 +7,26 @@
                 <div class="row">
                     <label for="username-2">
                         Username:
-                        <input type="text" name="username" id="username-2" placeholder="Hugh Jackman" pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{8,20}$" required="required" />
+                        <input type="text" name="username" id="user-name" v-model="userName" pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{8,20}$" required="required" />
                     </label>
                 </div>
             
                 <div class="row">
                     <label for="email-2">
                         your email:
-                        <input type="password" name="email" id="email-2" placeholder="" pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required="required" />
+                        <input type="password" name="email" id="email" v-model="email" pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required="required" />
                     </label>
                 </div>
                 <div class="row">
                     <label for="password-2">
                         Password:
-                        <input type="password" name="password" id="password-2" placeholder="" pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required="required" />
+                        <input type="password" name="password" id="password" v-model="password" pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required="required" />
                     </label>
                 </div>
                 <div class="row">
                     <label for="repassword-2">
                         re-type Password:
-                        <input type="password" name="password" id="repassword-2" placeholder="" pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required="required" />
+                        <input type="password" name="password" id="repassword" v-model="confPassword" pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required="required" />
                     </label>
                 </div>
             <div class="row">
@@ -38,6 +38,7 @@
 </template>
 
 <script lang="ts">
+import Signup from './Signup';
 
-export default class{}
+export default class extends Signup {}
 </script>

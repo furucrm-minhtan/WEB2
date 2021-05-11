@@ -1,5 +1,7 @@
 <template>
    <div>
+      <Login />
+      <Signup />
       <div class="slider movie-items">
          <div class="container">
             <div class="row">
@@ -323,9 +325,9 @@
    </div>
 </template>
 
-<script lang="ts">
-
+<script lang="ts" >
 import Home from './Home';
 
 export default class extends Home {}
 </script>
+
