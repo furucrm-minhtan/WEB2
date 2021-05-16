@@ -8,10 +8,10 @@ import {
   DataType,
   Default
 } from 'sequelize-typescript';
-import { BaseModel } from './base.model';
-import { Bookmarks } from './bookmark.model';
-import { Comment } from './comment.model';
-import { Ticket } from './ticket.model';
+import { BaseModel } from '../../model/base.model';
+import { Bookmarks } from '../../model/bookmark.model';
+import { Comment } from '../../model/comment.model';
+import { Ticket } from '../../model/ticket.model';
 
 @Table({ tableName: 'Users' })
 export class User extends BaseModel<User> {

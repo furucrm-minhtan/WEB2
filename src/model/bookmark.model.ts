@@ -7,8 +7,8 @@ import {
   Table
 } from 'sequelize-typescript';
 import { BaseModel } from './base.model';
-import { Movie } from './movie.model';
-import { User } from './user.model';
+import { Movie } from '../modules/movie/movie.model';
+import { User } from '../modules/user/user.model';
 
 @Table({ tableName: 'Bookmarks' })
 export class Bookmarks extends BaseModel<Bookmarks> {

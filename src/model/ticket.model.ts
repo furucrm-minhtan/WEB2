@@ -9,7 +9,7 @@ import {
 import { BaseModel } from './base.model';
 import { Seat } from './seat.model';
 import { ShowTime } from './showTime.model';
-import { User } from './user.model';
+import { User } from '../modules/user/user.model';
 
 @Table({ tableName: 'Tickets' })
 export class Ticket extends BaseModel<Ticket> {

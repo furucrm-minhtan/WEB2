@@ -9,7 +9,7 @@ import {
   ForeignKey
 } from 'sequelize-typescript';
 import { BaseModel } from './base.model';
-import { Movie } from './movie.model';
+import { Movie } from '../modules/movie/movie.model';
 import { Room } from './room.model';
 import { Ticket } from './ticket.model';
 
@@ -47,7 +47,7 @@ export class ShowTime extends BaseModel<ShowTime> {
   @ForeignKey(() => Movie)
   @Column({ field: 'movie_id', allowNull: false })
   movieId: number;
-    
+
   @BelongsTo(() => Movie, 'movie_id')
   movie: Movie;
 
