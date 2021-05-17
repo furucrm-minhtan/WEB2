@@ -20,6 +20,12 @@ async function bootstrap() {
   app.set('view options', { layout: '../layout' });
   hbs.registerPartials(resolve('./src/views/components'));
 
+  hbs.registerHelper('section', function (name: string, options: any) {
+    if (!this.sections) this.sections = {};
+    this.sections[name] = options.fn(this);
+    return null;
+  });
+
   await app.listen(3000);
 }
 bootstrap();

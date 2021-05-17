@@ -13,7 +13,7 @@ import {
 import { BaseModel } from '../../model/base.model';
 import { Category } from '../../model/category.model';
 import { Comment } from '../../model/comment.model';
-import { ShowTime } from '../../model/showTime.model';
+import { ShowTime } from '../showTIme/showTime.model';
 
 @Table({ tableName: 'Movies' })
 export class Movie extends BaseModel<Movie> {
@@ -36,7 +36,7 @@ export class Movie extends BaseModel<Movie> {
 
   @Column({ type: DataType.DATE })
   publish: Date;
-
+ 
   @ForeignKey(() => Category)
   @Column({ field: 'category_id', allowNull: false })
   category_id: number;

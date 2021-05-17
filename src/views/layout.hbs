@@ -10,8 +10,9 @@
 
 
 <head>
-    <!-- Basic need -->
-    <title>Open Pediatrics</title>
+    <title>
+        {{{sections.title}}}
+    </title>
     <meta charset="UTF-8">
     <meta name="description" content="">
     <meta name="keywords" content="">
@@ -28,9 +29,11 @@
     <link rel="stylesheet" href="css/plugins.css">
     <link rel="stylesheet" href="css/style.css">
 
-    <title>
-        <!-- <%= locals.title %> -->
-    </title>
+    <script src="js/jquery.js" defer></script>
+    <script src="js/plugins.js" defer></script>
+    <script src="js/plugins2.js" defer></script>
+    <script src="js/custom.js" defer></script>
+    <script src="js/vue@2.js" defer></script>
 </head>
 
 <body>
@@ -292,11 +295,7 @@
 </body>
 
 <footer>
-    <script src="js/jquery.js"></script>
-    <script src="js/plugins.js"></script>
-    <script src="js/plugins2.js"></script>
-    <script src="js/custom.js"></script>
-    <script src="js/vue@2.js"></script>
+    {{{sections.script}}}
 </footer>
 
 </html>

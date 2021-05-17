@@ -8,7 +8,7 @@ import {
 } from 'sequelize-typescript';
 import { BaseModel } from './base.model';
 import { Seat } from './seat.model';
-import { ShowTime } from './showTime.model';
+import { ShowTime } from '../modules/showTIme/showTime.model';
 import { User } from '../modules/user/user.model';
 
 @Table({ tableName: 'Tickets' })

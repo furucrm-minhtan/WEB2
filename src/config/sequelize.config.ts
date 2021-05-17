@@ -11,13 +11,54 @@ import { GroupTheater } from 'src/model/groupTheater.model';
 import { Movie } from 'src/modules/movie/movie.model';
 import { Room } from 'src/model/room.model';
 import { Seat } from 'src/model/seat.model';
-import { ShowTime } from 'src/model/showTime.model';
+import { ShowTime } from 'src/modules/showTIme/showTime.model';
 import { Theater } from 'src/model/theater.model';
 import { Ticket } from 'src/model/ticket.model';
 import { User } from 'src/modules/user/user.model';
+import { Op } from 'sequelize';
 
-export default class TypeOrmConfig {
-  static getOrmConfig(configService: ConfigService): SequelizeModuleOptions {
+export const operatorsAliases = {
+  $eq: Op.eq,
+  $ne: Op.ne,
+  $gte: Op.gte,
+  $gt: Op.gt,
+  $lte: Op.lte,
+  $lt: Op.lt,
+  $not: Op.not,
+  $in: Op.in,
+  $notIn: Op.notIn,
+  $is: Op.is,
+  $like: Op.like,
+  $notLike: Op.notLike,
+  $iLike: Op.iLike,
+  $notILike: Op.notILike,
+  $regexp: Op.regexp,
+  $notRegexp: Op.notRegexp,
+  $iRegexp: Op.iRegexp,
+  $notIRegexp: Op.notIRegexp,
+  $between: Op.between,
+  $notBetween: Op.notBetween,
+  $overlap: Op.overlap,
+  $contains: Op.contains,
+  $contained: Op.contained,
+  $adjacent: Op.adjacent,
+  $strictLeft: Op.strictLeft,
+  $strictRight: Op.strictRight,
+  $noExtendRight: Op.noExtendRight,
+  $noExtendLeft: Op.noExtendLeft,
+  $and: Op.and,
+  $or: Op.or,
+  $any: Op.any,
+  $all: Op.all,
+  $values: Op.values,
+  $col: Op.col
+};
+
+export default class SequelizeConfig {
+  static getOrmConfig(
+    configService: ConfigService,
+    operatorsAliases: any
+  ): SequelizeModuleOptions {
     return {
       dialect: configService.get('DB_DRIVER') || 'mysql',
       host: configService.get('DB_HOST') || 'localhost',
@@ -39,16 +80,17 @@ export default class TypeOrmConfig {
         Comment,
         Category,
         Bookmarks
-      ]
+      ],
+      operatorsAliases
     };
   }
 }
 
-export const typeOrmConfigAsync: SequelizeModuleAsyncOptions = {
+export const sequelizeConfigAsync: SequelizeModuleAsyncOptions = {
   imports: [ConfigModule],
   useFactory: async (
     configService: ConfigService
   ): Promise<SequelizeModuleOptions> =>
-    TypeOrmConfig.getOrmConfig(configService),
+    SequelizeConfig.getOrmConfig(configService, operatorsAliases),
   inject: [ConfigService]
 };

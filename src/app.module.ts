@@ -4,7 +4,7 @@ import { MovieService } from './modules/movie/movie.service';
 import { UserModule } from './modules/user/user.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { typeOrmConfigAsync } from './config/typeorm.config';
+import { sequelizeConfigAsync } from './config/sequelize.config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { GolobalMiddleware } from './middleware/golobal.middleware';
 
@@ -13,7 +13,7 @@ import { GolobalMiddleware } from './middleware/golobal.middleware';
     MovieModule,
     UserModule,
     ConfigModule.forRoot(),
-    SequelizeModule.forRootAsync(typeOrmConfigAsync)
+    SequelizeModule.forRootAsync(sequelizeConfigAsync)
   ]
 })
 export class AppModule implements NestModule {

@@ -8,10 +8,10 @@ import {
   HasMany,
   ForeignKey
 } from 'sequelize-typescript';
-import { BaseModel } from './base.model';
-import { Movie } from '../modules/movie/movie.model';
-import { Room } from './room.model';
-import { Ticket } from './ticket.model';
+import { BaseModel } from '../../model/base.model';
+import { Movie } from '../movie/movie.model';
+import { Room } from '../../model/room.model';
+import { Ticket } from '../../model/ticket.model';
 
 @Table({
   tableName: 'ShowTimes',

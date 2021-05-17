@@ -9,9 +9,8 @@ export class HomeController {
   @Render('home')
   async root() {
     const newMovie = await this.movieService.newestMovie(10);
+    const comingMovie = await this.movieService.comingMovie(90);
 
-    return {
-      newMovie
-    };
+    return { newMovie, comingMovie };
   }
 }
