@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Body, Inject, Injectable } from '@nestjs/common';
 import { User } from './user.model';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class UserService {
     return this.usersRepository.findAll<User>();
   }
 
-  async create(user: User): Promise<User> {
-    return this.usersRepository.create(user);
+  async create(): Promise<User> {
+    return this.usersRepository.create();
 }
 }
