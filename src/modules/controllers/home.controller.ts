@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Render } from '@nestjs/common';
+import { Controller, Get, Inject, Render, Session } from '@nestjs/common';
 import { MovieService } from '../movie/movie.service';
 
 @Controller()
@@ -7,7 +7,7 @@ export class HomeController {
 
   @Get()
   @Render('home')
-  async root() {
+  async root(@Session() session: Record<string, any>) {
     const newMovie = await this.movieService.newestMovie(10);
     const comingMovie = await this.movieService.comingMovie(90);
 
