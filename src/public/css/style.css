@@ -8284,3 +8284,15 @@ footer.full-width-ft .ft-copyright {
   font-family: 'Dosis', sans-serif;
   font-weight: 700;
 }
+
+.mr_0 {
+  margin: 0 !important;
+}
+
+.mb_10 {
+  margin-bottom: 10px !important;
+}
+
+.user_icon {
+  font-size: 25px !important;
+}

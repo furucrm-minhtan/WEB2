@@ -443,8 +443,10 @@ $(function () {
   //==js for login and sign up
   var loginLink = $('.loginLink');
   var signupLink = $('.signupLink');
+  var forgotPasswordLink = $('.forgotPasswordLink');
   var loginct = $('#login-content');
   var signupct = $('#signup-content');
+  var forgotPasswordContent = $('#forgot-password-content');
   var loginWrap = $('.login-wrapper');
   var overlay = $('.overlay');
   loginWrap.each(function () {
@@ -486,6 +488,29 @@ $(function () {
       }
     });
   });
+
+  //popup forgot password form
+  forgotPasswordLink.on('click', function (event) {
+    event.preventDefault();
+    $(loginct, signupct).each(function () {
+      $(this).parents(overlay).removeClass('openform');
+    });
+    forgotPasswordContent.parents(overlay).addClass('openform');
+    $(document).on('click', function (e) {
+      var target = $(e.target);
+      if ($(target).hasClass('overlay')) {
+        $(target)
+          .find(forgotPasswordContent)
+          .each(function () {
+            $(this).removeClass('openform');
+          });
+        setTimeout(function () {
+          $(target).removeClass('openform');
+        }, 350);
+      }
+    });
+  });
+
   // close popup for mobile
   var closebt = $('.close');
   closebt.on('click', function (e) {

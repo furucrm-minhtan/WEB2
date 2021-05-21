@@ -8,12 +8,15 @@ import {
   DataType,
   Default,
   BelongsTo,
-  ForeignKey
+  ForeignKey,
+  BelongsToMany
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
 import { Category } from '../../model/category.model';
 import { Comment } from '../../model/comment.model';
+import { Bookmarks } from '../bookmark/bookmark.model';
 import { ShowTime } from '../showTIme/showTime.model';
+import { User } from '../user/user.model';
 
 @Table({ tableName: 'Movies' })
 export class Movie extends BaseModel<Movie> {
@@ -36,7 +39,7 @@ export class Movie extends BaseModel<Movie> {
 
   @Column({ type: DataType.DATE })
   publish: Date;
- 
+
   @ForeignKey(() => Category)
   @Column({ field: 'category_id', allowNull: false })
   category_id: number;
@@ -47,6 +50,9 @@ export class Movie extends BaseModel<Movie> {
   @HasMany(() => ShowTime)
   showTimes: ShowTime[];
 
-  @HasMany(() => Comment)
-  comments: Comment[];
+  @BelongsToMany(() => User, () => Comment, 'user_id')
+  userComments: User[];
+
+  @BelongsToMany(() => User, () => Bookmarks, 'user_id')
+  userFavorites: User[];
 }

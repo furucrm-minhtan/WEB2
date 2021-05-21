@@ -29,16 +29,35 @@
     <link rel="stylesheet" href="css/plugins.css">
     <link rel="stylesheet" href="css/style.css">
 
-    <script src="js/jquery.js"></script>
-    <script src="js/plugins.js"></script>
-    <script src="js/plugins2.js"></script>
-    <script src="js/custom.js"></script>
-    <script src="js/alpine.min.js"></script>
-    <script src="js/axios.min.js"></script>
+    <script src="js/jquery.js" defer></script>
+    <script src="js/plugins.js" defer></script>
+    <script src="js/plugins2.js" defer></script>
+    <script src="js/custom.js" defer></script>
+    <script src="js/alpine.min.js" defer></script>
+    <script src="js/axios.min.js" defer></script>
+    <script src="https://kit.fontawesome.com/4316af07bc.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <div class="login-wrapper" id="login-content" x-data="{ userName: '', password: '' }">
+    <div class="login-wrapper" id="forgot-password-content">
+        <div class="login-content">
+            <a href="#" class="close">x</a>
+            <h3>Forgot Password</h3>
+            <form method="post">
+                <div class="row">
+                    <label for="username">
+                        Username:
+                        <input x-model="userName" type="text" name="username" id="username"
+                            pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{8,20}$" required="required" />
+                    </label>
+                </div>
+                <div class="row">
+                    <button x-on:click="forgotPassword($event, userName)">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="login-wrapper" id="login-content" x-data="{ userName: '', password: ''}">
         <div class="login-content">
             <a href="#" class="close">x</a>
             <h3>Login</h3>
@@ -64,7 +83,7 @@
                         <div>
                             <input type="checkbox" name="remember" value="Remember me"><span>Remember me</span>
                         </div>
-                        <a href="#">Forget password ?</a>
+                        <a href="#" class="forgotPasswordLink">Forget password ?</a>
                     </div>
                 </div>
                 <div class="row">
@@ -140,7 +159,7 @@
                     <a href="index-2.html"><img class="logo" src="images/logo1.png" alt="" width="119" height="58"></a>
                 </div>
                 <div class="collapse navbar-collapse flex-parent" id="bs-example-navbar-collapse-1">
-                    {{!-- <ul class="nav navbar-nav flex-child-menu menu-left">
+                    <ul class="nav navbar-nav flex-child-menu menu-left">
                         <li class="hidden">
                             <a href="#page-top"></a>
                         </li>
@@ -204,7 +223,7 @@
                                 <li class="it-last"><a href="userrate.html">user rate</a></li>
                             </ul>
                         </li>
-                    </ul> --}}
+                    </ul>
                     <ul class="nav navbar-nav flex-child-menu menu-right">
                         {{!-- <li class="dropdown first">
                             <a class="btn btn-default dropdown-toggle lv1" data-toggle="dropdown" data-hover="dropdown">
@@ -217,8 +236,18 @@
                             </ul>
                         </li>
                         <li><a href="#">Help</a></li> --}}
-                        <li class="loginLink"><a href="#">LOG In</a></li>
-                        <li class="btn signupLink"><a href="#">sign up</a></li>
+                        {{#if user}}
+                            <li class="dropdown">
+                                <a href="#" class="user_icon btn btn-default dropdown-toggle lv1" data-toggle="dropdown"><i class="fas fa-user"></i></a>
+                                <ul class="dropdown-menu level1">
+                                    <li><a href="/dashboard">Profile</a></li>
+                                    <li><a href="/authen/logout">Logout</a></li>
+                                </ul>
+                            </li>
+                        {{else}}
+                            <li class="loginLink"><a href="#">LOG In</a></li>
+                            <li class="btn signupLink"><a href="#">sign up</a></li>
+                        {{/if}}
                     </ul>
                 </div>
                 <!-- /.navbar-collapse -->
@@ -295,13 +324,15 @@
 </body>
 
 <footer>
-    <script type="text/javascript">
+    <script type="text/javascript" defer>
         function loginHandler(event, data) {
             event.preventDefault();
             
             axios.post('/authen/login', data)
                 .then((response) => {
-                    console.log(response);
+                    if(response.data) {
+                        location.reload();
+                    }
                 })
                 .catch((error) => {
                     console.log(error);

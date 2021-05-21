@@ -82,6 +82,9 @@ export default class SequelizeConfig {
         Bookmarks
       ],
       operatorsAliases
+      // sync: {
+      //   force: true
+      // }
     };
   }
 }

@@ -5,12 +5,15 @@ import {
   AutoIncrement,
   Column,
   DataType,
-  Default
+  Default,
+  AllowNull,
+  BelongsToMany
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
-import { Bookmarks } from '../../model/bookmark.model';
+import { Bookmarks } from '../bookmark/bookmark.model';
 import { Comment } from '../../model/comment.model';
 import { Ticket } from '../../model/ticket.model';
+import { Movie } from '../movie/movie.model';
 
 @Table({ tableName: 'Users' })
 export class User extends BaseModel<User> {
@@ -18,6 +21,10 @@ export class User extends BaseModel<User> {
   @AutoIncrement
   @Column
   id: number;
+
+  @AllowNull(false)
+  @Column
+  name: string;
 
   @Column({ type: DataType.STRING(100), allowNull: false })
   email: string;
@@ -41,12 +48,12 @@ export class User extends BaseModel<User> {
   @Column(DataType.STRING(100))
   city: string;
 
-  @HasMany(() => Comment)
-  comments: Comment[];
+  @BelongsToMany(() => Movie, () => Bookmarks, 'movie_id')
+  moviesComment: Movie[];
 
   @HasMany(() => Ticket)
   tickets: Ticket[];
 
-  @HasMany(() => Bookmarks)
-  bookmarks: Bookmarks;
+  @BelongsToMany(() => Movie, () => Bookmarks, 'movie_id')
+  moviesFavorite: Movie[];
 }
