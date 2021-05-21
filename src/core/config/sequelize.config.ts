@@ -4,16 +4,16 @@ import {
   SequelizeModuleOptions
 } from '@nestjs/sequelize';
 import { GroupedObservable } from 'rxjs';
-import { Bookmarks } from 'src/model/bookmark.model';
+import { Bookmark } from 'src/modules/bookmark/bookmark.model';
 import { Category } from 'src/model/category.model';
 import { Comment } from 'src/model/comment.model';
 import { GroupTheater } from 'src/model/groupTheater.model';
 import { Movie } from 'src/modules/movie/movie.model';
-import { Room } from 'src/model/room.model';
+import { Room } from 'src/modules/room/room.model';
 import { Seat } from 'src/model/seat.model';
 import { ShowTime } from 'src/modules/showTIme/showTime.model';
 import { Theater } from 'src/model/theater.model';
-import { Ticket } from 'src/model/ticket.model';
+import { Ticket } from 'src/modules/ticket/ticket.model';
 import { User } from 'src/modules/user/user.model';
 import { Op } from 'sequelize';
 
@@ -79,7 +79,7 @@ export default class SequelizeConfig {
         GroupTheater,
         Comment,
         Category,
-        Bookmarks
+        Bookmark
       ],
       operatorsAliases
       // sync: {

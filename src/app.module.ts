@@ -1,3 +1,6 @@
+import { RoomModule } from './modules/room/room.module';
+import { BookmarkModule } from './modules/bookmark/bookmark.module';
+import { TicketModule } from './modules/ticket/ticket.module';
 import { AuthenModule } from './modules/authen/authen.module';
 import { HomeController } from './modules/controllers/home.controller';
 import { MovieModule } from './modules/movie/movie.module';
@@ -16,6 +19,9 @@ import { GolobalMiddleware } from './middleware/golobal.middleware';
 
 @Module({
   imports: [
+    RoomModule,
+    BookmarkModule,
+    TicketModule,
     AuthenModule,
     MovieModule,
     UserModule,

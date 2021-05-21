@@ -8296,3 +8296,46 @@ footer.full-width-ft .ft-copyright {
 .user_icon {
   font-size: 25px !important;
 }
+
+ul li {
+  list-style-type: none;
+}
+
+.seat-area .seat-line {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  padding: 0;
+}
+
+.seat-area .seat-line ul.seat--area {
+  width: calc(100% - 60px);
+}
+
+.seat-area .seat-line ul {
+  flex-wrap: nowrap;
+  justify-content: space-around;
+}
+
+.seat-area .seat-line ul .front-seat {
+  padding: 0px;
+}
+
+.seat-area .seat-line ul .front-seat ul li {
+  padding: 5px;
+}
+
+.single-seat {
+  cursor: pointer;
+  position: relative;
+}
+
+.seat-area .seat-line, .seat-area .seat-line ul {
+  display: flex;
+  flex-wrap: wrap;
+}

@@ -11,10 +11,10 @@ import {
   BelongsTo,
   ForeignKey
 } from 'sequelize-typescript';
-import { BaseModel } from './base.model';
-import { Seat } from './seat.model';
-import { ShowTime } from '../modules/showTIme/showTime.model';
-import { Theater } from './theater.model';
+import { BaseModel } from '../../model/base.model';
+import { Seat } from '../../model/seat.model';
+import { ShowTime } from '../showTIme/showTime.model';
+import { Theater } from '../../model/theater.model';
 
 @Table({ tableName: 'Rooms' })
 export class Room extends BaseModel<Room> {

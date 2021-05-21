@@ -6,10 +6,10 @@ import {
   BelongsTo,
   ForeignKey
 } from 'sequelize-typescript';
-import { BaseModel } from './base.model';
-import { Seat } from './seat.model';
-import { ShowTime } from '../modules/showTIme/showTime.model';
-import { User } from '../modules/user/user.model';
+import { BaseModel } from '../../model/base.model';
+import { Seat } from '../../model/seat.model';
+import { ShowTime } from '../showTIme/showTime.model';
+import { User } from '../user/user.model';
 
 @Table({ tableName: 'Tickets' })
 export class Ticket extends BaseModel<Ticket> {
@@ -22,20 +22,20 @@ export class Ticket extends BaseModel<Ticket> {
   @Column({ field: 'user_id' })
   userId: number;
 
-  @BelongsTo(() => User, 'user_id')
-  user: User;
+  // @BelongsTo(() => User, 'user_id')
+  // user: User;
 
   @ForeignKey(() => ShowTime)
   @Column({ field: 'show_id' })
   showId: number;
 
-  @BelongsTo(() => ShowTime, 'show_id')
-  show: ShowTime;
+  // @BelongsTo(() => ShowTime, 'show_id')
+  // show: ShowTime;
 
   @ForeignKey(() => Seat)
   @Column({ field: 'seat_id' })
   seatId: number;
 
-  @BelongsTo(() => Seat, 'seat_id')
-  seat: Seat;
+  // @BelongsTo(() => Seat, 'seat_id')
+  // seat: Seat;
 }

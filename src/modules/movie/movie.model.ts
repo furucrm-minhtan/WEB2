@@ -14,7 +14,7 @@ import {
 import { BaseModel } from '../../model/base.model';
 import { Category } from '../../model/category.model';
 import { Comment } from '../../model/comment.model';
-import { Bookmarks } from '../bookmark/bookmark.model';
+import { Bookmark } from '../bookmark/bookmark.model';
 import { ShowTime } from '../showTIme/showTime.model';
 import { User } from '../user/user.model';
 
@@ -33,6 +33,9 @@ export class Movie extends BaseModel<Movie> {
 
   @Column({ type: DataType.TEXT })
   trailer: string;
+
+  @Column({ type: DataType.TEXT, allowNull: false })
+  describe: string;
 
   @Column({ allowNull: false })
   director: string;
@@ -53,6 +56,6 @@ export class Movie extends BaseModel<Movie> {
   @BelongsToMany(() => User, () => Comment, 'user_id')
   userComments: User[];
 
-  @BelongsToMany(() => User, () => Bookmarks, 'user_id')
+  @BelongsToMany(() => User, () => Bookmark, 'user_id')
   userFavorites: User[];
 }

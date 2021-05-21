@@ -11,7 +11,7 @@ import {
 } from 'sequelize-typescript';
 import { BaseModel } from './base.model';
 import { GroupTheater } from './groupTheater.model';
-import { Room } from './room.model';
+import { Room } from '../modules/room/room.model';
 
 type TheaterType = '2D' | '3D';
 

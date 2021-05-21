@@ -10,8 +10,8 @@ import {
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
 import { Movie } from '../movie/movie.model';
-import { Room } from '../../model/room.model';
-import { Ticket } from '../../model/ticket.model';
+import { Room } from '../room/room.model';
+import { Ticket } from '../ticket/ticket.model';
 
 @Table({
   tableName: 'ShowTimes',

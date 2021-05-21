@@ -9,7 +9,7 @@ import {
   ForeignKey
 } from 'sequelize-typescript';
 import { BaseModel } from './base.model';
-import { Room } from './room.model';
+import { Room } from '../modules/room/room.model';
 
 @Table({
   tableName: 'Seats',

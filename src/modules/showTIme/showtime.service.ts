@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Sequelize } from 'sequelize';
-import { Ticket } from 'src/model/ticket.model';
+import { Ticket } from 'src/modules/ticket/ticket.model';
 import { Movie } from '../movie/movie.model';
 import { ShowTime } from './showTime.model';
 
