@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Post, Render, Session } from '@nestjs/common';
 import session from 'express-session';
+import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { UserSession } from '../authen/dto/authen.dto';
 import { Bookmark } from '../bookmark/bookmark.model';
 import { BookmarkService } from '../bookmark/bookmark.service';
@@ -12,22 +13,21 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly bookmarkService: BookmarkService
+    private readonly bookmarkService: BookmarkService,
+    private readonly actionResponse: ActionResponseService
   ) {}
 
   @Get('/dashboard')
   @Render('userprofile')
-  async root(
-    @Session() session: Record<string, any>
-  ): Promise<Record<string, any>> {
+  async root(@Session() session: Record<string, any>): Promise<UserProfile> {
     // console.log(session);
     // const { id }: UserProfile = session.user;
-    const bookmarks: Bookmark[] = await this.bookmarkService.getFavoriteMovie(
-      1
-    );
+    // const bookmarks: Bookmark[] = await this.bookmarkService.getFavoriteMovie(
+    //   1
+    // );
     const user: UserProfile = await this.userService.loadProfileView(1);
 
-    return { ...user, bookmarks };
+    return { ...user };
   }
 
   @Post('/profile')

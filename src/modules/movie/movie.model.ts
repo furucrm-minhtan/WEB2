@@ -53,9 +53,9 @@ export class Movie extends BaseModel<Movie> {
   @HasMany(() => ShowTime)
   showTimes: ShowTime[];
 
-  @BelongsToMany(() => User, () => Comment, 'user_id')
+  @BelongsToMany(() => User, () => Comment, 'movie_id')
   userComments: User[];
 
-  @BelongsToMany(() => User, () => Bookmark, 'user_id')
+  @BelongsToMany(() => User, () => Bookmark, 'movie_id')
   userFavorites: User[];
 }

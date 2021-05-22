@@ -1,3 +1,4 @@
+import { ActionResponseModule } from './modules/actionResponse/actionresponse.module';
 import { RoomModule } from './modules/room/room.module';
 import { BookmarkModule } from './modules/bookmark/bookmark.module';
 import { TicketModule } from './modules/ticket/ticket.module';
@@ -19,6 +20,7 @@ import { GolobalMiddleware } from './middleware/golobal.middleware';
 
 @Module({
   imports: [
+    ActionResponseModule,
     RoomModule,
     BookmarkModule,
     TicketModule,

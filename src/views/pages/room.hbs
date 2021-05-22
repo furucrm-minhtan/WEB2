@@ -1,66 +1,99 @@
-<div class="container" x-data="{ row: 1, col: 9 }">
-   <div class="screen-wrapper">
-        <ul class="seat-area">
-            <li class="seat-line">
-                <span>G</span>
-                <ul class="seat--area">
-                    <li class="front-seat">
-                        <ul>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="front-seat">
-                        <ul>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="front-seat">
-                        <ul>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
-                            </li>
-                            <li class="single-seat">
-                                <img src="../../public/images/seat01.png" alt="seat">
+{{#section 'title'}}
+Room
+{{/section}}
+
+{{> loading }}
+
+<div x-data="init()">
+    <div class="hero user-hero">
+		<div class="container">
+			<div class="col-md-12">
+               <div class="hero-ct">
+                   <h1 class="mr_0 mb_10">Booking Ticket</h1>
+               </div>
+	        </div>
+		</div>
+	</div>
+	<div class="page-single">
+		<div class="container">
+            <div class="theater_group">
+                <div class="group">
+                    <label class="group_title">Group</label>
+                    <selection>
+                        <option value="A">A</option>
+                    </selection>
+                </div>
+                <div class="theater">
+                    <label class="theater_title">Theater</label>
+                    <section>
+                        <option value="B">B</option>
+                    </section>
+                </div>
+            </div>
+			<div class="row ipad-width">
+				<div class="screen-wrapper">
+                    <template x-for="(row, index) in seats" :key="index">
+                        <ul class="seat-area">
+                            <li class="seat-line">
+                                <span>G</span>
+                                <ul class="seat--area">
+                                    <li class="front-seat">
+                                        <ul>
+                                            <template x-for="(col, index) in row" :key="index">
+                                                <li class="single-seat">
+                                                    <img src="/images/seat01.png" alt="seat">
+                                                </li>
+                                           </template>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <span>G</span>
                             </li>
                         </ul>
-                    </li>
-                </ul>
-                <span>G</span>
-            </li>
-        </ul>
-    </div>
-</div>    
+                    </template>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+    function init() {
+        return {
+            seats: '{{seats}}',
+            bookingSeat(seat, movie) {
+                axios.post('/ticket', { seat, movie })
+                    .then(() => {
+                        alert('success');
+                    })
+                    .catch(() => {
+                        alert('falied')
+                    });
+            },
+            fetchGroups() {
+                fetch('/group-theater')
+                    .then((raw) => raw.json())
+                    .then((response) => {
+                        if(response.isSucess) {
+                            this.listGroup = response.data;
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            fetchTheaters() {
+                fetch('/theater')
+                    .then((raw) => raw.json())
+                    .then((response) => {
+                        if(response.isSucess) {
+                            this.listTheater = response.data;
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
+        }
+    }
+</script>

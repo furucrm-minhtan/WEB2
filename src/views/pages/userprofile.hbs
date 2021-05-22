@@ -4,7 +4,7 @@ Profile
 
 {{> loading }}
 
-<div x-data="{ page: 'profile', favoriteMovieShow: 10 }">
+<div x-data="init()">
 	<div class="hero user-hero">
 		<div class="container">
 			<div class="row">
@@ -35,7 +35,7 @@ Profile
 								<li class="active"><a href="javascript:void(0)"
 										x-on:click="$event.preventDefault(); page = 'profile'">Profile</a></li>
 								<li><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); page = 'favorite'">Favorite movies</a></li>
+										x-on:click="favoriteMovies = []; fetchFavoriteMovies($event, 0, favoriteMovieShow)">Favorite movies</a></li>
 								<li><a href="javascript:void(0)"
 										x-on:click="$event.preventDefault(); page = 'rate'">Rated movies</a></li>
 							</ul>
@@ -57,36 +57,36 @@ Profile
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Username</label>
-									<input type="text" value="{{user_name}}">
+									<input type="text" x-model="userForm.user_name">
 								</div>
 								<div class="col-md-6 form-it">
 									<label>Email Address</label>
-									<input type="text" value="{{email}}">
+									<input type="text" x-model="userForm.email">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Name</label>
-									<input type="text" value="{{name}}">
+									<input type="text" x-model="userForm.name">
 								</div>
 								<div class="col-md-6 form-it">
 									<label>Phone</label>
-									<input type="text" value="{{Phone}}">
+									<input type="text" x-model="userForm.phone">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Address</label>
-									<input type="text" value="{{address}}">
+									<input type="text" x-model="userForm.address">
 								</div>
 								<div class="col-md-6 form-it">
 									<label>City</label>
-									<input type="text" value="{{city}}">
+									<input type="text" x-model="userForm.city">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-2">
-									<input class="submit" type="submit" value="save">
+									<input class="submit" type="submit" value="save" @click="updateProfile($event)">
 								</div>
 							</div>
 						</form>
@@ -95,24 +95,24 @@ Profile
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Old Password</label>
-									<input type="text">
+									<input type="text" x-model="passwordForm.oldPassword">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>New Password</label>
-									<input type="text">
+									<input type="text" x-model="passwordForm.newPassword">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Confirm New Password</label>
-									<input type="text">
+									<input type="text" x-model="passwordForm.confPassword">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-2">
-									<input class="submit" type="submit" value="change">
+									<input class="submit" type="submit" value="change" @click="changePassword($event)">
 								</div>
 							</div>
 						</form>
@@ -128,25 +128,28 @@ Profile
 							<a href="userfavoritelist.html" class="list"><i class="ion-ios-list-outline active"></i></a>
 							<a href="userfavoritegrid.html" class="grid"><i class="ion-grid "></i></a>
 						</div>
-						<div class="flex-wrap-movielist user-fav-list">
-							<template x-for="(item, index) in favoriteMovies" :key="index">
-								<div class="movie-item-style-2">
-									<img x-bind:src="item.poster" alt="">
-									<div class="mv-item-infor">
-										<h6><a href="javascript:void(0)" x-text="item.name">oblivion <span>(2012)</span></a></h6>
-										{{!-- <p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p> --}}
-										<p class="describe" x-text="item.describe"></p>
-										<p class="run-time">Release: <span x-text="item.publish"></span></p>
-										<p>Director: <span x-text="director"></span> </p>
-										{{!-- <p>Stars: <a href="#">Robert Downey Jr.,</a> <a href="#">Chris Evans,</a> <a
-												href="#">
-												Chris Hemsworth</a></p> --}}
+						<template x-if="favoriteMovies">
+							<div class="flex-wrap-movielist user-fav-list">
+								<template x-for="index in Object.keys(favoriteMovies)" :key="index">
+									<div class="movie-item-style-2">
+										<img x-bind:src="favoriteMovies[index].movie.poster" alt="">
+										<div class="mv-item-infor">
+											<h6><a href="javascript:void(0)" x-text="favoriteMovies[index].movie.name">oblivion <span>(2012)</span></a></h6>
+											{{!-- <p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p> --}}
+											<p class="describe" x-text="favoriteMovies[index].movie.describe"></p>
+											<p class="run-time">Release: <span x-text="favoriteMovies[index].movie.publish"></span></p>
+											<p>Director: <span x-text="favoriteMovies[index].movie.director"></span> </p>
+											{{!-- <p>Stars: <a href="#">Robert Downey Jr.,</a> <a href="#">Chris Evans,</a> <a
+													href="#">
+													Chris Hemsworth</a></p> --}}
+										</div>
 									</div>
-								</div>
-							</template>
+								</template>
+							</div>
+						</template>
 						<div class="topbar-filter">
 							<label>Movies per page:</label>
-							<select x-on:change="fetchFavoriteMovies(0, $event.value)">
+							<select x-model="favoriteMovieShow" x-on:change="favoriteMovies = []; fetchFavoriteMovies($event, 0, favoriteMovieShow)">
 								<option value="5">5</option>
 								<option value="10">10</option>
 							</select>
@@ -244,10 +247,41 @@ Profile
 		return {
 			page: 'profile', 
 			favoriteMovieShow: 10,
-			favoriteMovie: [],	
-			updateProfile(event, user)
+			favoriteMovies: [],
+			userForm: {
+				id: '{{id}}',
+				user_name: '{{user_name}}',
+				email: '{{email}}',
+				name: '{{name}}',
+				phone: '{{phone}}',
+				address: '{{address}}',
+				city: '{{city}}'
+			},
+			passwordForm: {},	
+			updateProfile(event)
 			{
-				axios.post('/profile', user)
+				event.preventDefault();
+
+				axios.post('/profile', this.userForm)
+					.then(function (response)
+					{
+						console.log(response);
+					})
+					.catch(function (error)
+					{
+						console.log(error);
+					});
+			},
+			changePassword(event)
+			{
+				event.preventDefault();
+
+				if(this.passwordForm.newPassword != this.passwordForm.confPassword) {
+					alert('confirm password not match');
+					return false;
+				}
+
+				axios.post('/change-password', this.passwordForm)
 					.then(function (response)
 					{
 
@@ -257,24 +291,20 @@ Profile
 						console.log(error);
 					});
 			},
-			changePassword(event, password)
-			{
-				axios.post('/change-password', user)
-					.then(function (response)
-					{
+			fetchFavoriteMovies(event, offset, limit) {
+				event.preventDefault(); 
+				this.page = 'favorite';
 
+				fetch(`/bookmark?offset=${offset}&limit=${limit}`)
+					.then(function(response) { 
+						return response.json();
 					})
-					.catch(function (error)
-					{
-						console.log(error);
-					});
-			},
-			fetchFavoriteMovies(offset = 0, limit = 5) {
-				axios.get('/bookmark', { offset, limit })
-					.then(function(response) {
-						this.favoriteMovie = response;
+					.then((data) => {
+						if(data.isSuccess) {
+							this.favoriteMovies = this.favoriteMovies.concat(data.data);
+						}
 					})
-					.then(function (error) {
+					.catch(function(error) {
 						console.log(error);
 					})
 			}

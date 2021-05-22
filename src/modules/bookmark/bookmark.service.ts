@@ -19,11 +19,11 @@ export class BookmarkService {
   ): Promise<Bookmark[]> {
     const bookmarks: Bookmark[] = await this.bookmarkRepository.findAll({
       where: {
-        id
+        userId: id
       },
       include: [Movie],
-      offset,
-      limit
+      offset: +offset,
+      limit: +limit
     });
 
     return bookmarks;

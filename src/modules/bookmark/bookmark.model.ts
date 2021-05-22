@@ -24,4 +24,10 @@ export class Bookmark extends BaseModel<Bookmark> {
   @ForeignKey(() => Movie)
   @Column({ field: 'movie_id', allowNull: false })
   movieId: number;
+
+  @BelongsTo(() => User, 'user_id')
+  user: User;
+
+  @BelongsTo(() => Movie, 'movie_id')
+  movie: Movie;
 }

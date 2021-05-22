@@ -51,8 +51,6 @@ export class UserService {
   }
 
   async updateProfile(user: User): Promise<[number, User[]]> {
-    user.password = Helper.hashPassword(user.password);
-
     return this.usersRepository.update(user, {
       where: {
         id: user.id
@@ -70,11 +68,11 @@ export class UserService {
 
   async updatePassword(
     id: number,
-    { password, newPassword }: ChangePassword
+    { oldPassword, newPassword }: ChangePassword
   ): Promise<[number, User[]]> {
     const user: User = await this.getUser(id);
 
-    if (!Helper.comparePassword(password, user.password)) {
+    if (!Helper.comparePassword(oldPassword, user.password)) {
       throw 'password not match';
     }
     newPassword = Helper.hashPassword(newPassword);

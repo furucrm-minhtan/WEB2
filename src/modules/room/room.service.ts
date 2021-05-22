@@ -7,7 +7,14 @@ export class RoomService {
     @Inject('ROOMS_REPOSITORY') private roomRepository: typeof Room
   ) {}
 
-  async loadRoomBooking(id: number): Promise<Room> {
-    return await this.roomRepository.findOne({ where: { id } });
+  async loadRoomBooking(id: number): Promise<Array<Array<number>>> {
+    const room: Room = await this.roomRepository.findOne({
+      where: { id },
+      plain: true
+    });
+    console.log(room);
+    return Array.from(Array(room.rows).keys(), () => [
+      ...Array(room.columns).keys()
+    ]);
   }
 }
