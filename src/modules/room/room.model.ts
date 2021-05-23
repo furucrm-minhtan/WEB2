@@ -14,7 +14,7 @@ import {
 import { BaseModel } from '../../model/base.model';
 import { Seat } from '../../model/seat.model';
 import { ShowTime } from '../showTIme/showTime.model';
-import { Theater } from '../../model/theater.model';
+import { Theater } from '../theater/theater.model';
 
 @Table({ tableName: 'Rooms' })
 export class Room extends BaseModel<Room> {

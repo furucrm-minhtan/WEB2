@@ -9,9 +9,9 @@ import {
   Default,
   ForeignKey
 } from 'sequelize-typescript';
-import { BaseModel } from './base.model';
-import { GroupTheater } from './groupTheater.model';
-import { Room } from '../modules/room/room.model';
+import { BaseModel } from '../../model/base.model';
+import { GroupTheater } from '../groupTheater/groupTheater.model';
+import { Room } from '../room/room.model';
 
 type TheaterType = '2D' | '3D';
 

@@ -5,8 +5,8 @@ import {
   Table,
   HasMany
 } from 'sequelize-typescript';
-import { BaseModel } from './base.model';
-import { Theater } from './theater.model';
+import { BaseModel } from '../../model/base.model';
+import { Theater } from '../theater/theater.model';
 
 @Table({ tableName: 'GroupTheater' })
 export class GroupTheater extends BaseModel<GroupTheater> {

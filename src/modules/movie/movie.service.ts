@@ -15,6 +15,15 @@ export class MovieService {
     return this.movieRepository.findAll<Movie>();
   }
 
+  async findMovie(id: number, options = {}) {
+    return this.movieRepository.findOne({
+      where: {
+        id
+      },
+      ...options
+    });
+  }
+
   async newestMovie(limit: number): Promise<Movie[]> {
     return this.movieRepository.findAll({
       order: ['creationDate'],

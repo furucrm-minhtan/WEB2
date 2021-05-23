@@ -1,3 +1,5 @@
+import { TheaterModule } from './modules/theater/theater.module';
+import { GroupThearterModule } from './modules/groupTheater/groupthearter.module';
 import { ActionResponseModule } from './modules/actionResponse/actionresponse.module';
 import { RoomModule } from './modules/room/room.module';
 import { BookmarkModule } from './modules/bookmark/bookmark.module';
@@ -20,6 +22,8 @@ import { GolobalMiddleware } from './middleware/golobal.middleware';
 
 @Module({
   imports: [
+    TheaterModule,
+    GroupThearterModule,
     ActionResponseModule,
     RoomModule,
     BookmarkModule,

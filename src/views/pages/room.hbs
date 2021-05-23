@@ -1,33 +1,59 @@
 {{#section 'title'}}
-Room
+Booking Ticket
 {{/section}}
 
 {{> loading }}
+
+{{#section 'style'}}
+<style>
+    .page-single * {
+        color: #fff;
+    }
+
+    .theater_group {
+        display: flex;
+        flex: 1 1 auto;
+        justify-content: center;
+        margin: auto;
+        border: none;
+    }
+
+    .theater_group > .group, .theater_group > .theater {
+        margin: 15px;
+        width: 20%;
+    }
+
+</style>
+{{/section}}
 
 <div x-data="init()">
     <div class="hero user-hero">
 		<div class="container">
 			<div class="col-md-12">
                <div class="hero-ct">
-                   <h1 class="mr_0 mb_10">Booking Ticket</h1>
+                   <h1 class="mr_0 mb_10">{{name}}</h1>
                </div>
 	        </div>
 		</div>
 	</div>
 	<div class="page-single">
 		<div class="container">
-            <div class="theater_group">
+            <div class="theater_group topbar-filter">
                 <div class="group">
                     <label class="group_title">Group</label>
-                    <selection>
-                        <option value="A">A</option>
-                    </selection>
+                    <select>
+                        <template x-for="(item, index) in groups">
+                            <option x-bind:value="item.name" x-text="item.name"></option>
+                        </template>
+                    </select>
                 </div>
                 <div class="theater">
                     <label class="theater_title">Theater</label>
-                    <section>
-                        <option value="B">B</option>
-                    </section>
+                    <select >
+                        <template x-for="(item, index) in theaters">
+                            <option x-bind:value="item.name" x-text="item.name"></option>
+                        </template>
+                    </select>
                 </div>
             </div>
 			<div class="row ipad-width">
@@ -41,7 +67,7 @@ Room
                                         <ul>
                                             <template x-for="(col, index) in row" :key="index">
                                                 <li class="single-seat">
-                                                    <img src="/images/seat01.png" alt="seat">
+                                                    <img src="/images/seat01.png" alt="seat" onclick="bookingSeat({ row, col }, )">
                                                 </li>
                                            </template>
                                         </ul>
@@ -60,7 +86,7 @@ Room
 <script>
     function init() {
         return {
-            seats: '{{seats}}',
+            seats: [],
             bookingSeat(seat, movie) {
                 axios.post('/ticket', { seat, movie })
                     .then(() => {
