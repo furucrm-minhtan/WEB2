@@ -15,7 +15,7 @@ import { BaseModel } from '../../model/base.model';
 import { Category } from '../../model/category.model';
 import { Comment } from '../../model/comment.model';
 import { Bookmark } from '../bookmark/bookmark.model';
-import { ShowTime } from '../showTIme/showTime.model';
+import { ShowTime } from '../showTIme/showtime.model';
 import { Theater } from '../theater/theater.model';
 import { TheaterMovie } from '../theaterMovie/theaterMovie.model';
 import { User } from '../user/user.model';

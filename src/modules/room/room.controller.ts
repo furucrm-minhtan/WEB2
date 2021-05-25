@@ -13,9 +13,15 @@ export class RoomController {
   @Get(':id')
   async loadRoomView(@Param('id') id: number, @Query('movie') movieId: number) {
     try {
-      const rooms: Room[] = await this.roomService.showMovie(id, movieId, 5);
+      const roomsDisplay: Record<string, Room[]> = {};
+      // const rooms: Room[] = await this.roomService.showMovie(id, movieId, 5);
 
-      return this.actionResponse.responseApi(true, rooms, '');
+      // rooms.forEach((room) => {
+      //   if (roomsDisplay[room.]) roomsDisplay[room.id] = [];
+      //   roomsDisplay[room.id].push(room);
+      // })
+
+      return this.actionResponse.responseApi(true, roomsDisplay, '');
     } catch (error) {
       console.log(error);
     }

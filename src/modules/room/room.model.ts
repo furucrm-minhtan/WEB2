@@ -13,7 +13,7 @@ import {
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
 import { Seat } from '../../model/seat.model';
-import { ShowTime } from '../showTIme/showTime.model';
+import { ShowTime } from '../showTIme/showtime.model';
 import { Theater } from '../theater/theater.model';
 
 @Table({ tableName: 'Rooms' })

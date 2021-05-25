@@ -11,7 +11,7 @@ import { GroupTheater } from 'src/modules/groupTheater/groupTheater.model';
 import { Movie } from 'src/modules/movie/movie.model';
 import { Room } from 'src/modules/room/room.model';
 import { Seat } from 'src/model/seat.model';
-import { ShowTime } from 'src/modules/showTIme/showTime.model';
+import { ShowTime } from 'src/modules/showTIme/showtime.model';
 import { Theater } from 'src/modules/theater/theater.model';
 import { Ticket } from 'src/modules/ticket/ticket.model';
 import { User } from 'src/modules/user/user.model';

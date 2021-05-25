@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import moment from 'moment';
+import * as moment from 'moment';
 import { operatorsAliases } from 'src/core/config/sequelize.config';
-import { ShowTime } from '../showTIme/showTime.model';
+import { ShowTime } from '../showTIme/showtime.model';
 import { Room } from './room.model';
 const { $between } = operatorsAliases;
 
@@ -20,7 +20,7 @@ export class RoomService {
 
   showMovie(theaterId: number, movieId, day: number): Promise<Room[]> {
     return this.roomRepository.findAll({
-      attributes: ['row', 'col'],
+      attributes: ['rows', 'columns'],
       where: {
         theaterId
       },

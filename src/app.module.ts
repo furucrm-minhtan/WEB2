@@ -1,3 +1,4 @@
+import { ShowTimeModule } from './modules/showTIme/showtime.module';
 import { TheaterModule } from './modules/theater/theater.module';
 import { GroupThearterModule } from './modules/groupTheater/groupthearter.module';
 import { ActionResponseModule } from './modules/actionResponse/actionresponse.module';
@@ -22,6 +23,7 @@ import { GolobalMiddleware } from './middleware/golobal.middleware';
 
 @Module({
   imports: [
+    ShowTimeModule,
     TheaterModule,
     GroupThearterModule,
     ActionResponseModule,

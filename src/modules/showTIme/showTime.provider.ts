@@ -1,6 +1,6 @@
-import { ShowTime } from './showTime.model';
+import { ShowTime } from './showtime.model';
 
-export const MovieProviders = [
+export const ShowTimeProvider = [
   {
     provide: 'SHOWTIMES_REPOSITORY',
     useValue: ShowTime

@@ -23,6 +23,31 @@ Booking Ticket
         width: 20%;
     }
 
+    .showtime {
+        display: flex;
+    }
+
+    .showtime .showtime_item {
+        display: flex;
+        flex: 0 1 auto;
+        flex-direction: column;
+        margin-right: 20px;
+    }
+
+    .showtime_date, .single-room {
+        margin: 10px;
+        padding: 5px;
+    }
+
+    .showtime_item .single-room {
+        border: 1px solid #000;
+        background: transparent;
+    }
+
+    .showtime_item .single-room:hover {
+        border: none;
+        background-color: #074ce0;
+    } 
 </style>
 {{/section}}
 
@@ -51,7 +76,7 @@ Booking Ticket
                 <template x-if="groupSelected">
                     <div class="theater">
                         <label class="theater_title">Theater</label>
-                        <select x-model="theaterSelected" @change="get">
+                        <select x-model="theaterSelected" @change="get" x-on:change="fetchShowTimes()">
                             <option value="">--None--</option>
                             <template x-for="(item, index) in theaters[groupSelected]">
                                 <option x-bind:value="item.id" x-text="item.name"></option>
@@ -60,30 +85,20 @@ Booking Ticket
                     </div>
                 </template>
             </div>
+           <template x-if="theaterSelected">
                 <div class="row ipad-width">
-                    <div class="screen-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>1</th>
-                                    <th>2</th>
-                                    <th>3</th>
-                                    <th>4</th>
-                                    <th>5</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="screen-wrapper showtime">
+                        <template x-for="[date, items] in Object.entries(showTimes)">
+                            <div class="showtime_item">
+                                <div class="showtime_date" x-text="getDay(date)"></div>
+                                <template x-for="(showTime, index) in items" :key="index">
+                                    <button class="single-room" x-text="showTime.room.name" @click="roomSelected = showTime.room"></button>
+                                </template>
+                            </div>
+                        </template>
                     </div>
                 </div>
+            </template>
             {{!-- <template x-if="theaterSelected">
                 <div class="row ipad-width">
                     <div class="screen-wrapper">
@@ -109,10 +124,10 @@ Booking Ticket
                     </div>
                 </div>
             </template> --}}
-			<template x-if="theaterSelected">
+			<template x-if="roomSelected">
                 <div class="row ipad-width">
                     <div class="screen-wrapper">
-                        <template x-for="(row, index) in seats" :key="index">
+                        <template x-for="(row, index) in roomSelected.seats" :key="index">
                             <ul class="seat-area">
                                 <li class="seat-line">
                                     <span>G</span>
@@ -146,8 +161,9 @@ Booking Ticket
         return {
             groupSelected: '',
             theaterSelected: '',
+            roomSelected: '',
             seats: [],
-            rooms: [],
+            showTimes: [],
             groups,
             theaters,
             bookingSeat(seat, movie) {
@@ -163,7 +179,7 @@ Booking Ticket
                 fetch('/group-theater')
                     .then((raw) => raw.json())
                     .then((response) => {
-                        if(response.isSucess) {
+                        if(response.isSuccess) {
                             this.listGroup = response.data;
                         }
                     })
@@ -175,7 +191,7 @@ Booking Ticket
                 fetch('/theater')
                     .then((raw) => raw.json())
                     .then((response) => {
-                        if(response.isSucess) {
+                        if(response.isSuccess) {
                             this.listTheater = response.data;
                         }
                     })
@@ -183,14 +199,20 @@ Booking Ticket
                         console.log(error);
                     });
             },
-            fetchRooms() {
-                fetch(`/${theaterSelected}?movie={{id}}`)
+            fetchShowTimes() {
+                fetch(`/api/showtime/1?movie={{id}}`)
                     .then((raw) => raw.json())
                     .then((response) => {
-                        if(response.isSucess) {
-                            this.rooms = response.data;
+                        if(response.isSuccess) {
+                            this.showTimes = response.data;
                         } 
                     })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            getDay(date) {
+                return new Date(date).getDate();
             }
         }
     }
