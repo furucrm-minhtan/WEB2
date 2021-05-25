@@ -16,6 +16,7 @@ import { Theater } from 'src/modules/theater/theater.model';
 import { Ticket } from 'src/modules/ticket/ticket.model';
 import { User } from 'src/modules/user/user.model';
 import { Op } from 'sequelize';
+import { TheaterMovie } from 'src/modules/theaterMovie/theaterMovie.model';
 
 export const operatorsAliases = {
   $eq: Op.eq,
@@ -79,7 +80,8 @@ export default class SequelizeConfig {
         GroupTheater,
         Comment,
         Category,
-        Bookmark
+        Bookmark,
+        TheaterMovie
       ],
       operatorsAliases
       // sync: {

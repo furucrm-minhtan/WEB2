@@ -18,7 +18,7 @@ import { Ticket } from '../ticket/ticket.model';
   indexes: [
     {
       name: 'unique_showtime',
-      fields: ['start', 'end']
+      fields: ['start', 'end', 'date']
     }
   ]
 })
@@ -28,11 +28,14 @@ export class ShowTime extends BaseModel<ShowTime> {
   @Column
   id: number;
 
-  @Column({ allowNull: false })
+  @Column({ type: DataType.TIME, allowNull: false })
   start: Date;
 
-  @Column({ allowNull: false })
+  @Column({ type: DataType.TIME, allowNull: false })
   end: Date;
+
+  @Column({ type: DataType.DATEONLY, allowNull: false })
+  date: Date;
 
   @Column({ type: DataType.DECIMAL(undefined, 2), allowNull: false })
   price: number;

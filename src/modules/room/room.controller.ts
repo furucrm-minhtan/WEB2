@@ -1,22 +1,25 @@
-import { Controller, Get, Param, Render } from '@nestjs/common';
+import { Controller, Get, Param, Query, Render } from '@nestjs/common';
+import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { Room } from './room.model';
 import { RoomService } from './room.service';
 
 @Controller('room')
 export class RoomController {
-  constructor(private readonly roomService: RoomService) {}
+  constructor(
+    private readonly roomService: RoomService,
+    private readonly actionResponse: ActionResponseService
+  ) {}
 
   @Get(':id')
-  @Render('room')
-  async loadRoomView(@Param('id') id: number): Promise<Record<string, any>> {
+  async loadRoomView(@Param('id') id: number, @Query('movie') movieId: number) {
     try {
-      const seats: Array<
-        Array<number>
-      > = await this.roomService.loadRoomBooking(1);
-      console.log(seats);
-      return { seats };
+      const rooms: Room[] = await this.roomService.showMovie(id, movieId, 5);
+
+      return this.actionResponse.responseApi(true, rooms, '');
     } catch (error) {
       console.log(error);
     }
+
+    return this.actionResponse.responseApi(false, '', 'fetch data failed');
   }
 }

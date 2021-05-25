@@ -4,6 +4,6 @@ import { TheaterService } from './theater.service';
 
 @Module({
   providers: [TheaterService, ...TheaterProviders],
-  exports: [TheaterService]
+  exports: [TheaterService, ...TheaterProviders]
 })
 export class TheaterModule {}

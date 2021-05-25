@@ -16,6 +16,8 @@ import { Category } from '../../model/category.model';
 import { Comment } from '../../model/comment.model';
 import { Bookmark } from '../bookmark/bookmark.model';
 import { ShowTime } from '../showTIme/showTime.model';
+import { Theater } from '../theater/theater.model';
+import { TheaterMovie } from '../theaterMovie/theaterMovie.model';
 import { User } from '../user/user.model';
 
 @Table({ tableName: 'Movies' })
@@ -58,4 +60,7 @@ export class Movie extends BaseModel<Movie> {
 
   @BelongsToMany(() => User, () => Bookmark, 'movie_id')
   userFavorites: User[];
+
+  @BelongsToMany(() => Theater, () => TheaterMovie, 'movie_id')
+  theaters: Theater[];
 }
