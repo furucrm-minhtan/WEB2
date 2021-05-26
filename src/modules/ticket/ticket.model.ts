@@ -6,10 +6,10 @@ import {
   BelongsTo,
   ForeignKey
 } from 'sequelize-typescript';
-import { BaseModel } from './base.model';
-import { Seat } from './seat.model';
-import { ShowTime } from '../modules/showTIme/showTime.model';
-import { User } from '../modules/user/user.model';
+import { BaseModel } from '../../model/base.model';
+import { Seat } from '../seat/seat.model';
+import { ShowTime } from '../showTIme/showtime.model';
+import { User } from '../user/user.model';
 
 @Table({ tableName: 'Tickets' })
 export class Ticket extends BaseModel<Ticket> {

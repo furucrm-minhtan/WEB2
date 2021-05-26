@@ -10,6 +10,7 @@ import * as hbs from 'hbs';
 import { urlencoded } from 'body-parser';
 import * as session from 'express-session';
 import { ConfigService } from '@nestjs/config';
+import * as moment from 'moment';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -37,6 +38,10 @@ async function bootstrap() {
     if (!this.sections) this.sections = {};
     this.sections[name] = options.fn(this);
     return null;
+  });
+
+  hbs.registerHelper('formatDate', function (datetime: string, format: string) {
+    return moment(datetime).format(format);
   });
 
   await app.listen(3000);

@@ -13,10 +13,13 @@ import {
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
 import { Category } from '../../model/category.model';
-import { Comment } from '../../model/comment.model';
-import { Bookmarks } from '../bookmark/bookmark.model';
-import { ShowTime } from '../showTIme/showTime.model';
+import { Review } from '../review/review.model';
+import { Bookmark } from '../bookmark/bookmark.model';
+import { ShowTime } from '../showTIme/showtime.model';
+import { Theater } from '../theater/theater.model';
+import { TheaterMovie } from '../theaterMovie/theaterMovie.model';
 import { User } from '../user/user.model';
+import { MMPARating } from './dto/movie.dto';
 
 @Table({ tableName: 'Movies' })
 export class Movie extends BaseModel<Movie> {
@@ -34,11 +37,23 @@ export class Movie extends BaseModel<Movie> {
   @Column({ type: DataType.TEXT })
   trailer: string;
 
+  @Column({ type: DataType.TEXT, allowNull: false })
+  describe: string;
+
   @Column({ allowNull: false })
   director: string;
 
-  @Column({ type: DataType.DATE })
+  @Column({ allowNull: false })
+  writer: string;
+
+  @Column({ type: DataType.DATE, allowNull: false })
   publish: Date;
+
+  @Column({ allowNull: false })
+  MMPA_rating: MMPARating;
+
+  @Column({ allowNull: false })
+  run_time: number;
 
   @ForeignKey(() => Category)
   @Column({ field: 'category_id', allowNull: false })
@@ -50,9 +65,12 @@ export class Movie extends BaseModel<Movie> {
   @HasMany(() => ShowTime)
   showTimes: ShowTime[];
 
-  @BelongsToMany(() => User, () => Comment, 'user_id')
-  userComments: User[];
+  @BelongsToMany(() => User, () => Review, 'movie_id')
+  userReviews: User[];
 
-  @BelongsToMany(() => User, () => Bookmarks, 'user_id')
+  @BelongsToMany(() => User, () => Bookmark, 'movie_id')
   userFavorites: User[];
+
+  @BelongsToMany(() => Theater, () => TheaterMovie, 'movie_id')
+  theaters: Theater[];
 }

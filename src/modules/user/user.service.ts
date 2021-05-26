@@ -9,9 +9,7 @@ import { Movie } from '../movie/movie.model';
 export class UserService {
   constructor(
     @Inject('USERS_REPOSITORY')
-    private usersRepository: typeof User,
-    @Inject('MOVIES_REPOSITORY')
-    private moviesRepository: typeof Movie
+    private usersRepository: typeof User
   ) {}
 
   async findAll(): Promise<User[]> {
@@ -26,28 +24,33 @@ export class UserService {
     });
   }
 
-  async loadProfileView(session: Record<string, any>): Promise<UserProfile> {
-    // console.log(session);
-    // const { id }: UserProfile = session.user;
-    const user: User = await this.getUser(1);
+  async loadProfileView(id): Promise<UserProfile> {
+    const user: User = await this.getUser(id);
 
     return user.get({ plain: true });
   }
 
-  async getFavoriteMovie(id: number): Promise<Movie[]> {
+  async getFavoriteMovie(id: number, offset = 0, limit = 10): Promise<Movie[]> {
     const user: User = await this.usersRepository.findOne({
       where: {
         id
       },
-      include: [this.moviesRepository]
+      include: [
+        {
+          attributes: {
+            exclude: ['creationDate', 'updatedOn', 'trailer']
+          },
+          model: Movie,
+          as: 'moviesFavorite',
+          limit
+        }
+      ]
     });
 
     return user.moviesFavorite;
   }
 
   async updateProfile(user: User): Promise<[number, User[]]> {
-    user.password = Helper.hashPassword(user.password);
-
     return this.usersRepository.update(user, {
       where: {
         id: user.id
@@ -65,11 +68,11 @@ export class UserService {
 
   async updatePassword(
     id: number,
-    { password, newPassword }: ChangePassword
+    { oldPassword, newPassword }: ChangePassword
   ): Promise<[number, User[]]> {
     const user: User = await this.getUser(id);
 
-    if (!Helper.comparePassword(password, user.password)) {
+    if (!Helper.comparePassword(oldPassword, user.password)) {
       throw 'password not match';
     }
     newPassword = Helper.hashPassword(newPassword);

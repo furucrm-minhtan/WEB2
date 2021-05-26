@@ -2,6 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Movie } from './movie.model';
 import * as moment from 'moment';
 import { operatorsAliases } from 'src/core/config/sequelize.config';
+import { GroupTheater } from '../groupTheater/groupTheater.model';
+import { Theater } from '../theater/theater.model';
+import { GroupTheaterOptions } from '../groupTheater/dto/groupTheater.dto';
+import { TheaterOptions } from '../theater/dto/theater.dto';
 const { $between } = operatorsAliases;
 
 @Injectable()
@@ -11,8 +15,17 @@ export class MovieService {
     private movieRepository: typeof Movie
   ) {}
 
-  async findAll(): Promise<Movie[]> {
-    return this.movieRepository.findAll<Movie>();
+  async findAll(options = {}): Promise<Movie[]> {
+    return this.movieRepository.findAll<Movie>(options);
+  }
+
+  async findMovie(id: number, options = {}) {
+    return this.movieRepository.findOne({
+      where: {
+        id
+      },
+      ...options
+    });
   }
 
   async newestMovie(limit: number): Promise<Movie[]> {
@@ -34,5 +47,34 @@ export class MovieService {
       },
       limit
     });
+  }
+
+  async loadBookingPage(id: number): Promise<Record<string, any>> {
+    const groups: Set<GroupTheaterOptions> = new Set();
+    const theaters: Record<string, Array<TheaterOptions>> = {};
+    const movie: Movie = await this.findMovie(id, {
+      include: [
+        {
+          model: Theater,
+          include: [GroupTheater]
+        }
+      ]
+    });
+    const data: Record<string, any> = {
+      id: movie.id,
+      name: movie.name
+    };
+
+    movie.theaters.map((theater) => {
+      const groupId: number = theater.groupId;
+
+      groups.add(theater.group.get({ plain: true }));
+      if (!theaters[groupId]) theaters[theater.id] = [];
+      theaters[groupId].push({ id: theater.id, name: theater.name });
+    });
+    data.groups = JSON.stringify(Array.from(groups));
+    data.theaters = JSON.stringify(theaters);
+
+    return { ...data };
   }
 }

@@ -1,3 +1,12 @@
+import { ReviewModule } from './modules/review/review.module';
+import { SeatModule } from './modules/seat/seat.module';
+import { ShowTimeModule } from './modules/showTIme/showtime.module';
+import { TheaterModule } from './modules/theater/theater.module';
+import { GroupThearterModule } from './modules/groupTheater/groupthearter.module';
+import { ActionResponseModule } from './modules/actionResponse/actionresponse.module';
+import { RoomModule } from './modules/room/room.module';
+import { BookmarkModule } from './modules/bookmark/bookmark.module';
+import { TicketModule } from './modules/ticket/ticket.module';
 import { AuthenModule } from './modules/authen/authen.module';
 import { HomeController } from './modules/controllers/home.controller';
 import { MovieModule } from './modules/movie/movie.module';
@@ -16,6 +25,15 @@ import { GolobalMiddleware } from './middleware/golobal.middleware';
 
 @Module({
   imports: [
+    ReviewModule,
+    SeatModule,
+    ShowTimeModule,
+    TheaterModule,
+    GroupThearterModule,
+    ActionResponseModule,
+    RoomModule,
+    BookmarkModule,
+    TicketModule,
     AuthenModule,
     MovieModule,
     UserModule,

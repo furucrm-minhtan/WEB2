@@ -1,21 +1,31 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Movie } from '../movie/movie.model';
-import { Bookmarks } from './bookmark.model';
+import { Bookmark } from './bookmark.model';
 
 @Injectable()
 export class BookmarkService {
   constructor(
-    @Inject('BOOKMARKS_REPOSITORY') private bookmarkRepository: typeof Bookmarks
+    @Inject('BOOKMARKS_REPOSITORY') private bookmarkRepository: typeof Bookmark
   ) {}
 
-//   async getFavoriteMovie(id: number): Promise<Movie> {
-//       this.bookmarkRepository.findAll({
-//           where: {
-//               userId: id
-//           },
-//           include: {
+  async countMovie(id: number): Promise<number> {
+    return this.bookmarkRepository.count({ where: { id } });
+  }
 
-//           }
-//       })
-//   }
+  async getFavoriteMovie(
+    id: number,
+    offset = 0,
+    limit = 10
+  ): Promise<Bookmark[]> {
+    const bookmarks: Bookmark[] = await this.bookmarkRepository.findAll({
+      where: {
+        userId: id
+      },
+      include: [Movie],
+      offset: +offset,
+      limit: +limit
+    });
+
+    return bookmarks;
+  }
 }

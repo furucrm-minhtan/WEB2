@@ -1,3 +1,3 @@
 export default Object.freeze({
-  SALT: 'SyLramne6j'
+  SALT: 10
 });

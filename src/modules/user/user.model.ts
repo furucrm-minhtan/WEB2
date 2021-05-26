@@ -10,9 +10,9 @@ import {
   BelongsToMany
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
-import { Bookmarks } from '../bookmark/bookmark.model';
-import { Comment } from '../../model/comment.model';
-import { Ticket } from '../../model/ticket.model';
+import { Bookmark } from '../bookmark/bookmark.model';
+import { Review } from '../review/review.model';
+import { Ticket } from '../ticket/ticket.model';
 import { Movie } from '../movie/movie.model';
 
 @Table({ tableName: 'Users' })
@@ -48,12 +48,12 @@ export class User extends BaseModel<User> {
   @Column(DataType.STRING(100))
   city: string;
 
-  @BelongsToMany(() => Movie, () => Bookmarks, 'movie_id')
-  moviesComment: Movie[];
+  @BelongsToMany(() => Movie, () => Review, 'user_id')
+  moviesRevies: Array<Movie & { Review: Review }>;
 
   @HasMany(() => Ticket)
   tickets: Ticket[];
 
-  @BelongsToMany(() => Movie, () => Bookmarks, 'movie_id')
-  moviesFavorite: Movie[];
+  @BelongsToMany(() => Movie, () => Bookmark, 'user_id')
+  moviesFavorite: Array<Movie & { Bookmark: Bookmark }>;
 }

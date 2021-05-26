@@ -1,24 +1,38 @@
+{{>loading  }}
+<div class="hero mv-single-hero">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<!-- <h1> movie listing - list</h1>
+				<ul class="breadcumb">
+					<li class="active"><a href="#">Home</a></li>
+					<li> <span class="ion-ios-arrow-right"></span> movie listing</li>
+				</ul> -->
+			</div>
+		</div>
+	</div>
+</div>
 <div class="page-single movie-single movie_single">
 	<div class="container">
 		<div class="row ipad-width2">
 			<div class="col-md-4 col-sm-12 col-xs-12">
 				<div class="movie-img sticky-sb">
-					<img src="images/uploads/movie-single.jpg" alt="">
+					<img src="{{poster}}" alt="">
 					<div class="movie-btn">	
 						<div class="btn-transform transform-vertical red">
 							<div><a href="#" class="item item-1 redbtn"> <i class="ion-play"></i> Watch Trailer</a></div>
 							<div><a href="https://www.youtube.com/embed/o-0hcF97wy0" class="item item-2 redbtn fancybox-media hvr-grow"><i class="ion-play"></i></a></div>
 						</div>
 						<div class="btn-transform transform-vertical">
-							<div><a href="#" class="item item-1 yellowbtn"> <i class="ion-card"></i> Buy ticket</a></div>
-							<div><a href="#" class="item item-2 yellowbtn"><i class="ion-card"></i></a></div>
+							<div><a href="/booking" class="item item-1 yellowbtn"> <i class="ion-card"></i> Buy ticket</a></div>
+							<div><a href="/booking" class="item item-2 yellowbtn"><i class="ion-card"></i></a></div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="col-md-8 col-sm-12 col-xs-12">
 				<div class="movie-single-ct main-content">
-					<h1 class="bd-hd">Skyfall: Quantum of Spectre <span>2015</span></h1>
+					<h1 class="bd-hd">{{name}}</h1>
 					<div class="social-btn">
 						<a href="#" class="parent-btn"><i class="ion-heart"></i> Add to Favorite</a>
 						<div class="hover-bnt">
@@ -56,15 +70,15 @@
 							<ul class="tab-links tabs-mv">
 								<li class="active"><a href="#overview">Overview</a></li>
 								<li><a href="#reviews"> Reviews</a></li>
-								<li><a href="#cast">  Cast & Crew </a></li>
-								<li><a href="#media"> Media</a></li> 
+								{{!-- <li><a href="#cast">  Cast & Crew </a></li>
+								<li><a href="#media"> Media</a></li>  --}}
 								<li><a href="#moviesrelated"> Related Movies</a></li>                        
 							</ul>
 						    <div class="tab-content">
 						        <div id="overview" class="tab active">
 						            <div class="row">
 						            	<div class="col-md-8 col-sm-12 col-xs-12">
-						            		<p>Tony Stark creates the Ultron Program to protect the world, but when the peacekeeping program becomes hostile, The Avengers go into action to try and defeat a virtually impossible enemy together. Earth's mightiest heroes must come together once again to protect the world from global extinction.</p>
+						            		<p>{{describe}}</p>
 						            		<div class="title-hd-sm">
 												<h4>Videos & Photos</h4>
 												<a href="#" class="time">All 5 Videos & 245 Photos <i class="ion-ios-arrow-right"></i></a>
@@ -169,11 +183,11 @@
 						            	<div class="col-md-4 col-xs-12 col-sm-12">
 						            		<div class="sb-it">
 						            			<h6>Director: </h6>
-						            			<p><a href="#">Joss Whedon</a></p>
+						            			<p><a href="#">{{director}}</a></p>
 						            		</div>
 						            		<div class="sb-it">
 						            			<h6>Writer: </h6>
-						            			<p><a href="#">Joss Whedon,</a> <a href="#">Stan Lee</a></p>
+						            			<p>{{writer}}</p>
 						            		</div>
 						            		<div class="sb-it">
 						            			<h6>Stars: </h6>
@@ -185,15 +199,15 @@
 						            		</div>
 						            		<div class="sb-it">
 						            			<h6>Release Date:</h6>
-						            			<p>May 1, 2015 (U.S.A)</p>
+						            			<p>{{formatDate publish 'MMM D, YYYY'}}</p>
 						            		</div>
 						            		<div class="sb-it">
 						            			<h6>Run Time:</h6>
-						            			<p>141 min</p>
+						            			<p>{{run_time}} min</p>
 						            		</div>
 						            		<div class="sb-it">
 						            			<h6>MMPA Rating:</h6>
-						            			<p>PG-13</p>
+						            			<p>{{MMPA_rating}}</p>
 						            		</div>
 						            		<div class="sb-it">
 						            			<h6>Plot Keywords:</h6>
@@ -216,7 +230,7 @@
 						            	<div class="rv-hd">
 						            		<div class="div">
 							            		<h3>Related Movies To</h3>
-						       	 				<h2>Skyfall: Quantum of Spectre</h2>
+						       	 				<h2>{{name}}</h2>
 							            	</div>
 							            	<a href="#" class="redbtn">Write Review</a>
 						            	</div>
@@ -390,7 +404,7 @@
 										</div>
 						            </div>
 						        </div>
-						        <div id="cast" class="tab">
+						        {{!-- <div id="cast" class="tab">
 						        	<div class="row">
 						            	<h3>Cast & Crew of</h3>
 					       	 			<h2>Avengers: Age of Ultron</h2>
@@ -701,13 +715,13 @@
 											<a class="img-lightbox"  data-fancybox-group="gallery" href="images/uploads/image211.jpg" ><img src="images/uploads/image2-1.jpg" alt=""></a>
 										</div>
 						        	</div>
-					       	 	</div>
+					       	 	</div> --}}
 					       	 	<div id="moviesrelated" class="tab">
 					       	 		<div class="row">
 					       	 			<h3>Related Movies To</h3>
-					       	 			<h2>Skyfall: Quantum of Spectre</h2>
+					       	 			<h2>{{name}}</h2>
 					       	 			<div class="topbar-filter">
-											<p>Found <span>12 movies</span> in total</p>
+											<p>Found <span> movies</span> in total</p>
 											<label>Sort by:</label>
 											<select>
 												<option value="popularity">Popularity Descending</option>
@@ -718,74 +732,19 @@
 												<option value="date">Release date Ascending</option>
 											</select>
 										</div>
-										<div class="movie-item-style-2">
-											<img src="images/uploads/mv1.jpg" alt="">
-											<div class="mv-item-infor">
-												<h6><a href="#">oblivion <span>(2012)</span></a></h6>
-												<p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p>
-												<p class="describe">Earth's mightiest heroes must come together and learn to fight as a team if they are to stop the mischievous Loki and his alien army from enslaving humanity...</p>
-												<p class="run-time"> Run Time: 2h21’    .     <span>MMPA: PG-13 </span>    .     <span>Release: 1 May 2015</span></p>
-												<p>Director: <a href="#">Joss Whedon</a></p>
-												<p>Stars: <a href="#">Robert Downey Jr.,</a> <a href="#">Chris Evans,</a> <a href="#">  Chris Hemsworth</a></p>
+										{{#each releatedMovie}}
+											<div class="movie-item-style-2">
+												<img src="{{poster}}" alt="">
+												<div class="mv-item-infor">
+													<h6><a href="#">{{name}}</a></h6>
+													<p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p>
+													<p class="describe">{{describe}}</p>
+													<p class="run-time"> Run Time: {{run_time}}    .     <span>MMPA: {{MMPA_rating}} </span>    .     <span>Release: {{formatDate publish 'MMM D, YYYY'}}</span></p>
+													<p>Director: <a href="#">{{director}}</a></p>
+													{{!-- <p>Stars: <a href="#">Robert Downey Jr.,</a> <a href="#">Chris Evans,</a> <a href="#">  Chris Hemsworth</a></p> --}}
+												</div>
 											</div>
-										</div>
-										<div class="movie-item-style-2">
-											<img src="images/uploads/mv2.jpg" alt="">
-											<div class="mv-item-infor">
-												<h6><a href="#">into the wild <span>(2014)</span></a></h6>
-												<p class="rate"><i class="ion-android-star"></i><span>7.8</span> /10</p>
-												<p class="describe">As Steve Rogers struggles to embrace his role in the modern world, he teams up with a fellow Avenger and S.H.I.E.L.D agent, Black Widow, to battle a new threat...</p>
-												<p class="run-time"> Run Time: 2h21’    .     <span>MMPA: PG-13 </span>    .     <span>Release: 1 May 2015</span></p>
-												<p>Director: <a href="#">Anthony Russo,</a><a href="#">Joe Russo</a></p>
-												<p>Stars: <a href="#">Chris Evans,</a> <a href="#">Samuel L. Jackson,</a> <a href="#">  Scarlett Johansson</a></p>
-											</div>
-										</div>
-										<div class="movie-item-style-2">
-											<img src="images/uploads/mv3.jpg" alt="">
-											<div class="mv-item-infor">
-												<h6><a href="#">blade runner  <span>(2015)</span></a></h6>
-												<p class="rate"><i class="ion-android-star"></i><span>7.3</span> /10</p>
-												<p class="describe">Armed with a super-suit with the astonishing ability to shrink in scale but increase in strength, cat burglar Scott Lang must embrace his inner hero and help...</p>
-												<p class="run-time"> Run Time: 2h21’    .     <span>MMPA: PG-13 </span>    .     <span>Release: 1 May 2015</span></p>
-												<p>Director: <a href="#">Peyton Reed</a></p>
-												<p>Stars: <a href="#">Paul Rudd,</a> <a href="#"> Michael Douglas</a></p>
-											</div>
-										</div>
-										<div class="movie-item-style-2">
-											<img src="images/uploads/mv4.jpg" alt="">
-											<div class="mv-item-infor">
-												<h6><a href="#">Mulholland pride<span> (2013)  </span></a></h6>
-												<p class="rate"><i class="ion-android-star"></i><span>7.2</span> /10</p>
-												<p class="describe">When Tony Stark's world is torn apart by a formidable terrorist called the Mandarin, he starts an odyssey of rebuilding and retribution.</p>
-												<p class="run-time"> Run Time: 2h21’    .     <span>MMPA: PG-13 </span>    .     <span>Release: 1 May 2015</span></p>
-												<p>Director: <a href="#">Shane Black</a></p>
-												<p>Stars: <a href="#">Robert Downey Jr., </a> <a href="#">  Guy Pearce,</a><a href="#">Don Cheadle</a></p>
-											</div>
-										</div>
-										<div class="movie-item-style-2">
-											<img src="images/uploads/mv5.jpg" alt="">
-											<div class="mv-item-infor">
-												<h6><a href="#">skyfall: evil of boss<span> (2013)  </span></a></h6>
-												<p class="rate"><i class="ion-android-star"></i><span>7.0</span> /10</p>
-												<p class="describe">When Tony Stark's world is torn apart by a formidable terrorist called the Mandarin, he starts an odyssey of rebuilding and retribution.</p>
-												<p class="run-time"> Run Time: 2h21’    .     <span>MMPA: PG-13 </span>    .     <span>Release: 1 May 2015</span></p>
-												<p>Director: <a href="#">Alan Taylor</a></p>
-												<p>Stars: <a href="#">Chris Hemsworth,  </a> <a href="#">  Natalie Portman,</a><a href="#">Tom Hiddleston</a></p>
-											</div>
-										</div>
-										<div class="topbar-filter">
-											<label>Movies per page:</label>
-											<select>
-												<option value="range">5 Movies</option>
-												<option value="saab">10 Movies</option>
-											</select>
-											<div class="pagination2">
-												<span>Page 1 of 2:</span>
-												<a class="active" href="#">1</a>
-												<a href="#">2</a>
-												<a href="#"><i class="ion-arrow-right-b"></i></a>
-											</div>
-										</div>
+										{{/each}}
 					       	 		</div>
 					       	 	</div>
 						    </div>

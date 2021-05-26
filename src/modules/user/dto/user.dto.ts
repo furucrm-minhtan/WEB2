@@ -7,6 +7,6 @@ export interface UserProfile {
 }
 
 export interface ChangePassword {
-  password: string;
+  oldPassword: string;
   newPassword: string;
 }

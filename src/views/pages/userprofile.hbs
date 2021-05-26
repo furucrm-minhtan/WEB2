@@ -4,7 +4,7 @@ Profile
 
 {{> loading }}
 
-<div x-data="{ page: 'profile' }">
+<div x-data="init()">
 	<div class="hero user-hero">
 		<div class="container">
 			<div class="row">
@@ -35,7 +35,7 @@ Profile
 								<li class="active"><a href="javascript:void(0)"
 										x-on:click="$event.preventDefault(); page = 'profile'">Profile</a></li>
 								<li><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); page = 'favorite'">Favorite movies</a></li>
+										x-on:click="favoriteMovies = []; fetchFavoriteMovies($event, 0, favoriteMovieShow)">Favorite movies</a></li>
 								<li><a href="javascript:void(0)"
 										x-on:click="$event.preventDefault(); page = 'rate'">Rated movies</a></li>
 							</ul>
@@ -57,36 +57,36 @@ Profile
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Username</label>
-									<input type="text" value="{{user_name}}">
+									<input type="text" x-model="userForm.user_name">
 								</div>
 								<div class="col-md-6 form-it">
 									<label>Email Address</label>
-									<input type="text" value="{{email}}">
+									<input type="text" x-model="userForm.email">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Name</label>
-									<input type="text" value="{{name}}">
+									<input type="text" x-model="userForm.name">
 								</div>
 								<div class="col-md-6 form-it">
 									<label>Phone</label>
-									<input type="text" value="{{Phone}}">
+									<input type="text" x-model="userForm.phone">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Address</label>
-									<input type="text" value="{{address}}">
+									<input type="text" x-model="userForm.address">
 								</div>
 								<div class="col-md-6 form-it">
 									<label>City</label>
-									<input type="text" value="{{city}}">
+									<input type="text" x-model="userForm.city">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-2">
-									<input class="submit" type="submit" value="save">
+									<input class="submit" type="submit" value="save" @click="updateProfile($event)">
 								</div>
 							</div>
 						</form>
@@ -95,24 +95,24 @@ Profile
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Old Password</label>
-									<input type="text">
+									<input type="text" x-model="passwordForm.oldPassword">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>New Password</label>
-									<input type="text">
+									<input type="text" x-model="passwordForm.newPassword">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Confirm New Password</label>
-									<input type="text">
+									<input type="text" x-model="passwordForm.confPassword">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-2">
-									<input class="submit" type="submit" value="change">
+									<input class="submit" type="submit" value="change" @click="changePassword($event)">
 								</div>
 							</div>
 						</form>
@@ -128,97 +128,30 @@ Profile
 							<a href="userfavoritelist.html" class="list"><i class="ion-ios-list-outline active"></i></a>
 							<a href="userfavoritegrid.html" class="grid"><i class="ion-grid "></i></a>
 						</div>
-						<div class="flex-wrap-movielist user-fav-list">
-							<div class="movie-item-style-2">
-								<img src="images/uploads/mv1.jpg" alt="">
-								<div class="mv-item-infor">
-									<h6><a href="#">oblivion <span>(2012)</span></a></h6>
-									<p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p>
-									<p class="describe">Earth's mightiest heroes must come together and learn to fight
-										as a
-										team if they are to stop the mischievous Loki and his alien army from enslaving
-										humanity...</p>
-									<p class="run-time"> Run Time: 2h21’ . <span>MMPA: PG-13 </span> . <span>Release: 1
-											May
-											2015</span></p>
-									<p>Director: <a href="#">Joss Whedon</a></p>
-									<p>Stars: <a href="#">Robert Downey Jr.,</a> <a href="#">Chris Evans,</a> <a
-											href="#">
-											Chris Hemsworth</a></p>
-								</div>
+						<template x-if="favoriteMovies">
+							<div class="flex-wrap-movielist user-fav-list">
+								<template x-for="index in Object.keys(favoriteMovies)" :key="index">
+									<div class="movie-item-style-2">
+										<img x-bind:src="favoriteMovies[index].movie.poster" alt="">
+										<div class="mv-item-infor">
+											<h6><a href="javascript:void(0)" x-text="favoriteMovies[index].movie.name">oblivion <span>(2012)</span></a></h6>
+											{{!-- <p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p> --}}
+											<p class="describe" x-text="favoriteMovies[index].movie.describe"></p>
+											<p class="run-time">Release: <span x-text="favoriteMovies[index].movie.publish"></span></p>
+											<p>Director: <span x-text="favoriteMovies[index].movie.director"></span> </p>
+											{{!-- <p>Stars: <a href="#">Robert Downey Jr.,</a> <a href="#">Chris Evans,</a> <a
+													href="#">
+													Chris Hemsworth</a></p> --}}
+										</div>
+									</div>
+								</template>
 							</div>
-							<div class="movie-item-style-2">
-								<img src="images/uploads/mv2.jpg" alt="">
-								<div class="mv-item-infor">
-									<h6><a href="#">into the wild <span>(2014)</span></a></h6>
-									<p class="rate"><i class="ion-android-star"></i><span>7.8</span> /10</p>
-									<p class="describe">As Steve Rogers struggles to embrace his role in the modern
-										world,
-										he teams up with a fellow Avenger and S.H.I.E.L.D agent, Black Widow, to battle
-										a
-										new threat...</p>
-									<p class="run-time"> Run Time: 2h21’ . <span>MMPA: PG-13 </span> . <span>Release: 1
-											May
-											2015</span></p>
-									<p>Director: <a href="#">Anthony Russo,</a><a href="#">Joe Russo</a></p>
-									<p>Stars: <a href="#">Chris Evans,</a> <a href="#">Samuel L. Jackson,</a> <a
-											href="#">
-											Scarlett Johansson</a></p>
-								</div>
-							</div>
-							<div class="movie-item-style-2">
-								<img src="images/uploads/mv3.jpg" alt="">
-								<div class="mv-item-infor">
-									<h6><a href="#">blade runner <span>(2015)</span></a></h6>
-									<p class="rate"><i class="ion-android-star"></i><span>7.3</span> /10</p>
-									<p class="describe">Armed with a super-suit with the astonishing ability to shrink
-										in
-										scale but increase in strength, cat burglar Scott Lang must embrace his inner
-										hero
-										and help...</p>
-									<p class="run-time"> Run Time: 2h21’ . <span>MMPA: PG-13 </span> . <span>Release: 1
-											May
-											2015</span></p>
-									<p>Director: <a href="#">Peyton Reed</a></p>
-									<p>Stars: <a href="#">Paul Rudd,</a> <a href="#"> Michael Douglas</a></p>
-								</div>
-							</div>
-							<div class="movie-item-style-2">
-								<img src="images/uploads/mv4.jpg" alt="">
-								<div class="mv-item-infor">
-									<h6><a href="#">Mulholland pride<span> (2013) </span></a></h6>
-									<p class="rate"><i class="ion-android-star"></i><span>7.2</span> /10</p>
-									<p class="describe">When Tony Stark's world is torn apart by a formidable terrorist
-										called the Mandarin, he starts an odyssey of rebuilding and retribution.</p>
-									<p class="run-time"> Run Time: 2h21’ . <span>MMPA: PG-13 </span> . <span>Release: 1
-											May
-											2015</span></p>
-									<p>Director: <a href="#">Shane Black</a></p>
-									<p>Stars: <a href="#">Robert Downey Jr., </a> <a href="#"> Guy Pearce,</a><a
-											href="#">Don Cheadle</a></p>
-								</div>
-							</div>
-							<div class="movie-item-style-2">
-								<img src="images/uploads/mv5.jpg" alt="">
-								<div class="mv-item-infor">
-									<h6><a href="#">skyfall: evil of boss<span> (2013) </span></a></h6>
-									<p class="rate"><i class="ion-android-star"></i><span>7.0</span> /10</p>
-									<p class="describe">When Tony Stark's world is torn apart by a formidable terrorist
-										called the Mandarin, he starts an odyssey of rebuilding and retribution.</p>
-									<p class="run-time"> Run Time: 2h21’ . <span>MMPA: PG-13 </span> . <span>Release: 1
-											May
-											2015</span></p>
-									<p>Director: <a href="#">Alan Taylor</a></p>
-									<p>Stars: <a href="#">Chris Hemsworth, </a> <a href="#"> Natalie Portman,</a><a
-											href="#">Tom Hiddleston</a></p>
-								</div>
-							</div>
-						</div>
+						</template>
 						<div class="topbar-filter">
 							<label>Movies per page:</label>
-							<select>
-								<option value="range">5 Movies</option>
-								<option value="saab">10 Movies</option>
+							<select x-model="favoriteMovieShow" x-on:change="favoriteMovies = []; fetchFavoriteMovies($event, 0, favoriteMovieShow)">
+								<option value="5">5</option>
+								<option value="10">10</option>
 							</select>
 
 							<div class="pagination2">
@@ -310,30 +243,72 @@ Profile
 
 {{#section 'script' }}
 <script>
-	function updateProfile(event, user)
-	{
-		axios.post('/profile', user)
-			.then(function (response)
+	function init() {
+		return {
+			page: 'profile', 
+			favoriteMovieShow: 10,
+			favoriteMovies: [],
+			userForm: {
+				id: '{{id}}',
+				user_name: '{{user_name}}',
+				email: '{{email}}',
+				name: '{{name}}',
+				phone: '{{phone}}',
+				address: '{{address}}',
+				city: '{{city}}'
+			},
+			passwordForm: {},	
+			updateProfile(event)
 			{
+				event.preventDefault();
 
-			})
-			.catch(function (error)
+				axios.post('/profile', this.userForm)
+					.then(function (response)
+					{
+						console.log(response);
+					})
+					.catch(function (error)
+					{
+						console.log(error);
+					});
+			},
+			changePassword(event)
 			{
-				console.log(error);
-			});
-	}
+				event.preventDefault();
 
-	function changePassword(event, password)
-	{
-		axios.post('/change-password', user)
-			.then(function (response)
-			{
+				if(this.passwordForm.newPassword != this.passwordForm.confPassword) {
+					alert('confirm password not match');
+					return false;
+				}
 
-			})
-			.catch(function (error)
-			{
-				console.log(error);
-			});
+				axios.post('/change-password', this.passwordForm)
+					.then(function (response)
+					{
+
+					})
+					.catch(function (error)
+					{
+						console.log(error);
+					});
+			},
+			fetchFavoriteMovies(event, offset, limit) {
+				event.preventDefault(); 
+				this.page = 'favorite';
+
+				fetch(`/bookmark?offset=${offset}&limit=${limit}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							this.favoriteMovies = this.favoriteMovies.concat(data.data);
+						}
+					})
+					.catch(function(error) {
+						console.log(error);
+					})
+			}
+		}
 	}
 </script>
 {{/section }}

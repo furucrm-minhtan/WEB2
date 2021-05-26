@@ -7,11 +7,14 @@ import {
   BelongsTo,
   HasMany,
   Default,
-  ForeignKey
+  ForeignKey,
+  BelongsToMany
 } from 'sequelize-typescript';
-import { BaseModel } from './base.model';
-import { GroupTheater } from './groupTheater.model';
-import { Room } from './room.model';
+import { BaseModel } from '../../model/base.model';
+import { GroupTheater } from '../groupTheater/groupTheater.model';
+import { Movie } from '../movie/movie.model';
+import { Room } from '../room/room.model';
+import { TheaterMovie } from '../theaterMovie/theaterMovie.model';
 
 type TheaterType = '2D' | '3D';
 
@@ -38,4 +41,7 @@ export class Theater extends BaseModel<Theater> {
 
   @BelongsTo(() => GroupTheater, 'group_id')
   group: GroupTheater;
+
+  @BelongsToMany(() => Movie, () => TheaterMovie, 'theater_id')
+  movies: Movie[];
 }
