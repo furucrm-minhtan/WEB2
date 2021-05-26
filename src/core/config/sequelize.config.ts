@@ -69,6 +69,7 @@ export default class SequelizeConfig {
       database: configService.get('DB_NAME') || 'local',
       autoLoadModels: true,
       synchronize: true,
+      ssl: configService.get('SSL') || false,
       models: [
         User,
         Ticket,
