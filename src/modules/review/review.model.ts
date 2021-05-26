@@ -7,12 +7,12 @@ import {
   BelongsTo,
   ForeignKey
 } from 'sequelize-typescript';
-import { BaseModel } from './base.model';
-import { Movie } from '../modules/movie/movie.model';
-import { User } from '../modules/user/user.model';
+import { BaseModel } from '../../model/base.model';
+import { Movie } from '../movie/movie.model';
+import { User } from '../user/user.model';
 
-@Table({ tableName: 'Comments' })
-export class Comment extends BaseModel<Comment> {
+@Table({ tableName: 'Reviews' })
+export class Review extends BaseModel<Review> {
   @PrimaryKey
   @AutoIncrement
   @Column

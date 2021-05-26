@@ -9,8 +9,7 @@ export class TicketService {
     @Inject('TICKETS_REPOSITORY') private ticketRepository: typeof Ticket
   ) {}
 
-  async booking(ticketBooking: TicketBooking) {
-    // const transaction = await this.sequelizeInstance.transaction();
-    return await this.ticketRepository.create(ticketBooking as Ticket);
+  booking(ticketBooking: TicketBooking) {
+    return this.ticketRepository.create(ticketBooking as Ticket);
   }
 }

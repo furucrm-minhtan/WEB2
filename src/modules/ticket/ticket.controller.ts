@@ -1,22 +1,29 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { TicketBooking } from './dto/ticket.dto';
 import { TicketService } from './ticket.service';
 
-@Controller('/ticket')
+@Controller('/api/ticket')
 export class TicketController {
-  constructor(private readonly ticketService: TicketService) {}
+  constructor(
+    private readonly ticketService: TicketService,
+    private readonly actionResponseService: ActionResponseService
+  ) {}
 
   @Post()
   async buyTicket(
-    @Body() ticketBooking: TicketBooking
+    @Body() { seatId, showId, userId }: TicketBooking
   ): Promise<Record<string, any>> {
     const response = {};
 
     try {
-      await this.ticketService.booking(ticketBooking);
+      await this.ticketService.booking({ seatId, showId, userId });
+
+      return this.actionResponseService.responseApi(true, '', '');
     } catch (error) {
       console.log(error);
     }
-    return response;
+
+    return this.actionResponseService.responseApi(true, 'booking falied', '');
   }
 }

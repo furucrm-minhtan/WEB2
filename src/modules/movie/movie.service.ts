@@ -77,8 +77,4 @@ export class MovieService {
 
     return { ...data };
   }
-
-  async getShowTimeMovie(RoomId: number) {
-
-  } 
 }

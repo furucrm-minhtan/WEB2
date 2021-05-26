@@ -8,8 +8,8 @@ import {
   BelongsTo,
   ForeignKey
 } from 'sequelize-typescript';
-import { BaseModel } from './base.model';
-import { Room } from '../modules/room/room.model';
+import { BaseModel } from '../../model/base.model';
+import { Room } from '../room/room.model';
 
 @Table({
   tableName: 'Seats',
@@ -32,7 +32,7 @@ export class Seat extends BaseModel<Seat> {
 
   @Default(false)
   @Column
-  column: string;
+  column: number;
 
   @ForeignKey(() => Room)
   @Column({ field: 'room_id', allowNull: false })

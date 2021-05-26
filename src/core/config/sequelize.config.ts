@@ -6,11 +6,11 @@ import {
 import { GroupedObservable } from 'rxjs';
 import { Bookmark } from 'src/modules/bookmark/bookmark.model';
 import { Category } from 'src/model/category.model';
-import { Comment } from 'src/model/comment.model';
+import { Review } from 'src/modules/review/review.model';
 import { GroupTheater } from 'src/modules/groupTheater/groupTheater.model';
 import { Movie } from 'src/modules/movie/movie.model';
 import { Room } from 'src/modules/room/room.model';
-import { Seat } from 'src/model/seat.model';
+import { Seat } from 'src/modules/seat/seat.model';
 import { ShowTime } from 'src/modules/showTIme/showtime.model';
 import { Theater } from 'src/modules/theater/theater.model';
 import { Ticket } from 'src/modules/ticket/ticket.model';
@@ -78,7 +78,7 @@ export default class SequelizeConfig {
         Room,
         Movie,
         GroupTheater,
-        Comment,
+        Review,
         Category,
         Bookmark,
         TheaterMovie

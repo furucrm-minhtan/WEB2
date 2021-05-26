@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Post, Render, Session } from '@nestjs/common';
-import session from 'express-session';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { UserSession } from '../authen/dto/authen.dto';
 import { Bookmark } from '../bookmark/bookmark.model';

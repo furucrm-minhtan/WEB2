@@ -23,6 +23,10 @@ Booking Ticket
         width: 20%;
     }
 
+    .margin_t20 {
+        margin-top: 20px;
+    }
+
     .showtime {
         display: flex;
     }
@@ -40,14 +44,25 @@ Booking Ticket
     }
 
     .showtime_item .single-room {
-        border: 1px solid #000;
+        border: 1px solid #074ce0;
         background: transparent;
+        padding: 10px;
     }
 
     .showtime_item .single-room:hover {
-        border: none;
         background-color: #074ce0;
     } 
+
+    .booking-wrapper {
+        width: 100%;
+        margin: auto;
+    }
+
+    @media(min-width: 768px) {
+        .booking-wrapper {
+            width: 80%;
+        }
+    }
 </style>
 {{/section}}
 
@@ -63,92 +78,69 @@ Booking Ticket
 	</div>
 	<div class="page-single">
 		<div class="container">
-            <div class="theater_group topbar-filter">
-                <div class="group">
-                    <label class="group_title">Group</label>
-                    <select x-model="groupSelected">
-                        <option value="">--None--</option>
-                        <template x-for="(item, index) in groups">
-                            <option x-bind:value="item.id" x-text="item.name"></option>
-                        </template>
-                    </select>
-                </div>
-                <template x-if="groupSelected">
-                    <div class="theater">
-                        <label class="theater_title">Theater</label>
-                        <select x-model="theaterSelected" @change="get" x-on:change="fetchShowTimes()">
+            <div class="booking-wrapper">
+                <div class="theater_group topbar-filter">
+                    <div class="group">
+                        <label class="group_title">Group</label>
+                        <select x-model="groupSelected">
                             <option value="">--None--</option>
-                            <template x-for="(item, index) in theaters[groupSelected]">
+                            <template x-for="(item, index) in groups">
                                 <option x-bind:value="item.id" x-text="item.name"></option>
                             </template>
                         </select>
                     </div>
+                    <template x-if="groupSelected">
+                        <div class="theater">
+                            <label class="theater_title">Theater</label>
+                            <select x-model="theaterSelected" @change="get" x-on:change="fetchShowTimes()">
+                                <option value="">--None--</option>
+                                <template x-for="(item, index) in theaters[groupSelected]">
+                                    <option x-bind:value="item.id" x-text="item.name"></option>
+                                </template>
+                            </select>
+                        </div>
+                    </template>
+                </div>
+            <template x-if="theaterSelected">
+                    <div class="row ipad-width">
+                        <div class="screen-wrapper showtime">
+                            <template x-for="[date, items] in Object.entries(showTimes)">
+                                <div class="showtime_item">
+                                    <div class="showtime_date" x-text="getDay(date)"></div>
+                                    <template x-for="(showTime, index) in items" :key="index">
+                                        <button class="single-room" x-text="showTime.room.name" @click="formatSeatsData(showTime.room.rows, Object.values(showTime.room.seats))"></button>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+                <template x-if="seats">
+                    <div class="row ipad-width margin_t20">
+                        <div class="screen-wrapper">
+                            <template x-for="(row, index) in seats" :key="index">
+                                <ul class="seat-area">
+                                    <li class="seat-line">
+                                        <span>G</span>
+                                        <ul class="seat--area">
+                                            <li class="front-seat">
+                                                <ul>
+                                                    <template x-for="(col, index) in row" :key="index">
+                                                        <li class="single-seat">
+                                                            <img src="/images/seat01.png" alt="seat" onclick="bookingSeat(col.id)">
+                                                        </li>
+                                                </template>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                        <span>G</span>
+                                    </li>
+                                </ul>
+                            </template>
+                        </div>
+                    </div>
                 </template>
             </div>
-           <template x-if="theaterSelected">
-                <div class="row ipad-width">
-                    <div class="screen-wrapper showtime">
-                        <template x-for="[date, items] in Object.entries(showTimes)">
-                            <div class="showtime_item">
-                                <div class="showtime_date" x-text="getDay(date)"></div>
-                                <template x-for="(showTime, index) in items" :key="index">
-                                    <button class="single-room" x-text="showTime.room.name" @click="roomSelected = showTime.room"></button>
-                                </template>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </template>
-            {{!-- <template x-if="theaterSelected">
-                <div class="row ipad-width">
-                    <div class="screen-wrapper">
-                        <template x-for="(row, index) in rooms" :key="index">
-                            <ul class="seat-area">
-                                <li class="seat-line">
-                                    <span>G</span>
-                                    <ul class="seat--area">
-                                        <li class="front-seat">
-                                            <ul>
-                                                <template x-for="(col, index) in row" :key="index">
-                                                    <li class="single-seat">
-                                                       
-                                                    </li>
-                                            </template>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                    <span>G</span>
-                                </li>
-                            </ul>
-                        </template>
-                    </div>
-                </div>
-            </template> --}}
-			<template x-if="roomSelected">
-                <div class="row ipad-width">
-                    <div class="screen-wrapper">
-                        <template x-for="(row, index) in roomSelected.seats" :key="index">
-                            <ul class="seat-area">
-                                <li class="seat-line">
-                                    <span>G</span>
-                                    <ul class="seat--area">
-                                        <li class="front-seat">
-                                            <ul>
-                                                <template x-for="(col, index) in row" :key="index">
-                                                    <li class="single-seat">
-                                                        <img src="/images/seat01.png" alt="seat" onclick="bookingSeat({ row, col }, )">
-                                                    </li>
-                                            </template>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                    <span>G</span>
-                                </li>
-                            </ul>
-                        </template>
-                    </div>
-                </div>
-            </template>
 		</div>
 	</div>
 </div>
@@ -166,8 +158,8 @@ Booking Ticket
             showTimes: [],
             groups,
             theaters,
-            bookingSeat(seat, movie) {
-                axios.post('/ticket', { seat, movie })
+            bookingSeat(seatId) {
+                axios.post('/api/ticket', { seatId, '{{ id }}' })
                     .then(() => {
                         alert('success');
                     })
@@ -210,6 +202,16 @@ Booking Ticket
                     .catch((error) => {
                         console.log(error);
                     })
+            },
+            formatSeatsData(row, seats) {
+                formatSeat = [];
+                for(i = 1; i <= row; i++) {
+                    formatSeat.push(
+                        seats.filter((seat) => seat.row === i)
+                    );
+                }
+                this.seats = formatSeat;      
+                console.log(formatSeat);
             },
             getDay(date) {
                 return new Date(date).getDate();

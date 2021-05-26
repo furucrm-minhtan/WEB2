@@ -12,7 +12,7 @@ import {
   ForeignKey
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
-import { Seat } from '../../model/seat.model';
+import { Seat } from '../seat/seat.model';
 import { ShowTime } from '../showTIme/showtime.model';
 import { Theater } from '../theater/theater.model';
 

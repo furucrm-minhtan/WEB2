@@ -5,15 +5,29 @@ import { GroupTheaterService } from '../groupTheater/grouptheater.service';
 import { TheaterOptions } from '../theater/dto/theater.dto';
 import { Theater } from '../theater/theater.model';
 import { TheaterService } from '../theater/theater.service';
-import { MovieBooking } from './dto/movie.dto';
+import { MovieBooking, MovieDetail, MovieItem } from './dto/movie.dto';
 import { Movie } from './movie.model';
 import { MovieService } from './movie.service';
 
-@Controller()
+@Controller('movie')
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
-  @Get('booking/:id')
+  @Get(':id')
+  @Render('detail')
+  async loadMOvieDetail(@Param('id') id: number): Promise<Record<string, any>> {
+    const movieDetail: MovieDetail = await this.movieService.findMovie(id, {
+      raw: true
+    });
+    const releatedMovie: MovieItem[] = await this.movieService.findAll({
+      where: { category_id: movieDetail.category_id },
+      limit: 5
+    });
+
+    return { ...movieDetail, releatedMovie };
+  }
+
+  @Get(':id/booking')
   @Render('room')
   async loadRoomView(@Param('id') id: number): Promise<Record<string, any>> {
     try {

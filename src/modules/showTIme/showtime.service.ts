@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { Sequelize } from 'sequelize';
 import { operatorsAliases } from 'src/core/config/sequelize.config';
 import Helper from 'src/helper/helper';
-import { Seat } from 'src/model/seat.model';
+import { Seat } from 'src/modules/seat/seat.model';
 import { Ticket } from 'src/modules/ticket/ticket.model';
 import { Movie } from '../movie/movie.model';
 import { Room } from '../room/room.model';
@@ -55,10 +55,10 @@ export class ShowTimeService {
           where: {
             theaterId
           },
-          include: [Seat]
+          include: [{ model: Seat, order: ['row', 'col'] }]
         }
-      ],
-      group: ['start', 'end', 'date']
+      ]
+      // group: ['start', 'end', 'date']
     });
 
     showTimes.forEach((show) => {

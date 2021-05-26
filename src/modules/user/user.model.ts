@@ -11,7 +11,7 @@ import {
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
 import { Bookmark } from '../bookmark/bookmark.model';
-import { Comment } from '../../model/comment.model';
+import { Review } from '../review/review.model';
 import { Ticket } from '../ticket/ticket.model';
 import { Movie } from '../movie/movie.model';
 
@@ -48,8 +48,8 @@ export class User extends BaseModel<User> {
   @Column(DataType.STRING(100))
   city: string;
 
-  @BelongsToMany(() => Movie, () => Comment, 'user_id')
-  moviesComment: Movie[];
+  @BelongsToMany(() => Movie, () => Review, 'user_id')
+  moviesRevies: Array<Movie & { Review: Review }>;
 
   @HasMany(() => Ticket)
   tickets: Ticket[];
