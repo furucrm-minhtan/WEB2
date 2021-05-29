@@ -12,10 +12,13 @@ Booking Ticket
 
     .theater_group {
         display: flex;
-        flex: 1 1 auto;
-        justify-content: center;
+        justify-content: space-around;
         margin: auto;
         border: none;
+    }
+
+    .theater_group .group, .theater_group l.movie {
+         flex: 0 1 auto;
     }
 
     .theater_group > .group, .theater_group > .theater {
@@ -58,9 +61,29 @@ Booking Ticket
         margin: auto;
     }
 
+    .single-seat .sit-num {
+        height: 42px;
+        line-height: 42px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        text-transform: uppercase;
+        font-size: 14px;
+    }
+
     @media(min-width: 768px) {
         .booking-wrapper {
             width: 80%;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .single-seat .sit-num {
+            width: 100%;
+            font-size: 12px;
+            text-align: center;
         }
     }
 </style>
@@ -108,7 +131,7 @@ Booking Ticket
                                 <div class="showtime_item">
                                     <div class="showtime_date" x-text="getDay(date)"></div>
                                     <template x-for="(showTime, index) in items" :key="index">
-                                        <button class="single-room" x-text="showTime.room.name" @click="formatSeatsData(showTime.room.rows, Object.values(showTime.room.seats))"></button>
+                                        <button class="single-room" x-text="showTime.room.name" @click="formatSeatsData(showTime)"></button>
                                     </template>
                                 </div>
                             </template>
@@ -118,22 +141,23 @@ Booking Ticket
                 <template x-if="seats">
                     <div class="row ipad-width margin_t20">
                         <div class="screen-wrapper">
-                            <template x-for="(row, index) in seats" :key="index">
+                            <template x-for="[key, row] in Object.entries(seats)" :key="key">
                                 <ul class="seat-area">
                                     <li class="seat-line">
-                                        <span>G</span>
+                                        <span x-text="key"></span>
                                         <ul class="seat--area">
                                             <li class="front-seat">
                                                 <ul>
                                                     <template x-for="(col, index) in row" :key="index">
                                                         <li class="single-seat">
-                                                            <img src="/images/seat01.png" alt="seat" onclick="bookingSeat(col.id)">
+                                                            <img x-bind:src="col.isBooked ? '/images/seat01.png' : '/images/seat01-free.png' " alt="seat" @click="bookingSeat($el, col.id)">
+                                                            <span class="sit-num" x-show="!col.isBooked" x-text="col.position"></span>
                                                         </li>
-                                                </template>
+                                                    </template>
                                                 </ul>
                                             </li>
                                         </ul>
-                                        <span>G</span>
+                                        <span x-text="key"></span>
                                     </li>
                                 </ul>
                             </template>
@@ -145,23 +169,27 @@ Booking Ticket
 	</div>
 </div>
 
-<script>
+{{#section 'script'}}
+<script type="text/javascript" defer>
     function init() {
         const groups = JSON.parse('{{{ groups }}}');
         const theaters = JSON.parse('{{{ theaters }}}');
+        const rowName = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
 
         return {
             groupSelected: '',
             theaterSelected: '',
-            roomSelected: '',
+            showSelected: '',
             seats: [],
             showTimes: [],
+            rowName,
             groups,
             theaters,
-            bookingSeat(seatId) {
-                axios.post('/api/ticket', { seatId, '{{ id }}' })
+            bookingSeat(el, seatId) {
+                axios.post('/api/ticket', { seatId, showId: this.showSelected })
                     .then(() => {
                         alert('success');
+                        $(el).attr('src', '/images/seat01-booked.png')
                     })
                     .catch(() => {
                         alert('falied')
@@ -192,30 +220,43 @@ Booking Ticket
                     });
             },
             fetchShowTimes() {
-                fetch(`/api/showtime/1?movie={{id}}`)
-                    .then((raw) => raw.json())
-                    .then((response) => {
-                        if(response.isSuccess) {
-                            this.showTimes = response.data;
-                        } 
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    })
-            },
-            formatSeatsData(row, seats) {
-                formatSeat = [];
-                for(i = 1; i <= row; i++) {
-                    formatSeat.push(
-                        seats.filter((seat) => seat.row === i)
-                    );
+                if(this.theaterSelected) {
+                    fetch(`/api/showtime/${this.theaterSelected}?movie={{id}}`)
+                        .then((raw) => raw.json())
+                        .then((response) => {
+                            if(response.isSuccess) {
+                                this.showTimes = response.data;
+                            } 
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        })
                 }
-                this.seats = formatSeat;      
-                console.log(formatSeat);
             },
-            getDay(date) {
-                return new Date(date).getDate();
+            formatSeatsData(showTime) {
+                this.showSelected = showTime.id;
+                const row = showTime.room.rows;
+                const seats = showTime.room.seats;
+
+                formatSeat = {};
+                if(seats.length) {
+                    for(i = 1; i <= row; i++) {
+                        formatSeat[rowName[i]] = seats.filter((seat) => {
+                                                    seat.isBooked = showTime.tickets.find(ticket => ticket.seat_id == seat.id) != undefined;
+                                                    return seat.row === i
+                                                 });
+                    
+                    }
+                }
+                console.log(formatSeat);
+                this.seats = formatSeat;      
+            },
+            getDay(string) {
+                const date = new Date(string);
+
+                return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
             }
         }
     }
 </script>
+{{/section  }}

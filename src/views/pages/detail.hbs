@@ -12,7 +12,7 @@
 		</div>
 	</div>
 </div>
-<div class="page-single movie-single movie_single">
+<div class="page-single movie-single movie_single" x-data="init()">
 	<div class="container">
 		<div class="row ipad-width2">
 			<div class="col-md-4 col-sm-12 col-xs-12">
@@ -24,8 +24,8 @@
 							<div><a href="https://www.youtube.com/embed/o-0hcF97wy0" class="item item-2 redbtn fancybox-media hvr-grow"><i class="ion-play"></i></a></div>
 						</div>
 						<div class="btn-transform transform-vertical">
-							<div><a href="/booking" class="item item-1 yellowbtn"> <i class="ion-card"></i> Buy ticket</a></div>
-							<div><a href="/booking" class="item item-2 yellowbtn"><i class="ion-card"></i></a></div>
+							<div><a href="/movie/{{id}}/booking" class="item item-1 yellowbtn"> <i class="ion-card"></i> Buy ticket</a></div>
+							<div><a href="/movie/{{id}}/booking" class="item item-2 yellowbtn"><i class="ion-card"></i></a></div>
 						</div>
 					</div>
 				</div>
@@ -34,7 +34,7 @@
 				<div class="movie-single-ct main-content">
 					<h1 class="bd-hd">{{name}}</h1>
 					<div class="social-btn">
-						<a href="#" class="parent-btn"><i class="ion-heart"></i> Add to Favorite</a>
+						<a href="javascript:void(0)" class="parent-btn" o><i class="ion-heart"></i> Add to Favorite</a>
 						<div class="hover-bnt">
 							<a href="#" class="parent-btn"><i class="ion-android-share-alt"></i>share</a>
 							<div class="hvr-item">
@@ -755,3 +755,27 @@
 		</div>
 	</div>
 </div>
+
+{{#section 'scripts'}}
+<script>
+	function init() {
+		return {
+			addBookmark(userId, movieId) {
+				if(!userId) {
+					return;
+				}
+
+				axios.post('/bookmark', { userId, movieId })
+					.then((response) => {
+						if(response.isSuccess) {
+							alert('bookmark complete');
+						}
+					})
+					.catch((error) => {
+						console.log(error);
+					})
+			}
+		}
+	}	
+</script>
+{{/section}}

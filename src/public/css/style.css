@@ -8327,7 +8327,7 @@ ul li {
 }
 
 .seat-area .seat-line ul .front-seat ul li {
-  padding: 5px;
+  margin: 5px;
 }
 
 .single-seat {
@@ -8335,7 +8335,17 @@ ul li {
   position: relative;
 }
 
+.single-seat:hover .sit-num {
+  display: none;
+}
+
 .seat-area .seat-line, .seat-area .seat-line ul {
   display: flex;
   flex-wrap: wrap;
+}
+
+.disable_link {
+  color: currentColor;
+  cursor: not-allowed;
+  pointer-events: none;
 }

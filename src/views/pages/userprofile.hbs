@@ -35,7 +35,7 @@ Profile
 								<li class="active"><a href="javascript:void(0)"
 										x-on:click="$event.preventDefault(); page = 'profile'">Profile</a></li>
 								<li><a href="javascript:void(0)"
-										x-on:click="favoriteMovies = []; fetchFavoriteMovies($event, 0, favoriteMovieShow)">Favorite movies</a></li>
+										x-on:click="loadingFavorite()">Favorite movies</a></li>
 								<li><a href="javascript:void(0)"
 										x-on:click="$event.preventDefault(); page = 'rate'">Rated movies</a></li>
 							</ul>
@@ -44,7 +44,7 @@ Profile
 							<p>Others</p>
 							<ul>
 								<li><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); page = 'changePassword'">Change
+										x-on:click="$event.preventDefault(); page = 'change password'">Change
 										password</a></li>
 							</ul>
 						</div>
@@ -90,7 +90,9 @@ Profile
 								</div>
 							</div>
 						</form>
-						<form action="#" class="password" x-show="page === 'changePassword'">
+					</div>
+					<div class="form-style-1 user-pro" x-show="page === 'change password'">
+						<form action="#" class="password">
 							<h4>Change password</h4>
 							<div class="row">
 								<div class="col-md-6 form-it">
@@ -119,26 +121,27 @@ Profile
 					</div>
 					<div x-show="page === 'favorite'">
 						<div class="topbar-filter user">
-							<p>Found <span>1,608 movies</span> in total</p>
+							<p>Found <span x-text="favoriteData.total"></span> movies in total</p>
 							<label>Sort by:</label>
-							<select>
-								<option value="range">-- Choose option --</option>
-								<option value="saab">-- Choose option 2--</option>
+							<select x-model="favoriteData.sort">
+								<template x-for="(option, index) in Object.values(sortType)" :key="index">
+									<option x-bind:value="option.value" x-text="option.label"></option>
+								</template>
 							</select>
 							<a href="userfavoritelist.html" class="list"><i class="ion-ios-list-outline active"></i></a>
 							<a href="userfavoritegrid.html" class="grid"><i class="ion-grid "></i></a>
 						</div>
-						<template x-if="favoriteMovies">
+						<template x-if="favoriteData.movies">
 							<div class="flex-wrap-movielist user-fav-list">
-								<template x-for="index in Object.keys(favoriteMovies)" :key="index">
+								<template x-for="(item, index) in favoriteData.show" :key="index">
 									<div class="movie-item-style-2">
-										<img x-bind:src="favoriteMovies[index].movie.poster" alt="">
+										<img x-bind:src="item.movie.poster" alt="">
 										<div class="mv-item-infor">
-											<h6><a href="javascript:void(0)" x-text="favoriteMovies[index].movie.name">oblivion <span>(2012)</span></a></h6>
+											<h6><a href="javascript:void(0)" x-text="item.movie.name">oblivion <span>(2012)</span></a></h6>
 											{{!-- <p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p> --}}
-											<p class="describe" x-text="favoriteMovies[index].movie.describe"></p>
-											<p class="run-time">Release: <span x-text="favoriteMovies[index].movie.publish"></span></p>
-											<p>Director: <span x-text="favoriteMovies[index].movie.director"></span> </p>
+											<p class="describe" x-text="item.movie.describe"></p>
+											<p class="run-time">Release: <span x-text="getDate(item.movie.publish)"></span></p>
+											<p>Director: <span x-text="item.movie.director"></span> </p>
 											{{!-- <p>Stars: <a href="#">Robert Downey Jr.,</a> <a href="#">Chris Evans,</a> <a
 													href="#">
 													Chris Hemsworth</a></p> --}}
@@ -155,14 +158,12 @@ Profile
 							</select>
 
 							<div class="pagination2">
-								<span>Page 1 of 2:</span>
-								<a class="active" href="#">1</a>
-								<a href="#">2</a>
-								<a href="#">3</a>
-								<a href="#">...</a>
-								<a href="#">78</a>
-								<a href="#">79</a>
-								<a href="#"><i class="ion-arrow-right-b"></i></a>
+								<span>Page <span x-text="favoriteData.currentPage"></span> of <span x-text="page"></span>:</span>
+								<a :class="favoriteData.currentPage == 1 ? 'disable_link' : ''" href="javascript:void(0)" @click="prevPage()"><i class="ion-arrow-left-b"></i></a>
+								<template x-for="(key, index) in Array(favoriteMovieShow.page)">
+									<a x-bind:class="(favoriteData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1"></a>
+								</template>
+								<a :class="favoriteData.currentPage == favoriteData.page ? 'disable_link' : ''" href="javascript:void(0)" @click="nextPage()"><i class="ion-arrow-right-b"></i></a>
 							</div>
 						</div>
 					</div>
@@ -244,10 +245,41 @@ Profile
 {{#section 'script' }}
 <script>
 	function init() {
+		const fetchFavoriteMovies = function(offset, limit, sort) {
+			return new Promise((resolve, reject) => {
+				fetch(`/bookmark?offset=${offset}&limit=${limit}&sort=${sort}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							resolve(data);
+						}
+						else {
+							throw data.message;
+						}
+					})
+					.catch(function(error) {
+						throw error;
+					})
+			});
+		};
+
 		return {
 			page: 'profile', 
 			favoriteMovieShow: 10,
-			favoriteMovies: [],
+			favoriteData: {
+				total: 0,
+				page: 1,
+				currentPage: 1,
+				sort: '',
+				movies: [],
+				show: []
+			},
+			sortType: [
+				{ value: 'name', label: 'name' },
+				{ value: 'publish', label: 'publish date' }
+			],
 			userForm: {
 				id: '{{id}}',
 				user_name: '{{user_name}}',
@@ -291,22 +323,55 @@ Profile
 						console.log(error);
 					});
 			},
-			fetchFavoriteMovies(event, offset, limit) {
-				event.preventDefault(); 
+			loadingFavorite() {
 				this.page = 'favorite';
-
-				fetch(`/bookmark?offset=${offset}&limit=${limit}`)
+				
+				fetch(`/bookmark/user?limit=${this.favoriteMovieShow}`)
 					.then(function(response) { 
 						return response.json();
 					})
 					.then((data) => {
 						if(data.isSuccess) {
-							this.favoriteMovies = this.favoriteMovies.concat(data.data);
+							this.favoriteData.total = data.data.totalBookmark;
+							this.favoriteData.page = data.data.page;
+							
+							return fetchFavoriteMovies(0, this.favoriteMovieShow, this.favoriteData.sort);
 						}
+					})
+					.then((data) => {
+						this.favoriteData.movies = this.favoriteData.movies.concat(data.data);
+						this.favoriteData.show = this.dataShow(this.favoriteData.movies, 0, this.favoriteMovieShow);
 					})
 					.catch(function(error) {
 						console.log(error);
 					})
+			},
+			dataShow(data, from = 0, limit = 10) {
+				return Array.from({ length: limit }, (_item, index) => data[index + from] );
+			},
+			prevPage(event) {
+				event.preventDefault();
+				this.favoriteData.movies--;
+
+				this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteMovieShow, this.favoriteMovieShow);
+			},
+			nextPage(event) {
+				event.preventDefault();
+				this.favoriteData.currentPage++;
+
+				fetchFavoriteMovies(this.favoriteMovieShow)
+					.then((data) => {
+						this.favoriteData.movies = this.favoriteData.movies.concat(data.data);	
+						this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteMovieShow, this.favoriteMovieShow);
+					})
+					.catch((error) => {
+						console.log(error);
+					})
+			},
+			getDate(string) {
+				const date = new Date(string);
+
+				return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
 			}
 		}
 	}

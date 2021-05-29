@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 import { operatorsAliases } from 'src/core/config/sequelize.config';
-import { ShowTime } from '../showTIme/showtime.model';
+import { ShowTime } from '../showTime/showtime.model';
 import { Room } from './room.model';
 const { $between } = operatorsAliases;
 

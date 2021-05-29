@@ -13,7 +13,7 @@ import {
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
 import { Seat } from '../seat/seat.model';
-import { ShowTime } from '../showTIme/showtime.model';
+import { ShowTime } from '../showTime/showtime.model';
 import { Theater } from '../theater/theater.model';
 
 @Table({ tableName: 'Rooms' })
@@ -26,11 +26,11 @@ export class Room extends BaseModel<Room> {
   @Column({ allowNull: false })
   name: string;
 
-  @Max(24)
+  @Max(7)
   @Column({ allowNull: false })
   rows: number;
 
-  @Max(24)
+  @Max(9)
   @Column({ allowNull: false })
   columns: number;
 

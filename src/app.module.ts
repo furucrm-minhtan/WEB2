@@ -1,6 +1,6 @@
 import { ReviewModule } from './modules/review/review.module';
 import { SeatModule } from './modules/seat/seat.module';
-import { ShowTimeModule } from './modules/showTIme/showtime.module';
+import { ShowTimeModule } from './modules/showTime/showtime.module';
 import { TheaterModule } from './modules/theater/theater.module';
 import { GroupThearterModule } from './modules/groupTheater/groupthearter.module';
 import { ActionResponseModule } from './modules/actionResponse/actionresponse.module';

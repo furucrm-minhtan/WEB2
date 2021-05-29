@@ -17,6 +17,7 @@ export class TicketController {
     const response = {};
 
     try {
+      console.log(seatId, showId, userId);
       await this.ticketService.booking({ seatId, showId, userId });
 
       return this.actionResponseService.responseApi(true, '', '');
