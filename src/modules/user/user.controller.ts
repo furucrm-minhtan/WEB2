@@ -4,7 +4,7 @@ import { UserSession } from '../authen/dto/authen.dto';
 import { Bookmark } from '../bookmark/bookmark.model';
 import { BookmarkService } from '../bookmark/bookmark.service';
 import { Movie } from '../movie/movie.model';
-import { ChangePassword, UserProfile } from './dto/user.dto';
+import { ChangePassword, UserProfile, UserRegister } from './dto/user.dto';
 import { User } from './user.model';
 import { UserService } from './user.service';
 
@@ -13,7 +13,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly bookmarkService: BookmarkService,
-    private readonly actionResponse: ActionResponseService
+    private readonly actionResponseService: ActionResponseService
   ) {}
 
   @Get('/dashboard')
@@ -61,5 +61,50 @@ export class UserController {
     }
 
     return false;
+  }
+
+  @Post('/forgot-password')
+  async forgotPassword(
+    @Session() session: Record<string, any>,
+    @Body('email') email: string
+  ): Promise<Record<string, any>> {
+    try {
+      await this.userService.sendMailForgotPassword(session, email);
+
+      return this.actionResponseService.responseApi(
+        true,
+        '',
+        'mail is sent, please check your email'
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'send mail is failed'
+    );
+  }
+
+  @Post('/registration')
+  async userRegistration(
+    @Body() user: UserRegister
+  ): Promise<Record<string, any>> {
+    try {
+      await this.userService.createNewUser(user);
+
+      return this.actionResponseService.responseApi(
+        true,
+        '',
+        'create user success, please check your email to verify'
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'create user failed'
+    );
   }
 }

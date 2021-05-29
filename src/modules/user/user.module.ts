@@ -1,3 +1,4 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
 import { ActionResponseModule } from '../actionResponse/actionresponse.module';
 import { BookmarkModule } from '../bookmark/bookmark.module';
@@ -7,7 +8,7 @@ import { UserProviders } from './user.providers';
 import { UserService } from './user.service';
 
 @Module({
-  imports: [MovieModule, BookmarkModule, ActionResponseModule],
+  imports: [MovieModule, BookmarkModule, MailerService, ActionResponseModule],
   controllers: [UserController],
   providers: [UserService, ...UserProviders],
   exports: [UserService]

@@ -10,3 +10,9 @@ export interface ChangePassword {
   oldPassword: string;
   newPassword: string;
 }
+
+export interface UserRegister {
+  user_name: string;
+  email: string;
+  password: string;
+}

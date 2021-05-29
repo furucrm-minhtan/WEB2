@@ -1,15 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { User } from './user.model';
 import Helper from '../../helper/helper';
-import { where } from 'sequelize';
-import { ChangePassword, UserProfile } from './dto/user.dto';
+import { ChangePassword, UserProfile, UserRegister } from './dto/user.dto';
 import { Movie } from '../movie/movie.model';
+import { MailService } from '../mail/mail.service';
+import * as randomString from 'randomstring';
+import { Session } from 'node:inspector';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject('USERS_REPOSITORY')
-    private usersRepository: typeof User
+    private usersRepository: typeof User,
+    private mailService: MailService
   ) {}
 
   async findAll(): Promise<User[]> {
@@ -84,5 +87,28 @@ export class UserService {
         where: { id }
       }
     );
+  }
+
+  async sendMailForgotPassword(session: Record<string, any>, email: string) {
+    const user: User = await this.usersRepository.findOne({
+      where: { email }
+    });
+
+    if (!user) throw 'email not exist';
+    const token = randomString.generate(20);
+    await this.mailService.sendResetEmail({ email }, token);
+    session.token = token;
+  }
+
+  async createNewUser(userData: UserRegister): Promise<void> {
+    const token = randomString.generate(20);
+    const user: User = await this.usersRepository.create({
+      ...userData,
+      token
+    } as User);
+
+    if (user) {
+      await this.mailService.sendResetEmail(user, token);
+    }
   }
 }

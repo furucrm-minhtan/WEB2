@@ -41,6 +41,9 @@ export class User extends BaseModel<User> {
   @Column
   address: string;
 
+  @Column
+  token: string;
+
   @Default(false)
   @Column
   is_admin: boolean;
