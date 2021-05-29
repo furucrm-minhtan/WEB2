@@ -29,7 +29,7 @@ export class Theater extends BaseModel<Theater> {
   name: string;
 
   @Default('2D')
-  @Column
+  @Column({ type: DataType.ENUM('2D', '3D') })
   type: TheaterType;
 
   @HasMany(() => Room)

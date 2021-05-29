@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
+import { col, fn } from 'sequelize';
 import { Sequelize } from 'sequelize';
 import { operatorsAliases } from 'src/core/config/sequelize.config';
 import Helper from 'src/helper/helper';
@@ -38,7 +39,9 @@ export class ShowTimeService {
   ): Promise<Record<string, Room[]>> {
     const showTimesDisplay: Record<string, ShowTime[]> = {};
     const showTimes: ShowTime[] = await this.showTimeRepository.findAll({
-      attributes: ['start', 'end', 'date', 'price'],
+      attributes: {
+        include: ['id', 'start', 'end', 'date', 'price']
+      },
       where: {
         movieId,
         date: {
@@ -55,8 +58,14 @@ export class ShowTimeService {
           where: {
             theaterId
           },
-          include: [{ model: Seat, order: ['row', 'col'] }]
-        }
+          include: [
+            {
+              model: Seat,
+              order: ['row', 'col', 'position']
+            }
+          ]
+        },
+        { model: Ticket }
       ]
       // group: ['start', 'end', 'date']
     });

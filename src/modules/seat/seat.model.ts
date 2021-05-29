@@ -6,10 +6,13 @@ import {
   Column,
   Default,
   BelongsTo,
-  ForeignKey
+  ForeignKey,
+  DataType,
+  HasMany
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
 import { Room } from '../room/room.model';
+import { Ticket } from '../ticket/ticket.model';
 
 @Table({
   tableName: 'Seats',
@@ -27,12 +30,17 @@ export class Seat extends BaseModel<Seat> {
   id: number;
 
   @Default(false)
-  @Column
-  row: number;
+  @Column({ type: DataType.ENUM('A', 'B', 'C', 'D', 'E', 'F', 'G') })
+  row: string;
 
   @Default(false)
   @Column
   column: number;
+
+  @Column(DataType.VIRTUAL)
+  get position(): string {
+    return `${this.getDataValue('row')}-${this.getDataValue('column')}`;
+  }
 
   @ForeignKey(() => Room)
   @Column({ field: 'room_id', allowNull: false })
@@ -40,4 +48,7 @@ export class Seat extends BaseModel<Seat> {
 
   @BelongsTo(() => Room, 'room_id')
   room: Room;
+
+  @HasMany(() => Ticket)
+  tickets: Ticket[];
 }

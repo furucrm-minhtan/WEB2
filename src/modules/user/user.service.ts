@@ -16,11 +16,12 @@ export class UserService {
     return this.usersRepository.findAll<User>();
   }
 
-  async findUser(userName: string): Promise<User> {
+  async findUser(userName: string, options = {}): Promise<User> {
     return this.usersRepository.findOne({
       where: {
         user_name: userName
-      }
+      },
+      ...options
     });
   }
 
