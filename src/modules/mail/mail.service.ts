@@ -8,16 +8,14 @@ export class MailService {
   constructor(private mailerService: MailerService) {}
 
   async sendUserVerifyRegistration(
-    user: Record<string, any>,
-    token: string
+    url: string,
+    user: Record<string, any>
   ): Promise<void> {
-    const url = `${os.hostname}/auth/confirm?token=${token}`;
-
     await this.sendMail(
       [user.email],
       {
         subject: 'Welcome to Nice App! Confirm your Email',
-        template: 'confirmation'
+        template: './confirmation'
       },
       {
         name: user.name,
@@ -26,14 +24,12 @@ export class MailService {
     );
   }
 
-  async sendResetEmail({ email }: ResetPassword, token: string): Promise<void> {
-    const url = `${os.hostname}/auth/reset-password?token=${token}`;
-
+  async sendResetEmail(url: string, { email }: ResetPassword): Promise<void> {
     await this.sendMail(
       [email],
       {
-        subject: 'Welcome to Nice App! Confirm your Email',
-        template: 'resetPassword'
+        subject: 'Reset your Password',
+        template: './resetPassword'
       },
       {
         url

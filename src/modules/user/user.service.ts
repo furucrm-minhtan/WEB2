@@ -5,7 +5,6 @@ import { ChangePassword, UserProfile, UserRegister } from './dto/user.dto';
 import { Movie } from '../movie/movie.model';
 import { MailService } from '../mail/mail.service';
 import * as randomString from 'randomstring';
-import { Session } from 'node:inspector';
 
 @Injectable()
 export class UserService {
@@ -15,8 +14,12 @@ export class UserService {
     private mailService: MailService
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return this.usersRepository.findAll<User>();
+  async findAll(options = {}): Promise<User[]> {
+    return this.usersRepository.findAll<User>(options);
+  }
+
+  async findOne(options = {}): Promise<User> {
+    return this.usersRepository.findOne(options);
   }
 
   async findUser(userName: string, options = {}): Promise<User> {
@@ -89,26 +92,71 @@ export class UserService {
     );
   }
 
-  async sendMailForgotPassword(session: Record<string, any>, email: string) {
+  async sendMailForgotPassword(
+    hostname: string,
+    session: Record<string, any>,
+    email: string
+  ) {
+    const token = randomString.generate(20);
     const user: User = await this.usersRepository.findOne({
       where: { email }
     });
 
     if (!user) throw 'email not exist';
-    const token = randomString.generate(20);
-    await this.mailService.sendResetEmail({ email }, token);
-    session.token = token;
+    await this.mailService.sendResetEmail(
+      `${hostname}/reset-password?token=${token}`,
+      { email }
+    );
+    session.resetPassword = { email, token };
   }
 
-  async createNewUser(userData: UserRegister): Promise<void> {
+  async createNewUser(
+    hostname: string,
+    { user_name, email, name, password }: UserRegister
+  ): Promise<void> {
     const token = randomString.generate(20);
+    password = Helper.hashPassword(password);
     const user: User = await this.usersRepository.create({
-      ...userData,
-      token
+      user_name,
+      email,
+      name,
+      password,
+      verify_code: token
     } as User);
 
     if (user) {
-      await this.mailService.sendResetEmail(user, token);
+      await this.mailService.sendUserVerifyRegistration(
+        `${hostname}/authen/verify-register?token=${token}`,
+        user
+      );
     }
+  }
+
+  async verifyRegister(verify_code: string): Promise<void> {
+    const user: User = await this.usersRepository.findOne({
+      where: {
+        verify_code
+      }
+    });
+
+    if (!user) throw 'token is invalid';
+    user.verify_code = '';
+    user.save();
+  }
+
+  async resetPassword(
+    email: string,
+    password: string
+  ): Promise<[number, User[]]> {
+    const hashPassword = Helper.hashPassword(password);
+
+    return await this.usersRepository.update(
+      { password: hashPassword },
+      {
+        where: {
+          email
+        }
+      }
+    );
   }
 }

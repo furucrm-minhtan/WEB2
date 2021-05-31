@@ -2,7 +2,7 @@ import { MailerModule, MailerOptions } from '@nestjs-modules/mailer';
 import { MailerAsyncOptions } from '@nestjs-modules/mailer/dist/interfaces/mailer-async-options.interface';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
 export default class MailerConfig {
   static getMailerConfig(configService: ConfigService): MailerOptions {
@@ -21,7 +21,7 @@ export default class MailerConfig {
         from: configService.get('MAIL_FROM')
       },
       template: {
-        dir: join(__dirname, 'mail', 'templates'),
+        dir: resolve('./src/mail/templates/'),
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true
@@ -33,7 +33,7 @@ export default class MailerConfig {
 
 export const mailerConfigOptionsAsync: MailerAsyncOptions = {
   imports: [ConfigModule],
-  inject: [ConfigService],
-  useFactory: async (ConfigService: ConfigService): Promise<MailerOptions> =>
-    MailerConfig.getMailerConfig(ConfigService)
+  useFactory: async (configService: ConfigService): Promise<MailerOptions> =>
+    MailerConfig.getMailerConfig(configService),
+  inject: [ConfigService]
 };

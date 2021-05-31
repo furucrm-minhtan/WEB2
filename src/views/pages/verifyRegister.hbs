@@ -1,0 +1,49 @@
+{{#section 'title' }}
+Verify Register
+{{/section }}
+
+{{> loading }}
+
+{{#section 'style'}}
+<style>
+    .page-single {
+        padding-top: 0;
+    }
+
+    .content_center {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+    }
+</style>
+{{/section}}
+<div>
+    <div class="hero user-hero">
+        <div class="container">
+            <div class="col-md-12">
+            </div>
+        </div>
+    </div>
+    <div class="page-single">
+        <div class="container">
+            <div class="row ipad-width content_center">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-style-1 user-pro">
+                        {{#if isVerified}}
+                            <h5 style="color: #fff;">Your code is invalid or you are verified</h5>
+                        {{else}}
+                            <form class="user" action="/authen/verify-register?token={{token}}" method="POST">
+                                <h3>Verify Register</h3>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <input class="submit" type="submit" value="verify" />
+                                    </div>
+                                </div>
+                            </form>
+                        {{/if }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

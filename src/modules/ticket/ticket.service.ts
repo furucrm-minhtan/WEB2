@@ -9,6 +9,10 @@ export class TicketService {
     @Inject('TICKETS_REPOSITORY') private ticketRepository: typeof Ticket
   ) {}
 
+  async fetchTicket(options = {}): Promise<Ticket[]> {
+    return this.ticketRepository.findAll(options);
+  }
+
   booking(ticketBooking: TicketBooking) {
     return this.ticketRepository.create(ticketBooking as Ticket);
   }

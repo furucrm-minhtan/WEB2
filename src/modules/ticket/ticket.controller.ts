@@ -1,6 +1,9 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
+import { Movie } from '../movie/movie.model';
+import { ShowTime } from '../showTime/showtime.model';
 import { TicketBooking } from './dto/ticket.dto';
+import { Ticket } from './ticket.model';
 import { TicketService } from './ticket.service';
 
 @Controller('/api/ticket')
@@ -26,5 +29,29 @@ export class TicketController {
     }
 
     return this.actionResponseService.responseApi(true, 'booking falied', '');
+  }
+
+  @Get(':id')
+  async fetchUserTicket(@Param('id') userId: number) {
+    try {
+      const tickets: Ticket[] = await this.ticketService.fetchTicket({
+        where: {
+          userId
+        },
+        include: [
+          {
+            model: ShowTime,
+            order: ['start', 'end', 'date'],
+            include: [{ model: Movie }]
+          }
+        ]
+      });
+
+      return this.actionResponseService.responseApi(true, tickets, '');
+    } catch (error) {
+      console.log(error);
+    }
+
+    return this.actionResponseService.responseApi(false, '', '');
   }
 }

@@ -1,0 +1,399 @@
+{{#section 'title'}}
+Profile
+{{/section}}
+
+{{> loading }}
+
+<div x-data="init()">
+	<div class="hero user-hero">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="hero-ct">
+						<ul class="breadcumb">
+							<h1 class="mr_0 mb_10">{{user_name}}</h1>
+							<li class="active"><a href="#">Home</a></li>
+							<li><span class="ion-ios-arrow-right"></span><span x-text="page" class="mr_0"></span></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="page-single">
+		<div class="container">
+			<div class="row ipad-width">
+				<div class="col-md-3 col-sm-12 col-xs-12">
+					<div class="user-information">
+						<div class="user-img">
+							<a href="#"><img src="images/uploads/user-img.png" alt=""><br></a>
+							<a href="#" class="redbtn">Change avatar</a>
+						</div>
+						<div class="user-fav">
+							<p>Account Details</p>
+							<ul>
+								<li class="active"><a href="javascript:void(0)"
+										x-on:click="page = 'Manage'">Manage</a></li>
+								<li><a href="javascript:void(0)"
+										x-on:click="loadingFavorite()">Favorite movies</a></li>
+								<li><a href="javascript:void(0)"
+										x-on:click="$event.preventDefault(); page = 'rate'">Rated movies</a></li>
+							</ul>
+						</div>
+						<div class="user-fav">
+							<p>Others</p>
+							<ul>
+								<li><a href="javascript:void(0)"
+										x-on:click="$event.preventDefault(); page = 'change password'">Change
+										password</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-9 col-sm-12 col-xs-12">
+					<div class="form-style-1 user-pro">
+						<form class="user">
+							<h4>Profile details</h4>
+							<div class="row">
+								<div class="col-md-6 form-it">
+									<label>Username</label>
+									<input type="text" x-model="userForm.user_name">
+								</div>
+								<div class="col-md-6 form-it">
+									<label>Email Address</label>
+									<input type="text" x-model="userForm.email">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6 form-it">
+									<label>Name</label>
+									<input type="text" x-model="userForm.name">
+								</div>
+								<div class="col-md-6 form-it">
+									<label>Phone</label>
+									<input type="text" x-model="userForm.phone">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6 form-it">
+									<label>Address</label>
+									<input type="text" x-model="userForm.address">
+								</div>
+								<div class="col-md-6 form-it">
+									<label>City</label>
+									<input type="text" x-model="userForm.city">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-2">
+									<input class="submit" type="submit" value="save" @click="updateProfile($event)">
+								</div>
+							</div>
+						</form>
+						<div class="listview_theater">
+							<table class="table-bordered">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Type</th>
+										<th>Group</th>
+									</tr>
+								</thead>
+								<tbody>
+									<template x-for="(theater, index) in theaters" :key="index">
+										<tr>
+											<td></td>
+											<td></td>
+											<td></td>
+										</tr>
+									</template>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="form-style-1 user-pro" x-show="page === 'change password'">
+						<form action="#" class="password">
+							<h4>Change password</h4>
+							<div class="row">
+								<div class="col-md-6 form-it">
+									<label>Old Password</label>
+									<input type="text" x-model="passwordForm.oldPassword">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6 form-it">
+									<label>New Password</label>
+									<input type="text" x-model="passwordForm.newPassword">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6 form-it">
+									<label>Confirm New Password</label>
+									<input type="text" x-model="passwordForm.confPassword">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-2">
+									<input class="submit" type="submit" value="change" @click="changePassword($event)">
+								</div>
+							</div>
+						</form>
+					</div>
+					<div x-show="page === 'favorite'">
+						<div class="topbar-filter user">
+							<p>Found <span x-text="favoriteData.total"></span> movies in total</p>
+							<label>Sort by:</label>
+							<select x-model="favoriteData.sort">
+								<template x-for="(option, index) in Object.values(sortType)" :key="index">
+									<option x-bind:value="option.value" x-text="option.label"></option>
+								</template>
+							</select>
+							<a href="userfavoritelist.html" class="list"><i class="ion-ios-list-outline active"></i></a>
+							<a href="userfavoritegrid.html" class="grid"><i class="ion-grid "></i></a>
+						</div>
+						<template x-if="favoriteData.movies">
+							<div class="flex-wrap-movielist user-fav-list">
+								<template x-for="(item, index) in favoriteData.show" :key="index">
+									<div class="movie-item-style-2">
+										<img x-bind:src="item.movie.poster" alt="">
+										<div class="mv-item-infor">
+											<h6><a href="javascript:void(0)" x-text="item.movie.name">oblivion <span>(2012)</span></a></h6>
+											{{!-- <p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p> --}}
+											<p class="describe" x-text="item.movie.describe"></p>
+											<p class="run-time">Release: <span x-text="getDate(item.movie.publish)"></span></p>
+											<p>Director: <span x-text="item.movie.director"></span> </p>
+											{{!-- <p>Stars: <a href="#">Robert Downey Jr.,</a> <a href="#">Chris Evans,</a> <a
+													href="#">
+													Chris Hemsworth</a></p> --}}
+										</div>
+									</div>
+								</template>
+							</div>
+						</template>
+						<div class="topbar-filter">
+							<label>Movies per page:</label>
+							<select x-model="favoriteMovieShow" x-on:change="favoriteMovies = []; fetchFavoriteMovies($event, 0, favoriteMovieShow)">
+								<option value="5">5</option>
+								<option value="10">10</option>
+							</select>
+
+							<div class="pagination2">
+								<span>Page <span x-text="favoriteData.currentPage"></span> of <span x-text="page"></span>:</span>
+								<a :class="favoriteData.currentPage == 1 ? 'disable_link' : ''" href="javascript:void(0)" @click="prevPage()"><i class="ion-arrow-left-b"></i></a>
+								<template x-for="(key, index) in Array(favoriteMovieShow.page)">
+									<a x-bind:class="(favoriteData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1"></a>
+								</template>
+								<a :class="favoriteData.currentPage == favoriteData.page ? 'disable_link' : ''" href="javascript:void(0)" @click="nextPage()"><i class="ion-arrow-right-b"></i></a>
+							</div>
+						</div>
+					</div>
+					<div x-show="page === 'rate'">
+						<div class="topbar-filter">
+							<p>Found <span>3 rates</span> in total</p>
+							<label>Sort by:</label>
+							<select>
+								<option value="range">-- Choose option --</option>
+								<option value="saab">-- Choose option 2--</option>
+							</select>
+						</div>
+						<div class="movie-item-style-2 userrate">
+							<img src="images/uploads/mv1.jpg" alt="">
+							<div class="mv-item-infor">
+								<h6><a href="#">oblivion <span>(2012)</span></a></h6>
+								<p class="time sm-text">your rate:</p>
+								<p class="rate"><i class="ion-android-star"></i><span>9.0</span> /10</p>
+								<p class="time sm-text">your reviews:</p>
+								<h6>Best Marvel movie in my opinion</h6>
+								<p class="time sm">02 April 2017</p>
+								<p>“This is by far one of my favorite movies from the MCU. The introduction of new
+									Characters both good and bad also makes the movie more exciting. giving the
+									characters more of a back story can also help audiences relate more to different
+									characters better, and it connects a bond between the audience and actors or
+									characters. Having seen the movie three times does not bother me here as it is as
+									thrilling and exciting every time I am watching it. In other words, the movie is by
+									far better than previous movies (and I do love everything Marvel), the plotting is
+									splendid (they really do out do themselves in each film, there are no problems
+									watching it more than once.”</p>
+							</div>
+						</div>
+						<div class="movie-item-style-2 userrate">
+							<img src="images/uploads/mv2.jpg" alt="">
+							<div class="mv-item-infor">
+								<h6><a href="#">into the wild <span>(2014)</span></a></h6>
+								<p class="time sm-text">your rate:</p>
+								<p class="rate"><i class="ion-android-star"></i><span>7.0</span> /10</p>
+							</div>
+						</div>
+						<div class="movie-item-style-2 userrate last">
+							<img src="images/uploads/mv3.jpg" alt="">
+							<div class="mv-item-infor">
+								<h6><a href="#">blade runner<span>(2015)</span></a></h6>
+								<p class="time sm-text">your rate:</p>
+								<p class="rate"><i class="ion-android-star"></i><span>10.0</span> /10</p>
+								<p class="time sm-text">your reviews:</p>
+								<h6>A masterpiece!</h6>
+								<p class="time sm">01 February 2017</p>
+								<p>“To put it simply, the movie is fascinating, exciting and fantastic. The dialog, the
+									fight choreography, the way the story moves, the characters charisma, all and much
+									more are combined together to deliver this masterpiece. Such an amazing flow,
+									providing a fusion between the 90s and the new century, it's like the assassins are
+									living in another world, with another mindset, without people understanding it. Just
+									one advice for you though: Don't build an expectation of what you want to watch in
+									this movie, if you do, then you will ruin it. This movie has it's own flow and
+									movement, so watch it with a clear mind, and have fun.”</p>
+							</div>
+						</div>
+						<div class="topbar-filter">
+							<label>Movies per page:</label>
+							<select>
+								<option value="range">20 Movies</option>
+								<option value="saab">10 Movies</option>
+							</select>
+							<div class="pagination2">
+								<span>Page 1 of 1:</span>
+								<a class="active" href="#">1</a>
+								<a href="#"><i class="ion-arrow-right-b"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{{#section 'script' }}
+<script>
+	function init() {
+		const fetchFavoriteMovies = function(offset, limit, sort) {
+			return new Promise((resolve, reject) => {
+				fetch(`/bookmark?offset=${offset}&limit=${limit}&sort=${sort}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							resolve(data);
+						}
+						else {
+							throw data.message;
+						}
+					})
+					.catch(function(error) {
+						throw error;
+					})
+			});
+		};
+
+		return {
+			page: 'profile', 
+			favoriteMovieShow: 10,
+			favoriteData: {
+				total: 0,
+				page: 1,
+				currentPage: 1,
+				sort: '',
+				movies: [],
+				show: []
+			},
+			sortType: [
+				{ value: 'name', label: 'name' },
+				{ value: 'publish', label: 'publish date' }
+			],
+			userForm: {
+				id: '{{id}}',
+				user_name: '{{user_name}}',
+				email: '{{email}}',
+				name: '{{name}}',
+				phone: '{{phone}}',
+				address: '{{address}}',
+				city: '{{city}}'
+			},
+			passwordForm: {},	
+			updateProfile(event)
+			{
+				event.preventDefault();
+
+				axios.post('/profile', this.userForm)
+					.then(function (response)
+					{
+						console.log(response);
+					})
+					.catch(function (error)
+					{
+						console.log(error);
+					});
+			},
+			changePassword(event)
+			{
+				event.preventDefault();
+
+				if(this.passwordForm.newPassword != this.passwordForm.confPassword) {
+					alert('confirm password not match');
+					return false;
+				}
+
+				axios.post('/change-password', this.passwordForm)
+					.then(function (response)
+					{
+
+					})
+					.catch(function (error)
+					{
+						console.log(error);
+					});
+			},
+			loadingFavorite() {
+				this.page = 'favorite';
+				
+				fetch(`/bookmark/user?limit=${this.favoriteMovieShow}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							this.favoriteData.total = data.data.totalBookmark;
+							this.favoriteData.page = data.data.page;
+							
+							return fetchFavoriteMovies(0, this.favoriteMovieShow, this.favoriteData.sort);
+						}
+					})
+					.then((data) => {
+						this.favoriteData.movies = this.favoriteData.movies.concat(data.data);
+						this.favoriteData.show = this.dataShow(this.favoriteData.movies, 0, this.favoriteMovieShow);
+					})
+					.catch(function(error) {
+						console.log(error);
+					})
+			},
+			dataShow(data, from = 0, limit = 10) {
+				return Array.from({ length: limit }, (_item, index) => data[index + from] );
+			},
+			prevPage(event) {
+				event.preventDefault();
+				this.favoriteData.movies--;
+
+				this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteMovieShow, this.favoriteMovieShow);
+			},
+			nextPage(event) {
+				event.preventDefault();
+				this.favoriteData.currentPage++;
+
+				fetchFavoriteMovies(this.favoriteMovieShow)
+					.then((data) => {
+						this.favoriteData.movies = this.favoriteData.movies.concat(data.data);	
+						this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteMovieShow, this.favoriteMovieShow);
+					})
+					.catch((error) => {
+						console.log(error);
+					})
+			},
+			getDate(string) {
+				const date = new Date(string);
+
+				return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+			}
+		}
+	}
+</script>
+{{/section }}
