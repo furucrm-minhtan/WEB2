@@ -7,7 +7,8 @@ import {
   DataType,
   Default,
   AllowNull,
-  BelongsToMany
+  BelongsToMany,
+  Unique
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
 import { Bookmark } from '../bookmark/bookmark.model';
@@ -26,12 +27,14 @@ export class User extends BaseModel<User> {
   @Column
   name: string;
 
+  @Unique(true)
   @Column({ type: DataType.STRING(100), allowNull: false })
   email: string;
 
   @Column({ allowNull: false })
   password: string;
 
+  @Unique(true)
   @Column({ type: DataType.STRING(100), allowNull: false })
   user_name: string;
 
@@ -47,6 +50,11 @@ export class User extends BaseModel<User> {
 
   @Column(DataType.STRING(100))
   city: string;
+
+  @AllowNull(true)
+  @Unique(true)
+  @Column(DataType.STRING)
+  verify_code: string;
 
   @BelongsToMany(() => Movie, () => Review, 'user_id')
   moviesRevies: Array<Movie & { Review: Review }>;

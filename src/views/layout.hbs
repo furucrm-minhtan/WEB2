@@ -32,20 +32,20 @@
 </head>
 
 <body>
-    <div class="login-wrapper" id="forgot-password-content">
+    <div class="login-wrapper" id="forgot-password-content" x-data="{ email: '' }">
         <div class="login-content">
             <a href="#" class="close">x</a>
             <h3>Forgot Password</h3>
             <form method="post">
                 <div class="row">
                     <label for="username">
-                        Username:
-                        <input x-model="userName" type="text" name="username" id="username"
-                            pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{8,20}$" required="required" />
+                        Email:
+                        <input x-model="email" type="text" name="email" id="username"
+                            pattern="^[^\s@]+@[^\s@]+$" required="required" />
                     </label>
                 </div>
                 <div class="row">
-                    <button x-on:click="forgotPassword($event, userName)">Login</button>
+                    <button x-on:click="forgotPassword($event, email)">submit</button>
                 </div>
             </form>
         </div>
@@ -93,15 +93,23 @@
         </div>
     </div>
 
-    <div class="login-wrapper" id="signup-content">
+    <div class="login-wrapper" id="signup-content" x-data="{ user_name: '', email: '', password: '', confPassword: '' }">
         <div class="login-content">
             <a href="#" class="close">x</a>
             <h3>sign up</h3>
             <form method="post" action="#">
+                  <div class="row">
+                    <label for="username-2">
+                        Full Name:
+                        <input x-model="name" type="text" name="name" id="full-name"
+                            required="required" />
+                    </label>
+                </div>
+
                 <div class="row">
                     <label for="username-2">
                         Username:
-                        <input type="text" name="username" id="username-2" placeholder="Hugh Jackman"
+                        <input x-model="user_name" type="text" name="username" id="username-2"
                             pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{8,20}$" required="required" />
                     </label>
                 </div>
@@ -109,15 +117,15 @@
                 <div class="row">
                     <label for="email-2">
                         your email:
-                        <input type="password" name="email" id="email-2" placeholder=""
-                            pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
+                        <input x-model="email" type="text" name="email" id="email-2"
+                            pattern="^[^\s@]+@[^\s@]+$"
                             required="required" />
                     </label>
                 </div>
                 <div class="row">
                     <label for="password-2">
                         Password:
-                        <input type="password" name="password" id="password-2" placeholder=""
+                        <input x-model="password" type="password" name="password" id="password-registrantion"
                             pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
                             required="required" />
                     </label>
@@ -125,13 +133,13 @@
                 <div class="row">
                     <label for="repassword-2">
                         re-type Password:
-                        <input type="password" name="password" id="repassword-2" placeholder=""
+                        <input x-model="confPassword" type="password" name="password" id="repassword-registration"
                             pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
                             required="required" />
                     </label>
                 </div>
                 <div class="row">
-                    <button type="submit">sign up</button>
+                    <button type="submit" @click="registration($event, { user_name, email, password, name}, confPassword)">sign up</button>
                 </div>
             </form>
         </div>
@@ -246,12 +254,25 @@
                 <!-- /.navbar-collapse -->
             </nav>
 
-            <div class="top-search">
+            <div class="top-search" x-data="initSearch()">
                 <select>
                     <option value="united">TV show</option>
                     <option value="saab">Others</option>
                 </select>
-                <input type="text" placeholder="Search for a movie, TV Show or celebrity that you are looking for">
+                <input type="text" x-on:input.debound.500="fetchMovies($event.target.value)"/>
+                <div class="search-result">
+                    {{!-- <div class="search-image">
+                        <img src="http://dummyimage.com/180x250.png/cc0000/ffffff" />
+                    </div> --}}
+                    {{!-- <div class="search-content">
+                        <h3>Human Communications Planner</h3>
+                        <p><i class="ion-android-star"></i><span>7.4</span> /10</p>
+                        <p>Deleniti tempora eos doloremque in pariatur debitis blanditiis delectus cumque. Repellendus dolorum fugiat rerum accusantium magnam pariatur consequatur ad mollitia. Beatae commodi nam. Omnis cumque vitae pariatur maiores incidunt laudantium consectetur voluptatibus fuga. Officia consequatur quia necessitatibus maxime aperiam non sit vel.</p>
+                    </div> --}}
+                </div>
+                <template>
+
+                </template>
             </div>
         </div>
     </header>
@@ -341,6 +362,64 @@
                 .catch((error) => {
                     console.log(error);
                 });
+        }
+
+        function forgotPassword(event, email) {
+            event.preventDefault();
+
+             axios.post('/forgot-password', { email })
+                .then((response) => response.data)
+                .then((data) => {
+                    if(data.isSuccess) {
+                        alert(data.message);
+                    }
+                    else {
+                        alert(data.message); 
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+
+        function registration(event, postData, confPassword) {
+            event.preventDefault();
+
+            if(postData.password !== confPassword) {
+                alert('confirm password is wrong');
+                return;
+            }
+
+            axios.post('/registration', postData)
+                .then((response) => response.data)
+                .then((data) => {
+                    if(data.isSuccess) {
+                        alert(data.message);
+                    }
+                    else {
+                        alert(data.message); 
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+
+        function initSearch() {
+            return {
+                movies: [],
+                loading: false,
+                fetchMovie() {
+                    fetch('/search')    
+                    .then((raw) => raw.json())
+                    then((data) => {
+                       if(data.isSuccess) {
+                            this.movies = data.data;
+                       }
+                    })
+                    .catch((error) => console.log(error));
+                }
+            }
         }
     </script>
     {{{sections.script}}}

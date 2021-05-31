@@ -56,7 +56,7 @@ export const operatorsAliases = {
 };
 
 export default class SequelizeConfig {
-  static getOrmConfig(
+  static getSequelizeConfig(
     configService: ConfigService,
     operatorsAliases: any
   ): SequelizeModuleOptions {
@@ -97,6 +97,6 @@ export const sequelizeConfigAsync: SequelizeModuleAsyncOptions = {
   useFactory: async (
     configService: ConfigService
   ): Promise<SequelizeModuleOptions> =>
-    SequelizeConfig.getOrmConfig(configService, operatorsAliases),
+    SequelizeConfig.getSequelizeConfig(configService, operatorsAliases),
   inject: [ConfigService]
 };

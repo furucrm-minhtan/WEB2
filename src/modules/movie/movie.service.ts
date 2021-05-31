@@ -6,6 +6,7 @@ import { GroupTheater } from '../groupTheater/groupTheater.model';
 import { Theater } from '../theater/theater.model';
 import { GroupTheaterOptions } from '../groupTheater/dto/groupTheater.dto';
 import { TheaterOptions } from '../theater/dto/theater.dto';
+import { MovieDetail } from './dto/movie.dto';
 const { $between } = operatorsAliases;
 
 @Injectable()
@@ -76,5 +77,17 @@ export class MovieService {
     data.theaters = JSON.stringify(theaters);
 
     return { ...data };
+  }
+
+  async uploadMovie(movie: MovieDetail) {
+    return this.movieRepository.create(movie as Movie);
+  }
+
+  async updateMovie(id: number, movie: MovieDetail) {
+    return this.movieRepository.update(movie as Movie, {
+      where: {
+        id
+      }
+    });
   }
 }

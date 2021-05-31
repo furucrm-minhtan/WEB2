@@ -1,4 +1,5 @@
-import { Controller, Get, Param, Render } from '@nestjs/common';
+import { Controller, Get, Param, Query, Render } from '@nestjs/common';
+import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { GroupTheaterOptions } from '../groupTheater/dto/groupTheater.dto';
 import { GroupTheater } from '../groupTheater/groupTheater.model';
 import { GroupTheaterService } from '../groupTheater/grouptheater.service';
@@ -11,7 +12,10 @@ import { MovieService } from './movie.service';
 
 @Controller('movie')
 export class MovieController {
-  constructor(private readonly movieService: MovieService) {}
+  constructor(
+    private readonly movieService: MovieService,
+    private readonly actionResponseService: ActionResponseService
+  ) {}
 
   @Get(':id')
   @Render('detail')
@@ -35,5 +39,21 @@ export class MovieController {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  @Get('search')
+  async searchMovieBasic(@Query('name') name: string) {
+    try {
+      const movies: Movie[] = await this.movieService.findAll({
+        where: {
+          name
+        }
+      });
+
+      return this.actionResponseService.responseApi(true, movies, '');
+    } catch (error) {
+      console.log(error);
+    }
+    return this.actionResponseService.responseApi(false, [], '');
   }
 }

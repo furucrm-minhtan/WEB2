@@ -1,10 +1,21 @@
-import { Body, Controller, Get, Post, Render, Session } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Render,
+  Session,
+  Headers,
+  Redirect
+} from '@nestjs/common';
+import session from 'express-session';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { UserSession } from '../authen/dto/authen.dto';
 import { Bookmark } from '../bookmark/bookmark.model';
 import { BookmarkService } from '../bookmark/bookmark.service';
 import { Movie } from '../movie/movie.model';
-import { ChangePassword, UserProfile } from './dto/user.dto';
+import { ChangePassword, ResetPassword, UserProfile, UserRegister } from './dto/user.dto';
 import { User } from './user.model';
 import { UserService } from './user.service';
 
@@ -13,7 +24,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly bookmarkService: BookmarkService,
-    private readonly actionResponse: ActionResponseService
+    private readonly actionResponseService: ActionResponseService
   ) {}
 
   @Get('/dashboard')
@@ -61,5 +72,85 @@ export class UserController {
     }
 
     return false;
+  }
+
+  @Post('/forgot-password')
+  async forgotPassword(
+    @Headers('origin') host: string,
+    @Session() session: Record<string, any>,
+    @Body('email') email: string
+  ): Promise<Record<string, any>> {
+    try {
+      await this.userService.sendMailForgotPassword(host, session, email);
+
+      return this.actionResponseService.responseApi(
+        true,
+        '',
+        'mail is sent, please check your email'
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'send mail is failed'
+    );
+  }
+
+  @Get('reset-password')
+  @Render('resetPassword')
+  async renderResetPassword(
+    @Query('token') token: string
+  ): Promise<Record<string, any>> {
+    return { token, resetCompleted: true };
+  }
+
+  @Post('reset-password')
+  @Render('resetPassword')
+  async resetPassword(
+    @Session() session: Record<string, any>,
+    @Query('token') user_token: string,
+    @Body() { password }: ResetPassword
+  ): Promise<Record<string, any>> {
+    const { email, token } = session.resetPassword;
+    let message = '';
+
+    try {
+      if (token !== user_token) {
+        throw 'token is invalid';
+      }
+      await this.userService.resetPassword(email, password);
+
+      return { resetCompleted: true };
+    } catch (error) {
+      console.log(error);
+      message = error;
+    }
+
+    return { message, token };
+  }
+
+  @Post('/registration')
+  async userRegistration(
+    @Headers('origin') host: string,
+    @Body() user: UserRegister
+  ): Promise<Record<string, any>> {
+    try {
+      await this.userService.createNewUser(host, user);
+
+      return this.actionResponseService.responseApi(
+        true,
+        '',
+        'create user success, please check your email to verify'
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'create user failed'
+    );
   }
 }

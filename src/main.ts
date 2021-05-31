@@ -11,11 +11,13 @@ import { urlencoded } from 'body-parser';
 import * as session from 'express-session';
 import { ConfigService } from '@nestjs/config';
 import * as moment from 'moment';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
 
+  app.useGlobalPipes(new ValidationPipe());
   app.use(urlencoded({ extended: true }));
   app.use(
     session({
