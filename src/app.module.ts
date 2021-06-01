@@ -24,6 +24,8 @@ import { GolobalMiddleware } from './middleware/golobal.middleware';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { mailerConfigOptionsAsync } from './core/config/mailer.config';
 import { MailService } from './modules/mail/mail.service';
+import { AuthenMiddleware } from './middleware/authen.middleware';
+import { UserController } from './modules/user/user.controller';
 
 @Module({
   imports: [
@@ -51,6 +53,13 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(GolobalMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes({ path: '*', method: RequestMethod.ALL })
+      .apply(AuthenMiddleware)
+      .exclude(
+        { path: 'forgot-password', method: RequestMethod.ALL },
+        { path: 'registration', method: RequestMethod.ALL },
+        { path: 'reset-password', method: RequestMethod.ALL }
+      )
+      .forRoutes(UserController);
   }
 }

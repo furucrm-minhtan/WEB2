@@ -31,11 +31,11 @@ export class UserController {
   @Render('userprofile')
   async root(@Session() session: Record<string, any>): Promise<UserProfile> {
     // console.log(session);
-    // const { id }: UserProfile = session.user;
+    const { id }: UserProfile = session.user;
     // const bookmarks: Bookmark[] = await this.bookmarkService.getFavoriteMovie(
     //   1
     // );
-    const user: UserProfile = await this.userService.loadProfileView(1);
+    const user: UserProfile = await this.userService.loadProfileView(id);
 
     return { ...user };
   }
