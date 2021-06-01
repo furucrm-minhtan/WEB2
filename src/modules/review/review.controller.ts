@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { UserSession } from '../authen/dto/authen.dto';
+import { User } from '../user/user.model';
 import { UserReview } from './dto/review.dto';
 import { Review } from './review.model';
 import { ReviewService } from './review.service';
@@ -44,15 +45,27 @@ export class ReviewController {
   }
 
   @Get(':id')
-  async fetchReviewsMovie(@Param('id') movieId: number) {
+  async fetchReviewsMovie(
+    @Param('id') movieId: number,
+    @Query()
+    { offset, limit, sort }: { offset: number; limit: number; sort: string }
+  ) {
     try {
-      return await this.reviewService.fetchReview({
+      const reviews: Review[] = await this.reviewService.fetchReview({
         where: {
           movieId
         },
-        raw: true
+        include: [User],
+        offset,
+        limit
       });
-    } catch (error) {}
+
+      return this.actionResponseService.responseApi(true, reviews, '');
+    } catch (error) {
+      console.log(error);
+    }
+
+    return this.actionResponseService.responseApi(true, '', '');
   }
 
   @Get('user')

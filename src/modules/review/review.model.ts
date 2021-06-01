@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import {
   AutoIncrement,
   Column,
@@ -39,4 +40,8 @@ export class Review extends BaseModel<Review> {
 
   @BelongsTo(() => Movie, 'movie_id')
   movie: Movie;
+
+  get uploadDate(): string {
+    return moment(this.getDataValue('creationDate')).format('MMM DD, YYYY');
+  }
 }
