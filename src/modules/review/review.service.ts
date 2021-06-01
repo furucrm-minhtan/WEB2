@@ -35,7 +35,7 @@ export class ReviewService {
     return this.reviewRepository.findAll(options);
   }
 
-  async createReview(userReview: UserReview) {
-    return this.reviewRepository.create(userReview as Review);
+  async createReview(userReview: Review) {
+    return this.reviewRepository.create(userReview);
   }
 }

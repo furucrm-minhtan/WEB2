@@ -19,9 +19,8 @@ export class BookmarkController {
     @Query()
     { offset, limit, sort }: { offset: number; limit: number; sort: string }
   ): Promise<ActionResponseService> {
-    // const { id }: { id: number } = user;
+    const { id }: { id: number } = user;
     try {
-      const id = 1;
       const data: Bookmark[] = await this.bookmarkService.getFavoriteMovie(
         id,
         offset,
@@ -56,15 +55,27 @@ export class BookmarkController {
   }
 
   @Post()
-  async bookmarkMovie(@Body() body: Record<string, any>) {
-    try {
-      await this.bookmarkService.bookmarkMovie(body as BookmarkMovie);
+  async bookmarkMovie(
+    @Session() { user }: { user: UserSession },
+    @Body() userBookmark: BookmarkMovie
+  ) {
+    let message = '';
 
-      return this.actionResponse.responseApi(true, 'bookmark success', '');
+    try {
+      const id = user?.id;
+
+      if (!id) throw 'To use this feature you must authen';
+      await this.bookmarkService.bookmarkMovie({
+        userId: id,
+        ...userBookmark
+      } as Bookmark);
+
+      return this.actionResponse.responseApi(true, '', 'bookmark success');
     } catch (error) {
-      console.log(error)
+      console.log(error);
+      message = error;
     }
 
-    return this.actionResponse.responseApi(false, 'bookmark falied', '');
+    return this.actionResponse.responseApi(false, '', message);
   }
 }

@@ -1,11 +1,14 @@
-import { Controller, Get, Param, Query, Render } from '@nestjs/common';
+import { Controller, Get, Param, Query, Render, Session } from '@nestjs/common';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
+import { UserSession } from '../authen/dto/authen.dto';
+import { Bookmark } from '../bookmark/bookmark.model';
 import { GroupTheaterOptions } from '../groupTheater/dto/groupTheater.dto';
 import { GroupTheater } from '../groupTheater/groupTheater.model';
 import { GroupTheaterService } from '../groupTheater/grouptheater.service';
 import { TheaterOptions } from '../theater/dto/theater.dto';
 import { Theater } from '../theater/theater.model';
 import { TheaterService } from '../theater/theater.service';
+import { User } from '../user/user.model';
 import { MovieBooking, MovieDetail, MovieItem } from './dto/movie.dto';
 import { Movie } from './movie.model';
 import { MovieService } from './movie.service';
@@ -19,10 +22,26 @@ export class MovieController {
 
   @Get(':id')
   @Render('detail')
-  async loadMOvieDetail(@Param('id') id: number): Promise<Record<string, any>> {
-    const movieDetail: MovieDetail = await this.movieService.findMovie(id, {
-      raw: true
-    });
+  async loadMovieDetail(
+    @Session() { user }: { user: UserSession },
+    @Param('id') id: number
+  ): Promise<Record<string, any>> {
+    const fetchOptions: Record<string, any> = { raw: true };
+    const userId = user?.id;
+    if (userId)
+      fetchOptions.include = [
+        {
+          attributes: ['id'],
+          model: User,
+          as: 'userFavorites',
+          where: { id: userId }
+        }
+      ];
+    const movieDetail: MovieDetail = await this.movieService.findMovie(
+      id,
+      fetchOptions
+    );
+    movieDetail.isBookmark = movieDetail['userFavorites.id'] != null;
     const releatedMovie: MovieItem[] = await this.movieService.findAll({
       where: { category_id: movieDetail.category_id },
       limit: 5

@@ -171,9 +171,10 @@ Profile
 						<div class="topbar-filter">
 							<p>Found <span>3 rates</span> in total</p>
 							<label>Sort by:</label>
-							<select>
-								<option value="range">-- Choose option --</option>
-								<option value="saab">-- Choose option 2--</option>
+							<select x-model="ratingData.sort">
+								<template x-for="(option, index) in Object.values(sortType)" :key="index">
+									<option x-bind:value="option.value" x-text="option.label"></option>
+								</template>
 							</select>
 						</div>
 						<div class="movie-item-style-2 userrate">
@@ -265,10 +266,40 @@ Profile
 			});
 		};
 
+		const fetchRatingMovies = function(offset, limit, sort) {
+			return new Promise((resolve, reject) => {
+				fetch(`/review?offset=${offset}&limit=${limit}&sort=${sort}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							resolve(data);
+						}
+						else {
+							throw data.message;
+						}
+					})
+					.catch(function(error) {
+						throw error;
+					})
+			});
+		};
+
+
 		return {
 			page: 'profile', 
 			favoriteMovieShow: 10,
+			ratingMovieShow: 10,
 			favoriteData: {
+				total: 0,
+				page: 1,
+				currentPage: 1,
+				sort: '',
+				movies: [],
+				show: []
+			},
+			ratingData: {
 				total: 0,
 				page: 1,
 				currentPage: 1,
@@ -322,6 +353,29 @@ Profile
 					{
 						console.log(error);
 					});
+			},
+			loadingRate() {
+				this.page = 'rate';
+				
+				fetch(`/review/user?limit=${this.ratingMovieShow}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							this.ratingData.total = data.data.totalRating;
+							this.ratingData.page = data.data.page;
+							
+							return fetchRatingMovies(0, this.ratingMovieShow, this.ratingData.sort);
+						}
+					})
+					.then((data) => {
+						this.ratingData.movies = this.ratingData.movies.concat(data.data);
+						this.ratingData.show = this.dataShow(this.ratingData.movies, 0, this.ratingMovieShow);
+					})
+					.catch(function(error) {
+						console.log(error);
+					})
 			},
 			loadingFavorite() {
 				this.page = 'favorite';

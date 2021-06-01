@@ -1,4 +1,62 @@
 {{>loading  }}
+
+{{#section 'style' }}
+<style>
+	.avatar {
+		margin-right: 20px;
+	}
+
+	textarea {
+		font-family: 'Nunito', sans-serif;
+		font-size: 12px;
+		color: #fff;
+		font-weight: 300;
+		text-transform: none;
+		background-color: #233a50;
+		border: none;
+		-webkit-border-radius: 3px !important;
+		-moz-border-radius: 3px !important;
+		border-radius: 3px !important;
+		height: auto !important;
+		margin: 20px 0 20px 0;
+	}
+
+	textarea::selection {
+		color: #fff;
+	}
+
+	.rv-hd {
+		flex-direction: column;
+		align-items: flex-start !important;
+	}
+
+	.write_review_wrapper {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.write_review_wrapper .review_rating {
+		display: flex;
+		align-items: center;
+	}
+
+	.write_review_wrapper .review_rating .no-star i {
+		font-size: 25px;
+		cursor: pointer;
+	}
+
+	.write_review_wrapper .redbtn {
+		align-self: flex-end;
+		margin-bottom: 20px;
+	}
+
+	.write_review_wrapper .selected {
+		color: #f5b50a;
+	}
+</style>
+{{/section}}
+
 <div class="hero mv-single-hero">
 	<div class="container">
 		<div class="row">
@@ -34,7 +92,7 @@
 				<div class="movie-single-ct main-content">
 					<h1 class="bd-hd">{{name}}</h1>
 					<div class="social-btn">
-						<a href="javascript:void(0)" class="parent-btn" o><i class="ion-heart"></i> Add to Favorite</a>
+						<a href="javascript:void(0)" class="parent-btn" @click="addBookmark({{id}})"><i x-bind:class="isBookmark ? 'ion-heart' : 'ion-ios-heart-outline'"></i> Add to Favorite</a>
 						<div class="hover-bnt">
 							<a href="#" class="parent-btn"><i class="ion-android-share-alt"></i>share</a>
 							<div class="hvr-item">
@@ -232,7 +290,20 @@
 							            		<h3>Related Movies To</h3>
 						       	 				<h2>{{name}}</h2>
 							            	</div>
-							            	<a href="#" class="redbtn">Write Review</a>
+											<div class="write_review_wrapper">
+												<div class="review_rating">
+													<img class="avatar" src='https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light' width="50" height="50"/>
+													<div class="no-star">
+														<template x-for="(item, index) in createArray(10)">
+															<i class="ion-android-star" @click="fillStart(index)"></i>
+														</template>
+													</div>
+												</div>
+												<div class="review_content">
+													<textarea x-model="reviewForm.content" cols="20" rows="10"></textarea>
+												</div>
+												<a href="javascript:void(0)" @click="uploadReview({{id}})" class="redbtn">Write Review</a>
+											</div>
 						            	</div>
 						            	<div class="topbar-filter">
 											<p>Found <span>56 reviews</span> in total</p>
@@ -756,24 +827,65 @@
 	</div>
 </div>
 
-{{#section 'scripts'}}
-<script>
+{{#section 'script'}}
+<script type="text/javascript" defer> 
 	function init() {
 		return {
-			addBookmark(userId, movieId) {
-				if(!userId) {
+			isBookmark: '{{isBookmark}}' === 'true',
+			reviewForm: {
+				content: '',
+			},
+			errorReview: {
+				content: ''
+			}
+			addBookmark(movieId) {
+				if(this.isBookmark) {
+					alert('Movie is bookmarked');
 					return;
 				}
 
-				axios.post('/bookmark', { userId, movieId })
+				axios.post('/bookmark', { movieId })
 					.then((response) => {
-						if(response.isSuccess) {
-							alert('bookmark complete');
+						if(response.status === 201) {
+							alert(response.data.message);
+						}
+						else {
+							alert('bookmark failed');
 						}
 					})
 					.catch((error) => {
 						console.log(error);
 					})
+			},
+			uploadReview(movieId) {
+				const rate = $('.write_review_wrapper i[class="ion-android-star selected"]').length;
+				axios.post('/review', { content: this.reviewForm.content, movieId, rate })
+					.then((response) => {
+						console.log(response);
+						if(response.status === 201) {
+							alert(response.data.message);
+						}
+						else {
+							alert('upload review failed');
+						}
+					})
+					.catch((error) => {
+						if(error.response.status === 400) {
+							this.errorReview.content = error.response.data.message[0];
+						}
+						console.log(error);
+					})
+			},
+			createArray(number) {
+				return Array.from({ length: number }, (_item, index) => index);
+			},
+			fillStart(stop) {
+				const elements = $('.write_review_wrapper i[class="ion-android-star"]');
+
+				for(var i = 0; i < elements.length; i++) {
+					if(i <= stop) $(elements[i]).addClass('selected');
+					else $(elements[i]).removeClass('selected');
+				}
 			}
 		}
 	}	

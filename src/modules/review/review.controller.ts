@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query, Session } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Session
+} from '@nestjs/common';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { UserSession } from '../authen/dto/authen.dto';
 import { UserReview } from './dto/review.dto';
@@ -69,19 +77,32 @@ export class ReviewController {
     return this.actionResponseService.responseApi(true, '', 'error');
   }
 
-  @Post(':id')
+  @Post()
   async createReviewsMovie(
-    @Param('id') movieId: number,
-    @Body() userReview: UserReview
+    @Session() { user }: { user: UserSession },
+    @Body() body: UserReview
   ) {
-    try {
-      await this.reviewService.createReview(userReview);
+    let message = '';
 
-      return this.actionResponseService.responseApi(true, '', '');
+    try {
+      const { id } = user;
+
+      if (!id) throw 'To use this feature you must authen';
+      await this.reviewService.createReview({
+        userId: id,
+        ...body
+      } as Review);
+
+      return this.actionResponseService.responseApi(
+        true,
+        '',
+        'upload review completed'
+      );
     } catch (error) {
       console.log(error);
+      message = error;
     }
 
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(false, '', message);
   }
 }

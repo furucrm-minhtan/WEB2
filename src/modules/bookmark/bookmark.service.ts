@@ -31,7 +31,7 @@ export class BookmarkService {
     return bookmarks;
   }
 
-  async bookmarkMovie({ userId, movieId }: BookmarkMovie) {
-    return this.bookmarkRepository.create({ userId, movieId } as Bookmark);
+  async bookmarkMovie(userBookmark: Bookmark) {
+    return this.bookmarkRepository.create(userBookmark);
   }
 }
