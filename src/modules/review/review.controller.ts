@@ -22,7 +22,7 @@ export class ReviewController {
   ) {}
 
   @Get()
-  async fetchReview(
+  async fetchReviewUser(
     @Session() { user }: { user: UserSession },
     @Query()
     { offset, limit, sort }: { offset: number; limit: number; sort: string }
@@ -44,7 +44,7 @@ export class ReviewController {
     return this.actionResponseService.responseApi(true, [], 'error');
   }
 
-  @Get(':id')
+  @Get('movie/:id')
   async fetchReviewsMovie(
     @Param('id') movieId: number,
     @Query()
@@ -68,7 +68,7 @@ export class ReviewController {
     return this.actionResponseService.responseApi(true, '', '');
   }
 
-  @Get('user')
+  @Get('/user')
   async fetchReviewInformation(
     @Session() { user }: { user: UserSession },
     @Query() { limit }: { limit: number }
@@ -76,6 +76,7 @@ export class ReviewController {
     const { id }: { id: number } = user;
     try {
       const totalBookmark: number = await this.reviewService.countMovie(id);
+      console.log(totalBookmark);
       const page = Math.ceil(totalBookmark / limit) | 1;
 
       return this.actionResponseService.responseApi(
@@ -87,7 +88,7 @@ export class ReviewController {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(true, '', 'error');
+    return this.actionResponseService.responseApi(false, '', 'error');
   }
 
   @Post()

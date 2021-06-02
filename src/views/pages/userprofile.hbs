@@ -37,7 +37,7 @@ Profile
 								<li><a href="javascript:void(0)"
 										x-on:click="loadingFavorite()">Favorite movies</a></li>
 								<li><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); page = 'rate'">Rated movies</a></li>
+										x-on:click="loadingRating()">Rated movies</a></li>
 							</ul>
 						</div>
 						<div class="user-fav">
@@ -152,18 +152,18 @@ Profile
 						</template>
 						<div class="topbar-filter">
 							<label>Movies per page:</label>
-							<select x-model="favoriteMovieShow" x-on:change="favoriteMovies = []; fetchFavoriteMovies($event, 0, favoriteMovieShow)">
+							<select x-model="favoriteData.numberShow" x-on:change="loadingFavorite()">
 								<option value="5">5</option>
 								<option value="10">10</option>
 							</select>
 
 							<div class="pagination2">
 								<span>Page <span x-text="favoriteData.currentPage"></span> of <span x-text="page"></span>:</span>
-								<a :class="favoriteData.currentPage == 1 ? 'disable_link' : ''" href="javascript:void(0)" @click="prevPage()"><i class="ion-arrow-left-b"></i></a>
-								<template x-for="(key, index) in Array(favoriteMovieShow.page)">
+								<a :class="favoriteData.currentPage == 1 ? 'disable_link' : ''" href="javascript:void(0)" @click="prevPageFavorite(favoriteData, 'movies')"><i class="ion-arrow-left-b"></i></a>
+								<template x-for="(key, index) in Array(favoriteData.numberShow.page)">
 									<a x-bind:class="(favoriteData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1"></a>
 								</template>
-								<a :class="favoriteData.currentPage == favoriteData.page ? 'disable_link' : ''" href="javascript:void(0)" @click="nextPage()"><i class="ion-arrow-right-b"></i></a>
+								<a :class="favoriteData.currentPage == favoriteData.page ? 'disable_link' : ''" href="javascript:void(0)" @click="nextPageFavorite(favoriteData, 'movies')"><i class="ion-arrow-right-b"></i></a>
 							</div>
 						</div>
 					</div>
@@ -177,63 +177,38 @@ Profile
 								</template>
 							</select>
 						</div>
-						<div class="movie-item-style-2 userrate">
-							<img src="images/uploads/mv1.jpg" alt="">
-							<div class="mv-item-infor">
-								<h6><a href="#">oblivion <span>(2012)</span></a></h6>
-								<p class="time sm-text">your rate:</p>
-								<p class="rate"><i class="ion-android-star"></i><span>9.0</span> /10</p>
-								<p class="time sm-text">your reviews:</p>
-								<h6>Best Marvel movie in my opinion</h6>
-								<p class="time sm">02 April 2017</p>
-								<p>“This is by far one of my favorite movies from the MCU. The introduction of new
-									Characters both good and bad also makes the movie more exciting. giving the
-									characters more of a back story can also help audiences relate more to different
-									characters better, and it connects a bond between the audience and actors or
-									characters. Having seen the movie three times does not bother me here as it is as
-									thrilling and exciting every time I am watching it. In other words, the movie is by
-									far better than previous movies (and I do love everything Marvel), the plotting is
-									splendid (they really do out do themselves in each film, there are no problems
-									watching it more than once.”</p>
+						<template x-if="ratingData.movies">
+							<div>
+								<template x-for="(review, index) in ratingData.show">
+									<div class="movie-item-style-2 userrate">
+										<img x-bind:src="review.movie.poster" alt="">
+										<div class="mv-item-infor">
+											<h6><a x-bind:href="'/movie/'+ review.movie.id" x-text="review.movie.name"></a></h6>
+											<p class="time sm-text">your rate:</p>
+											<p class="rate"><i class="ion-android-star"></i><span x-text="review.rate"></span> /10</p>
+											{{!-- <p class="time sm-text">your reviews:</p>
+											<h6>Best Marvel movie in my opinion</h6> --}}
+											<p class="time sm">02 April 2017</p>
+											<p x-text="review.movie.content"></p>
+										</div>
+									</div>
+								</template>
 							</div>
-						</div>
-						<div class="movie-item-style-2 userrate">
-							<img src="images/uploads/mv2.jpg" alt="">
-							<div class="mv-item-infor">
-								<h6><a href="#">into the wild <span>(2014)</span></a></h6>
-								<p class="time sm-text">your rate:</p>
-								<p class="rate"><i class="ion-android-star"></i><span>7.0</span> /10</p>
-							</div>
-						</div>
-						<div class="movie-item-style-2 userrate last">
-							<img src="images/uploads/mv3.jpg" alt="">
-							<div class="mv-item-infor">
-								<h6><a href="#">blade runner<span>(2015)</span></a></h6>
-								<p class="time sm-text">your rate:</p>
-								<p class="rate"><i class="ion-android-star"></i><span>10.0</span> /10</p>
-								<p class="time sm-text">your reviews:</p>
-								<h6>A masterpiece!</h6>
-								<p class="time sm">01 February 2017</p>
-								<p>“To put it simply, the movie is fascinating, exciting and fantastic. The dialog, the
-									fight choreography, the way the story moves, the characters charisma, all and much
-									more are combined together to deliver this masterpiece. Such an amazing flow,
-									providing a fusion between the 90s and the new century, it's like the assassins are
-									living in another world, with another mindset, without people understanding it. Just
-									one advice for you though: Don't build an expectation of what you want to watch in
-									this movie, if you do, then you will ruin it. This movie has it's own flow and
-									movement, so watch it with a clear mind, and have fun.”</p>
-							</div>
-						</div>
+						</template>	
 						<div class="topbar-filter">
 							<label>Movies per page:</label>
-							<select>
-								<option value="range">20 Movies</option>
-								<option value="saab">10 Movies</option>
+							<select x-model="ratingData.numberShow" x-on:change="fetchFavoriteMovies($event, 0, ratingData.numberShow)">
+								<option value="5">5</option>
+								<option value="10">10</option>
 							</select>
+
 							<div class="pagination2">
-								<span>Page 1 of 1:</span>
-								<a class="active" href="#">1</a>
-								<a href="#"><i class="ion-arrow-right-b"></i></a>
+								<span>Page <span x-text="ratingData.currentPage" style="margin: 0"></span> of <span x-text="page"></span>:</span>
+								<a :class="ratingData.currentPage == 1 ? 'disable_link' : ''" href="javascript:void(0)" @click="prevPageFavorite(ratingData, 'movies')"><i class="ion-arrow-left-b"></i></a>
+								<template x-for="(key, index) in Array(ratingData.numberShow.page)">
+									<a x-bind:class="(ratingData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1"></a>
+								</template>
+								<a :class="ratingData.currentPage == ratingData.page ? 'disable_link' : ''" href="javascript:void(0)" @click="nextPageFavorite(ratingData, 'movies')"><i class="ion-arrow-right-b"></i></a>
 							</div>
 						</div>
 					</div>
@@ -289,15 +264,14 @@ Profile
 
 		return {
 			page: 'profile', 
-			favoriteMovieShow: 10,
-			ratingMovieShow: 10,
 			favoriteData: {
 				total: 0,
 				page: 1,
 				currentPage: 1,
 				sort: '',
 				movies: [],
-				show: []
+				show: [],
+				numberShow: 10
 			},
 			ratingData: {
 				total: 0,
@@ -305,7 +279,8 @@ Profile
 				currentPage: 1,
 				sort: '',
 				movies: [],
-				show: []
+				show: [],
+				numberShow: 10
 			},
 			sortType: [
 				{ value: 'name', label: 'name' },
@@ -380,7 +355,7 @@ Profile
 			loadingFavorite() {
 				this.page = 'favorite';
 				
-				fetch(`/bookmark/user?limit=${this.favoriteMovieShow}`)
+				fetch(`/bookmark/user?limit=${this.favoriteData.numberShow}`)
 					.then(function(response) { 
 						return response.json();
 					})
@@ -389,12 +364,12 @@ Profile
 							this.favoriteData.total = data.data.totalBookmark;
 							this.favoriteData.page = data.data.page;
 							
-							return fetchFavoriteMovies(0, this.favoriteMovieShow, this.favoriteData.sort);
+							return fetchFavoriteMovies(0, this.favoriteData.numberShow, this.favoriteData.sort);
 						}
 					})
 					.then((data) => {
-						this.favoriteData.movies = this.favoriteData.movies.concat(data.data);
-						this.favoriteData.show = this.dataShow(this.favoriteData.movies, 0, this.favoriteMovieShow);
+						this.favoriteData.movies = data.data;
+						this.favoriteData.show = this.dataShow(this.favoriteData.movies, 0, this.favoriteData.numberShow);
 					})
 					.catch(function(error) {
 						console.log(error);
@@ -403,20 +378,56 @@ Profile
 			dataShow(data, from = 0, limit = 10) {
 				return Array.from({ length: limit }, (_item, index) => data[index + from] );
 			},
-			prevPage(event) {
-				event.preventDefault();
-				this.favoriteData.movies--;
-
-				this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteMovieShow, this.favoriteMovieShow);
+			prevPageFavorite(event) {
+				this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteData.numberShow, this.favoriteData.numberShow);
 			},
-			nextPage(event) {
-				event.preventDefault();
+			nextPageFavorite(event) {
 				this.favoriteData.currentPage++;
 
-				fetchFavoriteMovies(this.favoriteMovieShow)
+				fetchFavoriteMovies(this.favoriteData.numberShow)
 					.then((data) => {
 						this.favoriteData.movies = this.favoriteData.movies.concat(data.data);	
-						this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteMovieShow, this.favoriteMovieShow);
+						this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteData.numberShow, this.favoriteData.numberShow);
+					})
+					.catch((error) => {
+						console.log(error);
+					})
+			},
+			loadingRating() {
+				this.page = 'rate';
+				
+				fetch(`/review/user?limit=${this.ratingData.numberShow}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							this.ratingData.total = data.data.totalBookmark;
+							this.ratingData.page = data.data.page;
+							
+							return fetchRatingMovies(0, this.ratingData.numberShow, this.ratingData.sort);
+						}
+					})
+					.then((data) => {
+						this.ratingData.movies = data.data;
+						this.ratingData.show = this.dataShow(this.ratingData.movies, 0, this.ratingData.numberShow);
+					})
+					.catch(function(error) {
+						console.log(error);
+					})
+			},
+			prevPageRate(event) {
+				this.ratingData.currentPage--;
+
+				this.ratingData.show = this.dataShow(this.ratingData.movies, this.ratingData.page * this.ratingData.numberShow, this.ratingData.numberShow);
+			},
+			nextPageRate(event) {
+				this.ratingData.currentPage++;
+
+				fetchRatingMovies(this.ratingData.numberShow)
+					.then((data) => {
+						this.ratingData.movies = this.ratingData.movies.concat(data.data);	
+						this.ratingData.show = this.dataShow(this.ratingData.movies, this.ratingData.page * this.ratingData.numberShow, this.ratingData.numberShow);
 					})
 					.catch((error) => {
 						console.log(error);

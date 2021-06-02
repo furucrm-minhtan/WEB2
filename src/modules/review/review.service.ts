@@ -10,7 +10,7 @@ export class ReviewService {
   ) {}
 
   async countMovie(id: number): Promise<number> {
-    return this.reviewRepository.count({ where: { id } });
+    return this.reviewRepository.count({ where: { id } }) ?? 0;
   }
 
   async getRatingMovie(
@@ -19,7 +19,7 @@ export class ReviewService {
     limit = 10,
     sort = 'name'
   ): Promise<Review[]> {
-    const bookmarks: Review[] = await this.reviewRepository.findAll({
+    const reviews: Review[] = await this.reviewRepository.findAll({
       where: {
         userId: id
       },
@@ -28,7 +28,7 @@ export class ReviewService {
       limit: +limit
     });
 
-    return bookmarks;
+    return reviews;
   }
 
   async fetchReview(options = {}): Promise<Review[]> {
