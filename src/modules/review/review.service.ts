@@ -9,8 +9,8 @@ export class ReviewService {
     @Inject('REVIEWS_REPOSITORY') private reviewRepository: typeof Review
   ) {}
 
-  async countMovie(id: number): Promise<number> {
-    return this.reviewRepository.count({ where: { id } }) ?? 0;
+  async countMovie(userId: number): Promise<number> {
+    return this.reviewRepository.count({ where: { userId } });
   }
 
   async getRatingMovie(

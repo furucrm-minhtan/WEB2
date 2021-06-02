@@ -169,7 +169,7 @@ Profile
 					</div>
 					<div x-show="page === 'rate'">
 						<div class="topbar-filter">
-							<p>Found <span>3 rates</span> in total</p>
+							<p>Found <span x-text="ratingData.total" style="margin: 0"></span> rates in total</p>
 							<label>Sort by:</label>
 							<select x-model="ratingData.sort">
 								<template x-for="(option, index) in Object.values(sortType)" :key="index">
@@ -402,7 +402,7 @@ Profile
 					})
 					.then((data) => {
 						if(data.isSuccess) {
-							this.ratingData.total = data.data.totalBookmark;
+							this.ratingData.total = data.data.totalRate;
 							this.ratingData.page = data.data.page;
 							
 							return fetchRatingMovies(0, this.ratingData.numberShow, this.ratingData.sort);

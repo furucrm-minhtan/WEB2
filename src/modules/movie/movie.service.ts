@@ -7,6 +7,7 @@ import { Theater } from '../theater/theater.model';
 import { GroupTheaterOptions } from '../groupTheater/dto/groupTheater.dto';
 import { TheaterOptions } from '../theater/dto/theater.dto';
 import { MovieDetail } from './dto/movie.dto';
+import { User } from '../user/user.model';
 const { $between } = operatorsAliases;
 
 @Injectable()
@@ -33,6 +34,15 @@ export class MovieService {
     return this.movieRepository.findAll({
       order: ['creationDate'],
       limit
+    });
+  }
+
+  fetchReviewMovie(id: number) {
+    return this.movieRepository.findAll({
+      where: {
+        id
+      },
+      include: [{ model: User, as: 'userReviews' }]
     });
   }
 

@@ -75,4 +75,16 @@ export class MovieController {
     }
     return this.actionResponseService.responseApi(false, [], '');
   }
+
+  @Get(':id/review')
+  async fetchReviewMovie(@Query('id') id: number) {
+    try {
+      const movies: Movie[] = await this.movieService.fetchReviewMovie(id);
+
+      return this.actionResponseService.responseApi(true, movies, '');
+    } catch (error) {
+      console.log(error);
+    }
+    return this.actionResponseService.responseApi(false, [], '');
+  }
 }

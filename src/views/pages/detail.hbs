@@ -716,9 +716,10 @@
 				page: 1,
 				currentPage: 1,
 				sort: '',
-				reviews: [],
-				show: []
-			}
+				movies: [],
+				show: [],
+				numberShow: 10
+			},
 			reviewShow: 10,
 			reviewForm: {
 				content: '',
@@ -765,7 +766,7 @@
 					})
 			},
 			fetchReviews(movieId) {
-				axios.fetch(`/review/1?sort=${this.reviewShow}`)
+				axios.fetch(`/review/movie/1?sort=${this.reviewShow}`)
 					.then((raw) => raw.json())
 					.then((response) => {
 						if(response.status === 201) {
@@ -779,14 +780,18 @@
 			dataShow(data, from = 0, limit = 10) {
 				return Array.from({ length: limit }, (_item, index) => data[index + from] );
 			},
-			prevPage(key, page, show) {
-				this[key].show = this.dataShow(this[key].movies, this[key].page * show, show);
+			prevPageRate(event) {
+				this.reviewData.currentPage--;
+
+				this.reviewData.show = this.dataShow(this.reviewData.movies, this.reviewData.page * this.reviewData.numberShow, this.reviewData.numberShow);
 			},
-			nextPage((key, page, show) {
-				fetchFavoriteMovies(this.favoriteMovieShow)
+			nextPageRate(event) {
+				this.reviewData.currentPage++;
+
+				fetchRatingMovies(this.reviewData.numberShow)
 					.then((data) => {
-						this[key].movies = this[key].movies.concat(data.data);	
-						this[key].show = this.dataShow(this[key].movies, this[key].page * show, show);
+						this.reviewData.movies = this.reviewData.movies.concat(data.data);	
+						this.reviewData.show = this.dataShow(this.reviewData.movies, this.reviewData.page * this.reviewData.numberShow, this.reviewData.numberShow);
 					})
 					.catch((error) => {
 						console.log(error);

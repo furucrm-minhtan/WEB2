@@ -75,13 +75,12 @@ export class ReviewController {
   ) {
     const { id }: { id: number } = user;
     try {
-      const totalBookmark: number = await this.reviewService.countMovie(id);
-      console.log(totalBookmark);
-      const page = Math.ceil(totalBookmark / limit) | 1;
+      const totalRate: number = await this.reviewService.countMovie(id);
+      const page = Math.ceil(totalRate / limit) | 1;
 
       return this.actionResponseService.responseApi(
         true,
-        { totalBookmark, page },
+        { totalRate, page },
         ''
       );
     } catch (error) {
