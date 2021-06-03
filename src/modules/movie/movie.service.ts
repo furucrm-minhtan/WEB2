@@ -8,6 +8,7 @@ import { GroupTheaterOptions } from '../groupTheater/dto/groupTheater.dto';
 import { TheaterOptions } from '../theater/dto/theater.dto';
 import { MovieDetail } from './dto/movie.dto';
 import { User } from '../user/user.model';
+import { Review } from '../review/review.model';
 const { $between } = operatorsAliases;
 
 @Injectable()
@@ -37,13 +38,15 @@ export class MovieService {
     });
   }
 
-  fetchReviewMovie(id: number) {
-    return this.movieRepository.findAll({
+  async fetchReviewMovie(id: number): Promise<User[]> {
+    const movie: Movie = await this.movieRepository.findOne({
       where: {
         id
       },
       include: [{ model: User, as: 'userReviews' }]
     });
+
+    return movie.userReviews ?? [];
   }
 
   comingMovie(day: number, limit = 10): Promise<Movie[]> {
@@ -93,11 +96,19 @@ export class MovieService {
     return this.movieRepository.create(movie as Movie);
   }
 
-  async updateMovie(id: number, movie: MovieDetail) {
-    return this.movieRepository.update(movie as Movie, {
+  createMovie(data: Movie) {
+    return this.movieRepository.create(data);
+  }
+
+  updateMovie(id: number, data: Movie) {
+    return this.movieRepository.update(data, {
       where: {
         id
       }
     });
+  }
+
+  deleteMovie(id: number) {
+    return this.movieRepository.destroy({ where: { id } });
   }
 }

@@ -1,3 +1,6 @@
+import { CategoryModule } from './modules/category/category.module';
+import { CategoryService } from './modules/category/category.service';
+import { AdminModule } from './modules/admin/admin.module';
 import { MailModule } from './modules/mail/mail.module';
 import { ReviewModule } from './modules/review/review.module';
 import { SeatModule } from './modules/seat/seat.module';
@@ -29,6 +32,8 @@ import { UserController } from './modules/user/user.controller';
 
 @Module({
   imports: [
+    CategoryModule,
+    AdminModule,
     MailModule,
     ReviewModule,
     SeatModule,

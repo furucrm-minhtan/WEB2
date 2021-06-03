@@ -8,8 +8,8 @@ import {
   PrimaryKey,
   Table
 } from 'sequelize-typescript';
-import { BaseModel } from './base.model';
-import { Movie } from '../modules/movie/movie.model';
+import { BaseModel } from '../../model/base.model';
+import { Movie } from '../movie/movie.model';
 
 @Table({ tableName: 'Categories' })
 export class Category extends BaseModel<Category> {

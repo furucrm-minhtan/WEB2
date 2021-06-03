@@ -34,6 +34,15 @@ async function bootstrap() {
     })
   );
   app.useStaticAssets(resolve('./src/public'));
+  // app.use(express.static(__dirname + '/public'));
+  app.use(
+    '/js/mdbootstrap',
+    express.static(resolve('./node_modules/mdbootstrap/js'))
+  );
+  app.use(
+    '/css/mdbootstrap',
+    express.static(resolve('./node_modules/mdbootstrap/css'))
+  );
   app.setBaseViewsDir(resolve('./src/views/pages'));
   app.setViewEngine('hbs');
   app.set('layout', resolve('./src/views/layout'));
