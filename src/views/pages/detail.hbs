@@ -1,6 +1,10 @@
+{{#contentFor  'title'}}
+Detail
+{{/contentFor}}
+
 {{>loading  }}
 
-{{#section 'style' }}
+{{#contentFor 'style'}}
 <style>
 	.avatar {
 		margin-right: 20px;
@@ -63,7 +67,7 @@
 		flex: 0 1 auto;
 	}
 </style>
-{{/section}}
+{{/contentFor}}
 
 <div class="hero mv-single-hero">
 	<div class="container">
@@ -705,7 +709,7 @@
 	</div>
 </div>
 
-{{#section 'script'}}
+{{#contentFor "scripts"}}
 <script type="text/javascript" defer> 
 	function init() {
 		const fetchRatingMovies = function(sort) {
@@ -783,8 +787,7 @@
 						console.log(error);
 					})
 			},
-			loadingReview(event) {
-				event.preventDefault();
+			loadingReview() {
 
 				fetchRatingMovies(this.reviewData.sort)
 					.then((data) => {
@@ -854,4 +857,4 @@
 		}
 	}	
 </script>
-{{/section}}
+{{/contentFor}}

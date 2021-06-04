@@ -1,6 +1,6 @@
-{{#section 'title'}}
+{{#contentFor 'title'}}
 Profile
-{{/section}}
+{{/contentFor}}
 
 {{> loading }}
 
@@ -218,7 +218,7 @@ Profile
 	</div>
 </div>
 
-{{#section 'script' }}
+{{{{#contentFor "scripts"}} }}
 <script>
 	function init() {
 		const fetchFavoriteMovies = function(offset, limit, sort) {

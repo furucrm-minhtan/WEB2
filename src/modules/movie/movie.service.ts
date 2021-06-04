@@ -34,7 +34,8 @@ export class MovieService {
   async newestMovie(limit: number): Promise<Movie[]> {
     return this.movieRepository.findAll({
       order: ['creationDate'],
-      limit
+      limit,
+      raw: true
     });
   }
 

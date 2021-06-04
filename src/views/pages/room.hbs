@@ -1,10 +1,10 @@
-{{#section 'title'}}
+{{#contentFor 'title'}}
 Booking Ticket
-{{/section}}
+{{/contentFor}}
 
 {{> loading }}
 
-{{#section 'style'}}
+{{#contentFor 'style'}}
 <style>
     .page-single * {
         color: #fff;
@@ -87,7 +87,7 @@ Booking Ticket
         }
     }
 </style>
-{{/section}}
+{{/contentFor}}
 
 <div x-data="init()">
     <div class="hero user-hero">
@@ -169,7 +169,7 @@ Booking Ticket
 	</div>
 </div>
 
-{{#section 'script'}}
+{{#contentFor "scripts"}}
 <script type="text/javascript" defer>
     function init() {
         const groups = JSON.parse('{{{ groups }}}');
