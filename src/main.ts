@@ -56,6 +56,7 @@ async function bootstrap() {
     '/css/mdbootstrap',
     express.static(resolve('./node_modules/mdbootstrap/css'))
   );
+  app.use('/js/moment', express.static(resolve('./node_modules/moment/min')));
   app.engine(
     'hbs',
     hbs.express4({

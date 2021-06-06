@@ -4,11 +4,11 @@
         <div class="row mt-5">
             <div class="col-12 col-md-6">
                 <label>Name</label>
-                <input class="form-control" type="text" x-model="groupForm.name">
+                <input class="form-control" type="text" x-model="group.data.name">
             </div>
             <div class="col-12 col-md-6">
                 <label>Address</label>
-                <input class="form-control" type="text" x-model="groupForm.address">
+                <input class="form-control" type="text" x-model="group.data.address">
             </div>
         </div>
         <div class="text-center mt-5">
@@ -33,24 +33,24 @@
     <form>
         <h4 class="text-center">Add Theater</h4>
         <div class="row mt-5">
-            <div class="col-12 col-md-6">
+            <div class="col-12">
                 <label>Name</label>
-                <input class="form-control" type="text" x-model="theater.name">
+                <input class="form-control" type="text" x-model="theater.data.name">
             </div>
+        </div>
+        <div class="row mt-5">
             <div class="col-12 col-md-6">
                 <label>Type</label>
-                <select class="custom-select" x-model="theater.type">
+                <select class="custom-select" x-model="theater.data.type">
                     <template>
 
                     </template>
                 </select>
             </div>
-        </div>
-        <div class="row mt-5">
-            <div class="col-12">
+            <div class="col-12 col-md-6">
                 <label>Group</label>
-                <select class="custom-select" x-model="theater.group">
-                    <template x-for="(group, index) in groups">
+                <select class="custom-select" x-model="theater.data.group">
+                    <template x-for="(group, index) in group.listView">
 
                     </template>
                 </select>
@@ -69,11 +69,13 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>1</td>
-            </tr>
+             <template x-for="(item, index) in theater.listView">
+                <tr>
+                    <td x-text="item.name"></td>
+                    <td x-text="item.type"></td>
+                    <td x-text="item.group.name"></td>
+                </tr>
+            </template>
         </tbody>
     </table>
 </div>

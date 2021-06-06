@@ -133,7 +133,7 @@ Profile
 						</div>
 						<template x-if="favoriteData.movies">
 							<div class="flex-wrap-movielist user-fav-list">
-								<template x-for="(item, index) in favoriteData.show" :key="index">
+								<template x-for="(item, index) in favoriteData.movies" :key="index">
 									<div class="movie-item-style-2">
 										<img x-bind:src="item.movie.poster" alt="">
 										<div class="mv-item-infor">
@@ -179,7 +179,7 @@ Profile
 						</div>
 						<template x-if="ratingData.movies">
 							<div>
-								<template x-for="(review, index) in ratingData.show">
+								<template x-for="(review, index) in ratingData.movies">
 									<div class="movie-item-style-2 userrate">
 										<img x-bind:src="review.movie.poster" alt="">
 										<div class="mv-item-infor">
@@ -218,7 +218,7 @@ Profile
 	</div>
 </div>
 
-{{{{#contentFor "scripts"}} }}
+{{#contentFor "scripts"}}
 <script>
 	function init() {
 		const fetchFavoriteMovies = function(offset, limit, sort) {
@@ -270,7 +270,6 @@ Profile
 				currentPage: 1,
 				sort: '',
 				movies: [],
-				show: [],
 				numberShow: 10
 			},
 			ratingData: {
@@ -345,8 +344,7 @@ Profile
 						}
 					})
 					.then((data) => {
-						this.ratingData.movies = this.ratingData.movies.concat(data.data);
-						this.ratingData.show = this.dataShow(this.ratingData.movies, 0, this.ratingMovieShow);
+						this.ratingData.movies = data.data;
 					})
 					.catch(function(error) {
 						console.log(error);
@@ -369,7 +367,6 @@ Profile
 					})
 					.then((data) => {
 						this.favoriteData.movies = data.data;
-						this.favoriteData.show = this.dataShow(this.favoriteData.movies, 0, this.favoriteData.numberShow);
 					})
 					.catch(function(error) {
 						console.log(error);
@@ -379,15 +376,22 @@ Profile
 				return Array.from({ length: limit }, (_item, index) => data[index + from] );
 			},
 			prevPageFavorite(event) {
-				this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteData.numberShow, this.favoriteData.numberShow);
+				this.favoriteData.currentPage--;
+
+				fetchFavoriteMovies(this.favoriteData.numberShow)
+					.then((data) => {
+						this.favoriteData.movies = data.data;	
+					})
+					.catch((error) => {
+						console.log(error);
+					})	
 			},
 			nextPageFavorite(event) {
 				this.favoriteData.currentPage++;
 
 				fetchFavoriteMovies(this.favoriteData.numberShow)
 					.then((data) => {
-						this.favoriteData.movies = this.favoriteData.movies.concat(data.data);	
-						this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteData.numberShow, this.favoriteData.numberShow);
+						this.favoriteData.movies = data.data;	
 					})
 					.catch((error) => {
 						console.log(error);
@@ -410,7 +414,6 @@ Profile
 					})
 					.then((data) => {
 						this.ratingData.movies = data.data;
-						this.ratingData.show = this.dataShow(this.ratingData.movies, 0, this.ratingData.numberShow);
 					})
 					.catch(function(error) {
 						console.log(error);
@@ -419,15 +422,20 @@ Profile
 			prevPageRate(event) {
 				this.ratingData.currentPage--;
 
-				this.ratingData.show = this.dataShow(this.ratingData.movies, this.ratingData.page * this.ratingData.numberShow, this.ratingData.numberShow);
+				fetchRatingMovies(this.ratingData.numberShow)
+					.then((data) => {
+						this.ratingData.movies = data.data;	
+					})
+					.catch((error) => {
+						console.log(error);
+					})
 			},
 			nextPageRate(event) {
 				this.ratingData.currentPage++;
 
 				fetchRatingMovies(this.ratingData.numberShow)
 					.then((data) => {
-						this.ratingData.movies = this.ratingData.movies.concat(data.data);	
-						this.ratingData.show = this.dataShow(this.ratingData.movies, this.ratingData.page * this.ratingData.numberShow, this.ratingData.numberShow);
+						this.ratingData.movies = data.data;	
 					})
 					.catch((error) => {
 						console.log(error);

@@ -23,7 +23,9 @@ export class CategoryController {
   @Get()
   async fetchCategory() {
     try {
-      const categories: Category[] = await this.categoryService.fetchCategory();
+      const categories: Category[] = await this.categoryService.fetchCategory({
+        attributes: ['name', 'level', 'creationDate', 'updatedOn']
+      });
 
       return this.actionResponseService.responseApi(true, categories, '');
     } catch (error) {
