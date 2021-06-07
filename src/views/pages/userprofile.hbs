@@ -4,6 +4,15 @@ Profile
 
 {{> loading }}
 
+{{#contentFor 'style' }}
+<style>
+	.topbar-filter.user p {
+		padding-right: 0;
+	}
+</style>
+
+{{/contentFor  }}
+
 <div x-data="init()">
 	<div class="hero user-hero">
 		<div class="container">
@@ -13,7 +22,7 @@ Profile
 						<ul class="breadcumb">
 							<h1 class="mr_0 mb_10">{{user_name}}</h1>
 							<li class="active"><a href="#">Home</a></li>
-							<li><span class="ion-ios-arrow-right"></span><span x-text="page" class="mr_0"></span></li>
+							<li><span class="ion-ios-arrow-right"></span><span x-text="sheet" class="mr_0"></span></li>
 						</ul>
 					</div>
 				</div>
@@ -33,7 +42,7 @@ Profile
 							<p>Account Details</p>
 							<ul>
 								<li class="active"><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); page = 'profile'">Profile</a></li>
+										x-on:click="$event.preventDefault(); sheet = 'profile'">Profile</a></li>
 								<li><a href="javascript:void(0)"
 										x-on:click="loadingFavorite()">Favorite movies</a></li>
 								<li><a href="javascript:void(0)"
@@ -44,14 +53,14 @@ Profile
 							<p>Others</p>
 							<ul>
 								<li><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); page = 'change password'">Change
+										x-on:click="$event.preventDefault(); sheet = 'change password'">Change
 										password</a></li>
 							</ul>
 						</div>
 					</div>
 				</div>
 				<div class="col-md-9 col-sm-12 col-xs-12">
-					<div class="form-style-1 user-pro" action="#" x-show="page === 'profile'">
+					<div class="form-style-1 user-pro" action="#" x-show="sheet === 'profile'">
 						<form class="user">
 							<h4>Profile details</h4>
 							<div class="row">
@@ -91,7 +100,7 @@ Profile
 							</div>
 						</form>
 					</div>
-					<div class="form-style-1 user-pro" x-show="page === 'change password'">
+					<div class="form-style-1 user-pro" x-show="sheet === 'change password'">
 						<form action="#" class="password">
 							<h4>Change password</h4>
 							<div class="row">
@@ -119,11 +128,11 @@ Profile
 							</div>
 						</form>
 					</div>
-					<div x-show="page === 'favorite'">
+					<div x-show="sheet === 'favorite'">
 						<div class="topbar-filter user">
 							<p>Found <span x-text="favoriteData.total"></span> movies in total</p>
 							<label>Sort by:</label>
-							<select x-model="favoriteData.sort">
+							<select x-model="favoriteData.sort" x-on:change="fetchFavoriteDataPage(0)">
 								<template x-for="(option, index) in Object.values(sortType)" :key="index">
 									<option x-bind:value="option.value" x-text="option.label"></option>
 								</template>
@@ -152,22 +161,20 @@ Profile
 						</template>
 						<div class="topbar-filter">
 							<label>Movies per page:</label>
-							<select x-model="favoriteData.numberShow" x-on:change="loadingFavorite()">
+							<select x-model="favoriteData.numberShow" x-on:change="fetchFavoriteDataPage(0)">
 								<option value="5">5</option>
 								<option value="10">10</option>
 							</select>
 
 							<div class="pagination2">
-								<span>Page <span x-text="favoriteData.currentPage"></span> of <span x-text="page"></span>:</span>
-								<a :class="favoriteData.currentPage == 1 ? 'disable_link' : ''" href="javascript:void(0)" @click="prevPageFavorite(favoriteData, 'movies')"><i class="ion-arrow-left-b"></i></a>
-								<template x-for="(key, index) in Array(favoriteData.numberShow.page)">
-									<a x-bind:class="(favoriteData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1"></a>
+								<span>Page <span style="margin-right: 0" x-text="favoriteData.currentPage"></span> of <span x-text="favoriteData.page"></span>:</span>
+								<template x-for="(page, index) in createArray(favoriteData.page)">
+									<a x-bind:class="(favoriteData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1" @click="fetchFavoriteDataPage(page)"></a>
 								</template>
-								<a :class="favoriteData.currentPage == favoriteData.page ? 'disable_link' : ''" href="javascript:void(0)" @click="nextPageFavorite(favoriteData, 'movies')"><i class="ion-arrow-right-b"></i></a>
 							</div>
 						</div>
 					</div>
-					<div x-show="page === 'rate'">
+					<div x-show="sheet === 'rate'">
 						<div class="topbar-filter">
 							<p>Found <span x-text="ratingData.total" style="margin: 0"></span> rates in total</p>
 							<label>Sort by:</label>
@@ -188,7 +195,7 @@ Profile
 											<p class="rate"><i class="ion-android-star"></i><span x-text="review.rate"></span> /10</p>
 											{{!-- <p class="time sm-text">your reviews:</p>
 											<h6>Best Marvel movie in my opinion</h6> --}}
-											<p class="time sm">02 April 2017</p>
+											<p class="time sm" x-text="getDate(review.creationDate)"></p>
 											<p x-text="review.movie.content"></p>
 										</div>
 									</div>
@@ -197,18 +204,16 @@ Profile
 						</template>	
 						<div class="topbar-filter">
 							<label>Movies per page:</label>
-							<select x-model="ratingData.numberShow" x-on:change="fetchFavoriteMovies($event, 0, ratingData.numberShow)">
+							<select x-model="ratingData.numberShow" x-on:change="fetchRatingDataPage(0)">
 								<option value="5">5</option>
 								<option value="10">10</option>
 							</select>
 
 							<div class="pagination2">
-								<span>Page <span x-text="ratingData.currentPage" style="margin: 0"></span> of <span x-text="page"></span>:</span>
-								<a :class="ratingData.currentPage == 1 ? 'disable_link' : ''" href="javascript:void(0)" @click="prevPageFavorite(ratingData, 'movies')"><i class="ion-arrow-left-b"></i></a>
-								<template x-for="(key, index) in Array(ratingData.numberShow.page)">
-									<a x-bind:class="(ratingData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1"></a>
+								<span>Page <span x-text="ratingData.currentPage" style="margin: 0"></span> of <span x-text="ratingData.page"></span>:</span>
+								<template x-for="(page, index) in Array(ratingData.page)">
+									<a x-bind:class="(ratingData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1" @click="fetchRatingDataPage(page)"></a>
 								</template>
-								<a :class="ratingData.currentPage == ratingData.page ? 'disable_link' : ''" href="javascript:void(0)" @click="nextPageFavorite(ratingData, 'movies')"><i class="ion-arrow-right-b"></i></a>
 							</div>
 						</div>
 					</div>
@@ -263,23 +268,23 @@ Profile
 
 
 		return {
-			page: 'profile', 
+			sheet: 'profile', 
 			favoriteData: {
 				total: 0,
 				page: 1,
 				currentPage: 1,
-				sort: '',
+				sort: 'name',
 				movies: [],
-				numberShow: 10
+				numberShow: 5
 			},
 			ratingData: {
 				total: 0,
 				page: 1,
 				currentPage: 1,
-				sort: '',
+				sort: 'name',
 				movies: [],
 				show: [],
-				numberShow: 10
+				numberShow: 5
 			},
 			sortType: [
 				{ value: 'name', label: 'name' },
@@ -328,30 +333,19 @@ Profile
 						console.log(error);
 					});
 			},
-			loadingRate() {
-				this.page = 'rate';
-				
-				fetch(`/review/user?limit=${this.ratingMovieShow}`)
-					.then(function(response) { 
-						return response.json();
-					})
+			fetchFavoriteDataPage(page) {
+				this.favoriteData.currentPage = page + 1;
+
+				fetchFavoriteMovies(page * this.favoriteData.numberShow, this.favoriteData.numberShow, this.favoriteData.sort)
 					.then((data) => {
-						if(data.isSuccess) {
-							this.ratingData.total = data.data.totalRating;
-							this.ratingData.page = data.data.page;
-							
-							return fetchRatingMovies(0, this.ratingMovieShow, this.ratingData.sort);
-						}
+						this.favoriteData.movies = data.data;	
 					})
-					.then((data) => {
-						this.ratingData.movies = data.data;
-					})
-					.catch(function(error) {
+					.catch((error) => {
 						console.log(error);
-					})
+					})	
 			},
 			loadingFavorite() {
-				this.page = 'favorite';
+				this.sheet = 'favorite';
 				
 				fetch(`/bookmark/user?limit=${this.favoriteData.numberShow}`)
 					.then(function(response) { 
@@ -360,7 +354,7 @@ Profile
 					.then((data) => {
 						if(data.isSuccess) {
 							this.favoriteData.total = data.data.totalBookmark;
-							this.favoriteData.page = data.data.page;
+							this.favoriteData.page = Math.ceil(this.favoriteData.total / this.favoriteData.numberShow);
 							
 							return fetchFavoriteMovies(0, this.favoriteData.numberShow, this.favoriteData.sort);
 						}
@@ -372,33 +366,19 @@ Profile
 						console.log(error);
 					})
 			},
-			dataShow(data, from = 0, limit = 10) {
-				return Array.from({ length: limit }, (_item, index) => data[index + from] );
-			},
-			prevPageFavorite(event) {
-				this.favoriteData.currentPage--;
+			fetchFavoriteDataPage(page) {
+				this.ratingData.currentPage = page + 1;
 
-				fetchFavoriteMovies(this.favoriteData.numberShow)
+				fetchRatingMovies(page * this.ratingData.numberShow, this.ratingData.numberShow)
 					.then((data) => {
-						this.favoriteData.movies = data.data;	
+						this.ratingData.movies = data.data;	
 					})
 					.catch((error) => {
 						console.log(error);
 					})	
 			},
-			nextPageFavorite(event) {
-				this.favoriteData.currentPage++;
-
-				fetchFavoriteMovies(this.favoriteData.numberShow)
-					.then((data) => {
-						this.favoriteData.movies = data.data;	
-					})
-					.catch((error) => {
-						console.log(error);
-					})
-			},
 			loadingRating() {
-				this.page = 'rate';
+				this.sheet = 'rate';
 				
 				fetch(`/review/user?limit=${this.ratingData.numberShow}`)
 					.then(function(response) { 
@@ -407,7 +387,7 @@ Profile
 					.then((data) => {
 						if(data.isSuccess) {
 							this.ratingData.total = data.data.totalRate;
-							this.ratingData.page = data.data.page;
+							this.ratingData.page = Math.ceil(this.ratingData.total / this.ratingData.numberShow);
 							
 							return fetchRatingMovies(0, this.ratingData.numberShow, this.ratingData.sort);
 						}
@@ -445,8 +425,11 @@ Profile
 				const date = new Date(string);
 
 				return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+			},
+			createArray(number) {
+				return Array.from({ length: number }, (_item, index) => index);
 			}
 		}
 	}
 </script>
-{{/section }}
+{{/contentFor }}

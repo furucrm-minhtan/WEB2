@@ -11,6 +11,7 @@ Admin
 </style>
 {{/contentFor}}
 
+
 <div x-cloak x-data="init()" x-init="fetchReport()">
 	<!-- Page Wrapper -->
     <div id="wrapper">
@@ -41,17 +42,10 @@ Admin
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
+                <a class="nav-link collapsed" href="javascript:void(0)" @click="loadManagement()">
                     <i class="fas fa-fw fa-cog"></i>
                     <span>Manager</span>
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="javascript:void(0)" @click="loadTheater()">Add Theater</a>
-                        <a class="collapse-item" href="javascript:void(0)" @Click="loadMovie()">Add Movie</a>
-                    </div>
-                </div>
             </li>
         </ul>
         <!-- End of Sidebar -->
@@ -483,7 +477,65 @@ Admin
 {{#contentFor 'scripts'}}
 <script>
 	function init() {
-		return {
+        const post = (url, data) => {
+           return new Promise((resolve, reject) => {
+                axios.post(url, data)
+                .then((response) => {
+                    if(response.status === 201) {
+                        resolve(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                    reject(error.response);
+                });
+           });
+        }
+
+        const put = (url, data) => {
+           return new Promise((resolve, reject) => {
+                axios.put(url, data)
+                .then((response) => {
+                    if(response.status === 201) {
+                        resolve(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                    reject(error.response);
+                });
+           });
+        }
+
+         const destroy = (url, data) => {
+           return new Promise((resolve, reject) => {
+                axios.delete(url, data)
+                .then((response) => {
+                    if(response.status === 201) {
+                        resolve(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                    reject(error.response);
+                });
+           })
+        }
+
+        return {
+            modal: {
+                show: {
+                    header: true,
+                    footer: true
+                },
+                title: 'Modal',
+                content: '',
+                errors: [],
+                submitHandler: undefined
+            },
+            updateModal: function(settings) {
+                this.modal = Object.assign(this.modal, settings);
+            },
             movie: {
                 data: {},
                 listView: [],
@@ -621,54 +673,71 @@ Admin
                                             return date.isValid() ? date.format('DD/MM/YYYY') : '';
                                         },
                                         targets: [2,3]
-                                    }]
+                                    }, {
+                                        render: function(data, type, row) {
+                                            return `
+                                                <div>
+                                                    <button class="btn btn-success text-uppercase" @click="category.update($event,${row.id})">update</button>
+                                                    <button class="btn btn-danger text-uppercase" @click="category.delete($event,${row.id})">delete</button>
+                                                </div>
+                                            `
+                                        },
+                                        targets: 4
+                                    }],
+                                    createdRow: function(row, data) {
+                                        $(row).attr('data-id', data.id);
+                                    }
                                 });
                                 $('.dataTables_length').addClass('bs-select');
                             }
                         })
                         .catch((error) => {
                             console.log(error);
-                        })
+                        });
                 },
                 create(event) {
-                    try{
-                        event.preventDefault();
-                    
-                        axios.post('/category', this.data)
-                            .then((response) => {
-                                if(response.status === 201) {
-                                    alert(response.data.message);
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    event.preventDefault();
+
+                    this.parent.modal.title = 'Create Category';
+                    this.parent.modal.content = 'category_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+
+                        post('/category', this.data)
+                            .then((data) => console.log(data))
+                            .catch(error => alert('create failed'));
                     }
-                    catch(error) {
-                        console.log(error);
-                    }
+
+                    $('#modal').modal('show');
                 },
-                update(event, id) {
-                    axios.put('/category', { id, ...this.data })
-                        .then((response) => {
-                            if(response.status === 201) {
-                                alert(response.data.message);
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        })
+                update(event, id, data) {
+                    event.preventDefault();
+                    
+                    this.data = this.table.row($(`#list-category tr[data-id="${id}"]`)).data();
+                    this.parent.modal.title = 'Update Category';
+                    this.parent.modal.content = 'category_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+
+                        put('/category', { id, ...this.data })
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    alert('update failed');
+                                }   
+                            })
+                            .catch(error => alert('update failed'));
+                    }
+
+                    $('#modal').modal('show');
                 },
                 delete(event, id) {
-                    axios.delete('/category', id)
-                        .then((response) => {
-                            if(response.status === 201) {
-                                alert(response.data.message);
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        })
+                    delete('/category', { id })
+                        .then((data) => console.log(data))
+                        .catch(error => alert('delete failed'));
                 }
             },
             group: {
@@ -686,12 +755,14 @@ Admin
             loadTheater() {
             
             },
-            loadMovie() {
+            loadManagement() {
                 this.section = 'management';
                 
                 this.category.fetchData();
+                this.category.parent = this;
                 this.movie.fetchData();
-            } 
+                this.movie.parent = this;
+            }
 		}
 	}
 </script>

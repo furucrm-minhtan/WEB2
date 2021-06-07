@@ -76,13 +76,8 @@ export class ReviewController {
     const { id }: { id: number } = user;
     try {
       const totalRate: number = await this.reviewService.countMovie(id);
-      const page = Math.ceil(totalRate / limit) | 1;
 
-      return this.actionResponseService.responseApi(
-        true,
-        { totalRate, page },
-        ''
-      );
+      return this.actionResponseService.responseApi(true, { totalRate }, '');
     } catch (error) {
       console.log(error);
     }

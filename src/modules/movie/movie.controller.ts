@@ -11,6 +11,7 @@ import {
   Render,
   Session
 } from '@nestjs/common';
+import { col, fn } from 'sequelize';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { UserSession } from '../authen/dto/authen.dto';
 import { Bookmark } from '../bookmark/bookmark.model';
@@ -45,17 +46,33 @@ export class MovieController {
     @Session() { user }: { user: UserSession },
     @Param('id') id: number
   ): Promise<Record<string, any>> {
-    const fetchOptions: Record<string, any> = { raw: true };
-    const userId = user?.id;
-    if (userId)
-      fetchOptions.include = [
+    const fetchOptions: Record<string, any> = {
+      attributes: {
+        exclude: ['creationDate', 'updatedOn'],
+        include: [
+          [fn('SUM', col('rate')), 'total_rate'],
+          [fn('COUNT', col('rate')), 'total_user']
+        ]
+      },
+      include: [
         {
-          attributes: ['id'],
           model: User,
-          as: 'userFavorites',
-          where: { id: userId }
+          as: 'userReviews',
+          through: ['rate']
         }
-      ];
+      ],
+      group: ['name'],
+      raw: true
+    };
+    const userId = user?.id;
+    if (userId) {
+      fetchOptions.include.push({
+        attributes: ['id'],
+        model: User,
+        as: 'userFavorites',
+        where: { id: userId }
+      });
+    }
     const movieDetail: MovieDetail = await this.movieService.findMovie(
       id,
       fetchOptions
@@ -63,7 +80,8 @@ export class MovieController {
     movieDetail.isBookmark = movieDetail['userFavorites.id'] != null;
     const releatedMovie: MovieItem[] = await this.movieService.findAll({
       where: { category_id: movieDetail.category_id },
-      limit: 5
+      limit: 5,
+      raw: true
     });
 
     return { ...movieDetail, releatedMovie };

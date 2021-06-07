@@ -24,7 +24,7 @@ export class CategoryController {
   async fetchCategory() {
     try {
       const categories: Category[] = await this.categoryService.fetchCategory({
-        attributes: ['name', 'level', 'creationDate', 'updatedOn']
+        attributes: ['id', 'name', 'level', 'creationDate', 'updatedOn']
       });
 
       return this.actionResponseService.responseApi(true, categories, '');
@@ -39,7 +39,7 @@ export class CategoryController {
   async create(@Body() data: AddCategory) {
     try {
       const cate: Category = await this.categoryService.createCategory(
-        data as Category
+        (data as unknown) as Category
       );
 
       return this.actionResponseService.responseApi(true, cate, '');
@@ -59,7 +59,10 @@ export class CategoryController {
       const cate: [
         number,
         Category[]
-      ] = await this.categoryService.updateCategory(id, data as Category);
+      ] = await this.categoryService.updateCategory(
+        id,
+        (data as unknown) as Category
+      );
 
       return this.actionResponseService.responseApi(true, cate, '');
     } catch (error) {

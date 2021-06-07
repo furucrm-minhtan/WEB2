@@ -23,9 +23,10 @@ export class BookmarkService {
       where: {
         userId: id
       },
-      include: [{ model: Movie, order: [sort] }],
+      include: [{ model: Movie }],
       offset: +offset,
-      limit: +limit
+      limit: +limit,
+      order: [[{ model: Movie, as: 'movie' }, sort, 'DESC']]
     });
 
     return bookmarks;

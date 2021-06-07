@@ -24,7 +24,8 @@ export class BookmarkController {
       const data: Bookmark[] = await this.bookmarkService.getFavoriteMovie(
         id,
         offset,
-        limit
+        limit,
+        sort
       );
 
       return this.actionResponse.responseApi(true, data, '');
@@ -36,17 +37,12 @@ export class BookmarkController {
   }
 
   @Get('user')
-  async fetchBookmarkInformation(
-    @Session() { user }: { user: UserSession },
-    @Query() { limit }: { limit: number }
-  ) {
-    //const { id }: { id: number } = user;
+  async fetchBookmarkInformation(@Session() { user }: { user: UserSession }) {
+    const { id }: { id: number } = user;
     try {
-      const id = 1;
       const totalBookmark: number = await this.bookmarkService.countMovie(id);
-      const page = Math.ceil(totalBookmark / limit) | 1;
 
-      return this.actionResponse.responseApi(true, { totalBookmark, page }, '');
+      return this.actionResponse.responseApi(true, { totalBookmark }, '');
     } catch (error) {
       console.log(error);
     }

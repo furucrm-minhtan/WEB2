@@ -1,9 +1,8 @@
-<div class="modal fade" id="modal" tabindex="-1" role="dialog" x-bind:aria-labelledby="modal-label"
-  aria-hidden="true">
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header" x-show="modal.show.header">
-        <h5 class="modal-title" id="modal-label" x-text="modal.title">Modal title</h5>
+        <h5 class="modal-title" id="modal-label" x-text="modal.title"></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -13,12 +12,12 @@
               <image class="w-100" x-bind:src="modal.data" />
           </div>
           <div x-show="modal.content === 'category_form'">
-              {{<categoryForm}}
+              {{>categoryForm}}
           </div>
       </div>
       <div x-show="modal.show.footer" class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" @click="modal.submitHander">Save changes</button>
+        <button type="button" class="btn btn-primary" x-on:click="modal.submitHandler($event)">Save changes</button>
       </div>
     </div>
   </div>

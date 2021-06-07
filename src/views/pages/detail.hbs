@@ -66,6 +66,19 @@ Detail
 	.topbar-filter > select {
 		flex: 0 1 auto;
 	}
+
+	.topbar-filter .pagination2 {
+		padding-left: 20px;
+	}
+	
+	.tabs .tab-content .active {
+		margin-left: auto;
+	}
+
+	.tab.review .row {
+		margin-left: auto;
+		margin-right: auto;
+	}
 </style>
 {{/contentFor}}
 
@@ -118,21 +131,15 @@ Detail
 					<div class="movie-rate">
 						<div class="rate">
 							<i class="ion-android-star"></i>
-							<p><span>8.1</span> /10<br>
-								<span class="rv">56 Reviews</span>
+							<p><span x-text="scoreReview"></span> /10<br>
+								<span class="rv">{{total_user}} Reviews</span>
 							</p>
 						</div>
 						<div class="rate-star">
 							<p>Rate This Movie:  </p>
-							<i class="ion-ios-star"></i>
-							<i class="ion-ios-star"></i>
-							<i class="ion-ios-star"></i>
-							<i class="ion-ios-star"></i>
-							<i class="ion-ios-star"></i>
-							<i class="ion-ios-star"></i>
-							<i class="ion-ios-star"></i>
-							<i class="ion-ios-star"></i>
-							<i class="ion-ios-star-outline"></i>
+							<template x-for="(value, index) in createArray(10)">
+								<i x-bind:class="index + 1 > scoreReview ? 'ion-ios-star-outline' : 'ion-ios-star' "></i>
+							</template>
 						</div>
 					</div>
 					<div class="movie-tabs">
@@ -358,9 +365,9 @@ Detail
 												<option value="10">10 Reviews</option>
 											</select>
 											<div class="pagination2">
-												<span>Page <span x-text="reviewData.currentPage" style="margin: 0"></span> of <span x-text="reviewData.total"></span>:</span>
-												<template x-for="(page, index) in createArray(reviewData.total)">
-													<a x-bind:class="(page + 1) == reviewData.currentPage ? 'active' : ''" href="javascript:void(0)" @click="fetchReview(page + 1)" x-text="page + 1"></a>
+												<span>Page <span x-text="reviewData.currentPage" style="margin: 0"></span> of <span x-text="reviewData.page"></span>:</span>
+												<template x-for="(page, index) in createArray(reviewData.page)">
+													<a x-bind:class="(page + 1) == reviewData.currentPage ? 'active' : ''" href="javascript:void(0)" @click="fetchReview(page)" x-text="page + 1"></a>
 												</template>
 											</div>
 										</div>
@@ -733,15 +740,15 @@ Detail
 		};
 
 		return {
+			scoreReview: Number('{{divide total_rate total_user}}'),
 			isBookmark: '{{isBookmark}}' === 'true',
 			reviewData: {
-				total: 0,
 				page: 1,
 				currentPage: 1,
 				sort: '',
 				users: [],
 				show: [],
-				numberShow: 10
+				numberShow: 5
 			},
 			reviewForm: {
 				content: '',
@@ -792,9 +799,9 @@ Detail
 				fetchRatingMovies(this.reviewData.sort)
 					.then((data) => {
 						const users = data.data;
+						const total = users.length || 0;
 
-						this.reviewData.total = users.length || 0;
-						this.reviewData.page = Math.ceil(this.reviewData.total / this.reviewData.numberShow);
+						this.reviewData.page = Math.ceil(total / this.reviewData.numberShow);
 							
 						this.reviewData.users = users;
 						this.reviewData.show = this.dataShow(this.reviewData.users, 0, this.reviewData.numberShow);
@@ -804,20 +811,11 @@ Detail
 					})
 			},
 			fetchReview(page) {
+				this.reviewData.currentPage = page + 1;
 				this.reviewData.show = this.dataShow(this.reviewData.users, page * this.reviewData.numberShow, this.reviewData.numberShow);
 			},
 			dataShow(data, from = 0, limit = 10) {
 				return Array.from({ length: limit }, (_item, index) => data[index + from] );
-			},
-			prevPageRate(event) {
-				this.reviewData.currentPage--;
-
-				this.reviewData.show = this.dataShow(this.reviewData.users, this.reviewData.page * this.reviewData.numberShow, this.reviewData.numberShow);
-			},
-			nextPageRate(event) {
-				this.reviewData.currentPage++;
-
-				this.reviewData.show = this.dataShow(this.reviewData.users, this.reviewData.page * this.reviewData.numberShow, this.reviewData.numberShow);
 			},
 			createArray(number) {
 				return Array.from({ length: number }, (_item, index) => index);

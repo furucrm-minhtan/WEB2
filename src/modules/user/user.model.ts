@@ -27,15 +27,13 @@ export class User extends BaseModel<User> {
   @Column
   name: string;
 
-  @Unique(true)
-  @Column({ type: DataType.STRING(100), allowNull: false })
+  @Column({ type: DataType.STRING(100), allowNull: false, unique: true })
   email: string;
 
   @Column({ allowNull: false })
   password: string;
 
-  @Unique(true)
-  @Column({ type: DataType.STRING(100), allowNull: false })
+  @Column({ type: DataType.STRING(100), allowNull: false, unique: true })
   user_name: string;
 
   @Column(DataType.STRING(20))
@@ -51,9 +49,7 @@ export class User extends BaseModel<User> {
   @Column(DataType.STRING(100))
   city: string;
 
-  @AllowNull(true)
-  @Unique(true)
-  @Column(DataType.STRING)
+  @Column({ type: DataType.STRING, unique: true })
   verify_code: string;
 
   @BelongsToMany(() => Movie, () => Review, 'user_id')
