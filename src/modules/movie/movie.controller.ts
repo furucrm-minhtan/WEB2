@@ -44,47 +44,13 @@ export class MovieController {
   @Render('detail')
   async loadMovieDetail(
     @Session() { user }: { user: UserSession },
-    @Param('id') id: number
+    @Param('id', ParseIntPipe) id: number
   ): Promise<Record<string, any>> {
-    const fetchOptions: Record<string, any> = {
-      attributes: {
-        exclude: ['creationDate', 'updatedOn'],
-        include: [
-          [fn('SUM', col('rate')), 'total_rate'],
-          [fn('COUNT', col('rate')), 'total_user']
-        ]
-      },
-      include: [
-        {
-          model: User,
-          as: 'userReviews',
-          through: ['rate']
-        }
-      ],
-      group: ['name'],
-      raw: true
-    };
-    const userId = user?.id;
-    if (userId) {
-      fetchOptions.include.push({
-        attributes: ['id'],
-        model: User,
-        as: 'userFavorites',
-        where: { id: userId }
-      });
+    try {
+      return this.movieService.getDetailMovie(id, user?.id);
+    } catch (error) {
+      console.log(error);
     }
-    const movieDetail: MovieDetail = await this.movieService.findMovie(
-      id,
-      fetchOptions
-    );
-    movieDetail.isBookmark = movieDetail['userFavorites.id'] != null;
-    const releatedMovie: MovieItem[] = await this.movieService.findAll({
-      where: { category_id: movieDetail.category_id },
-      limit: 5,
-      raw: true
-    });
-
-    return { ...movieDetail, releatedMovie };
   }
 
   @Get(':id/booking')

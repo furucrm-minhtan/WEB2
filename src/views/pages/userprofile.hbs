@@ -9,11 +9,15 @@ Profile
 	.topbar-filter.user p {
 		padding-right: 0;
 	}
+
+	.topbar-filter .pagination2 {
+		padding-left: 20px;
+	}
 </style>
 
 {{/contentFor  }}
 
-<div x-data="init()">
+<div ng-cloak x-data="init()" x-init="setWatch($watch)">
 	<div class="hero user-hero">
 		<div class="container">
 			<div class="row">
@@ -35,8 +39,9 @@ Profile
 				<div class="col-md-3 col-sm-12 col-xs-12">
 					<div class="user-information">
 						<div class="user-img">
-							<a href="#"><img src="images/uploads/user-img.png" alt=""><br></a>
+							<a href="javascript:void(0)" @click="$('#avatar').click()"><img src="images/uploads/user-img.png" alt=""><br></a>
 							<a href="#" class="redbtn">Change avatar</a>
+							<input id="avatar" x-show="false" />
 						</div>
 						<div class="user-fav">
 							<p>Account Details</p>
@@ -132,7 +137,7 @@ Profile
 						<div class="topbar-filter user">
 							<p>Found <span x-text="favoriteData.total"></span> movies in total</p>
 							<label>Sort by:</label>
-							<select x-model="favoriteData.sort" x-on:change="fetchFavoriteDataPage(0)">
+							<select x-model="favoriteData.sort" x-on:change="">
 								<template x-for="(option, index) in Object.values(sortType)" :key="index">
 									<option x-bind:value="option.value" x-text="option.label"></option>
 								</template>
@@ -161,7 +166,7 @@ Profile
 						</template>
 						<div class="topbar-filter">
 							<label>Movies per page:</label>
-							<select x-model="favoriteData.numberShow" x-on:change="fetchFavoriteDataPage(0)">
+							<select x-model="favoriteData.numberShow">
 								<option value="5">5</option>
 								<option value="10">10</option>
 							</select>
@@ -204,7 +209,7 @@ Profile
 						</template>	
 						<div class="topbar-filter">
 							<label>Movies per page:</label>
-							<select x-model="ratingData.numberShow" x-on:change="fetchRatingDataPage(0)">
+							<select x-model="ratingData.numberShow">
 								<option value="5">5</option>
 								<option value="10">10</option>
 							</select>
@@ -304,10 +309,10 @@ Profile
 			{
 				event.preventDefault();
 
-				axios.post('/profile', this.userForm)
+				axios.put('/profile', this.userForm)
 					.then(function (response)
 					{
-						console.log(response);
+						alert(response.message);
 					})
 					.catch(function (error)
 					{
@@ -366,7 +371,7 @@ Profile
 						console.log(error);
 					})
 			},
-			fetchFavoriteDataPage(page) {
+			fetchRateDataPage(page) {
 				this.ratingData.currentPage = page + 1;
 
 				fetchRatingMovies(page * this.ratingData.numberShow, this.ratingData.numberShow)
@@ -428,6 +433,12 @@ Profile
 			},
 			createArray(number) {
 				return Array.from({ length: number }, (_item, index) => index);
+			},
+			setWatch(watch) {
+				watch('favoriteData.sort', () => this.fetchFavoriteDataPage(0));
+				watch('favoriteData.numberShow', () => this.fetchFavoriteDataPage(0));
+				watch('ratingData.sort', () => this.fetchRateDataPage(0));
+				watch('ratingData.numberShow', () => this.fetchRateDataPage(0));
 			}
 		}
 	}

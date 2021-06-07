@@ -6,10 +6,12 @@ import { GroupTheater } from '../groupTheater/groupTheater.model';
 import { Theater } from '../theater/theater.model';
 import { GroupTheaterOptions } from '../groupTheater/dto/groupTheater.dto';
 import { TheaterOptions } from '../theater/dto/theater.dto';
-import { MovieDetail } from './dto/movie.dto';
+import { MovieDetail, MovieItem } from './dto/movie.dto';
 import { User } from '../user/user.model';
 import { Review } from '../review/review.model';
-const { $between } = operatorsAliases;
+import { col, fn, where } from 'sequelize';
+import { literal } from 'sequelize';
+const { $between, $eq } = operatorsAliases;
 
 @Injectable()
 export class MovieService {
@@ -33,9 +35,67 @@ export class MovieService {
 
   async newestMovie(limit: number): Promise<Movie[]> {
     return this.movieRepository.findAll({
+      attributes: ['id', 'name', 'poster', 'creationDate'],
+      include: [
+        {
+          attributes: [[fn('AVG', col('rate')), 'movie_rate']],
+          model: User,
+          as: 'userReviews',
+          through: { attributes: ['rate'] },
+          required: false
+        }
+      ],
+      group: ['id'],
       order: ['creationDate'],
       limit,
-      raw: true
+      raw: true,
+      subQuery: false
+    });
+  }
+
+  async topRatedMovie(limit: number): Promise<Movie[]> {
+    return this.movieRepository.findAll({
+      attributes: ['id', 'name', 'poster', 'creationDate'],
+      include: [
+        {
+          attributes: [[fn('AVG', col('rate')), 'movie_rate']],
+          model: User,
+          as: 'userReviews',
+          through: { attributes: ['rate'] },
+          required: false
+        }
+      ],
+      group: ['id'],
+      order: [[fn('AVG', col('rate')), 'DESC']],
+      limit,
+      raw: true,
+      subQuery: false
+    });
+  }
+
+  comingMovie(day: number, limit = 10): Promise<Movie[]> {
+    return this.movieRepository.findAll({
+      attributes: ['id', 'name', 'poster'],
+      include: [
+        {
+          attributes: [[fn('AVG', col('rate')), 'movie_rate']],
+          model: User,
+          as: 'userReviews',
+          through: { attributes: ['rate'] },
+          required: false
+        }
+      ],
+      where: {
+        publish: {
+          [$between]: [
+            moment().toDate().toDateString(),
+            moment().add(day, 'days').toDate().toDateString()
+          ]
+        }
+      },
+      group: ['id'],
+      limit,
+      subQuery: false
     });
   }
 
@@ -48,20 +108,6 @@ export class MovieService {
     });
 
     return movie.userReviews ?? [];
-  }
-
-  comingMovie(day: number, limit = 10): Promise<Movie[]> {
-    return this.movieRepository.findAll({
-      where: {
-        publish: {
-          [$between]: [
-            moment().toDate().toDateString(),
-            moment().add(day, 'days').toDate().toDateString()
-          ]
-        }
-      },
-      limit
-    });
   }
 
   async loadBookingPage(id: number): Promise<Record<string, any>> {
@@ -95,6 +141,44 @@ export class MovieService {
 
   async uploadMovie(movie: MovieDetail) {
     return this.movieRepository.create(movie as Movie);
+  }
+
+  async getDetailMovie(id: number, userId: number) {
+    const fetchOptions: Record<string, any> = {
+      attributes: {
+        exclude: ['creationDate', 'updatedOn'],
+        include: [
+          [fn('SUM', col('rate')), 'total_rate'],
+          [fn('COUNT', col('rate')), 'total_user']
+        ]
+      },
+      include: [
+        {
+          model: User,
+          as: 'userReviews',
+          through: { attributes: ['rate'] }
+        }
+      ],
+      group: ['name'],
+      raw: true
+    };
+    userId &&
+      fetchOptions.include.push({
+        attributes: ['id'],
+        model: User,
+        as: 'userFavorites',
+        where: { id: userId }
+      });
+
+    const movieDetail: MovieDetail = await this.findMovie(id, fetchOptions);
+    movieDetail.isBookmark = movieDetail['userFavorites.id'] != null;
+    const releatedMovie: MovieItem[] = await this.findAll({
+      where: { category_id: movieDetail.category_id },
+      limit: 5,
+      raw: true
+    });
+
+    return { ...movieDetail, releatedMovie };
   }
 
   createMovie(data: Movie) {

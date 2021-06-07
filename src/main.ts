@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import * as moment from 'moment';
 import { ValidationPipe } from '@nestjs/common';
 import * as hbs from 'express-hbs';
+import { isNumber } from 'node:util';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -81,7 +82,19 @@ async function bootstrap() {
     return Array.from({ length }, (_value, index) => index + 1);
   });
   hbs.registerHelper('divide', function (v1: number, v2: number) {
-    return v1 / v2;
+    return v1 && v2 ? v1 / v2 : 0;
+  });
+  hbs.registerHelper('json', function (context: any) {
+    return JSON.stringify(context);
+  });
+  hbs.registerHelper(
+    'getProp',
+    function (obj: Record<string, any>, key: string) {
+      return obj[key];
+    }
+  );
+  hbs.registerHelper('formatDecimal', function (value: string, fix: number) {
+    return isNaN(Number(value)) ? 0 : parseFloat(value).toFixed(fix);
   });
   hbs.registerHelper({
     eq: (v1, v2) => v1 === v2,

@@ -1,3 +1,5 @@
+import { HomeModule } from './modules/home/home.module';
+import { HomeService } from './modules/home/home.service';
 import { CategoryModule } from './modules/category/category.module';
 import { CategoryService } from './modules/category/category.service';
 import { AdminModule } from './modules/admin/admin.module';
@@ -32,6 +34,7 @@ import { UserController } from './modules/user/user.controller';
 
 @Module({
   imports: [
+    HomeModule,
     CategoryModule,
     AdminModule,
     MailModule,
