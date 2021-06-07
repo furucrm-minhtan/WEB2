@@ -9,8 +9,8 @@ export class BookmarkService {
     @Inject('BOOKMARKS_REPOSITORY') private bookmarkRepository: typeof Bookmark
   ) {}
 
-  async countMovie(id: number): Promise<number> {
-    return this.bookmarkRepository.count({ where: { id } });
+  async countMovie(userId: number): Promise<number> {
+    return this.bookmarkRepository.count({ where: { userId } });
   }
 
   async getFavoriteMovie(
@@ -23,15 +23,16 @@ export class BookmarkService {
       where: {
         userId: id
       },
-      include: [{ model: Movie, order: [sort] }],
+      include: [{ model: Movie }],
       offset: +offset,
-      limit: +limit
+      limit: +limit,
+      order: [[{ model: Movie, as: 'movie' }, sort, 'DESC']]
     });
 
     return bookmarks;
   }
 
-  async bookmarkMovie({ userId, movieId }: BookmarkMovie) {
-    return this.bookmarkRepository.create({ userId, movieId } as Bookmark);
+  async bookmarkMovie(userBookmark: Bookmark) {
+    return this.bookmarkRepository.create(userBookmark);
   }
 }

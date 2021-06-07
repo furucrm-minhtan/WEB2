@@ -42,4 +42,20 @@ export class RoomService {
       group: ['start', 'end', 'date']
     });
   }
+
+  createRoom(data: Room) {
+    return this.roomRepository.create(data);
+  }
+
+  updateRoom(id: number, data: Room) {
+    return this.roomRepository.update(data, {
+      where: {
+        id
+      }
+    });
+  }
+
+  deleteRoom(id: number) {
+    return this.roomRepository.destroy({ where: { id } });
+  }
 }

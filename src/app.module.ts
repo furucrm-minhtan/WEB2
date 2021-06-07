@@ -1,3 +1,8 @@
+import { HomeModule } from './modules/home/home.module';
+import { HomeService } from './modules/home/home.service';
+import { CategoryModule } from './modules/category/category.module';
+import { CategoryService } from './modules/category/category.service';
+import { AdminModule } from './modules/admin/admin.module';
 import { MailModule } from './modules/mail/mail.module';
 import { ReviewModule } from './modules/review/review.module';
 import { SeatModule } from './modules/seat/seat.module';
@@ -24,9 +29,14 @@ import { GolobalMiddleware } from './middleware/golobal.middleware';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { mailerConfigOptionsAsync } from './core/config/mailer.config';
 import { MailService } from './modules/mail/mail.service';
+import { AuthenMiddleware } from './middleware/authen.middleware';
+import { UserController } from './modules/user/user.controller';
 
 @Module({
   imports: [
+    HomeModule,
+    CategoryModule,
+    AdminModule,
     MailModule,
     ReviewModule,
     SeatModule,
@@ -51,6 +61,13 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(GolobalMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes({ path: '*', method: RequestMethod.ALL })
+      .apply(AuthenMiddleware)
+      .exclude(
+        { path: 'forgot-password', method: RequestMethod.ALL },
+        { path: 'registration', method: RequestMethod.ALL },
+        { path: 'reset-password', method: RequestMethod.ALL }
+      )
+      .forRoutes(UserController);
   }
 }

@@ -7,7 +7,8 @@ import {
   Render,
   Session,
   Headers,
-  Redirect
+  Redirect,
+  Put
 } from '@nestjs/common';
 import session from 'express-session';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
@@ -31,26 +32,34 @@ export class UserController {
   @Render('userprofile')
   async root(@Session() session: Record<string, any>): Promise<UserProfile> {
     // console.log(session);
-    // const { id }: UserProfile = session.user;
+    const { id }: UserProfile = session.user;
     // const bookmarks: Bookmark[] = await this.bookmarkService.getFavoriteMovie(
     //   1
     // );
-    const user: UserProfile = await this.userService.loadProfileView(1);
+    const user: UserProfile = await this.userService.loadProfileView(id);
 
     return { ...user };
   }
 
-  @Post('/profile')
-  async updateProflie(@Body() user: UserProfile): Promise<boolean> {
+  @Put('/profile')
+  async updateProflie(@Body() user: UserProfile): Promise<Record<string, any>> {
     try {
       await this.userService.updateProfile(user as User);
 
-      return true;
+      return this.actionResponseService.responseApi(
+        true,
+        '',
+        'update profile completed'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return false;
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'update profile failed'
+    );
   }
 
   @Get('/favorite')

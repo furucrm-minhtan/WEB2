@@ -1,5 +1,17 @@
-import { Controller, Get, Param, Query, Render } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  Render
+} from '@nestjs/common';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
+import { CreateRoom, UpdateRoom } from './dto/room.dto';
 import { Room } from './room.model';
 import { RoomService } from './room.service';
 
@@ -7,7 +19,7 @@ import { RoomService } from './room.service';
 export class RoomController {
   constructor(
     private readonly roomService: RoomService,
-    private readonly actionResponse: ActionResponseService
+    private readonly actionResponseService: ActionResponseService
   ) {}
 
   @Get(':id')
@@ -21,11 +33,57 @@ export class RoomController {
       //   roomsDisplay[room.id].push(room);
       // })
 
-      return this.actionResponse.responseApi(true, roomsDisplay, '');
+      return this.actionResponseService.responseApi(true, roomsDisplay, '');
     } catch (error) {
       console.log(error);
     }
 
-    return this.actionResponse.responseApi(false, '', 'fetch data failed');
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'fetch data failed'
+    );
+  }
+
+  @Post()
+  async create(@Body() data: CreateRoom) {
+    try {
+      const room: Room = await this.roomService.createRoom(data as Room);
+
+      return this.actionResponseService.responseApi(true, room, '');
+    } catch (error) {
+      console.log(error);
+    }
+    return this.actionResponseService.responseApi(false, [], '');
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateRoom
+  ) {
+    try {
+      const movie: [number, Room[]] = await this.roomService.updateRoom(
+        id,
+        data as Room
+      );
+
+      return this.actionResponseService.responseApi(true, movie, '');
+    } catch (error) {
+      console.log(error);
+    }
+    return this.actionResponseService.responseApi(false, [], '');
+  }
+
+  @Delete(':id')
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    try {
+      const deleted: number = await this.roomService.deleteRoom(id);
+
+      return this.actionResponseService.responseApi(true, deleted, '');
+    } catch (error) {
+      console.log(error);
+    }
+    return this.actionResponseService.responseApi(false, [], '');
   }
 }

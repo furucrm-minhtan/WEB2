@@ -1,10 +1,281 @@
-{{#section 'title'}}
-Profile
-{{/section}}
+{{#contentFor 'title'}}
+Admin
+{{/contentFor}}
+{{!< layout-admin}}
 
-{{> loading }}
+{{#contentFor 'style' }}
+<style>
+    input[type="date"] {
+        color: #000 !important;
+    }
+</style>
+{{/contentFor}}
 
-<div x-data="init()">
+
+<div x-cloak x-data="init()" x-init="fetchReport()">
+	<!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-laugh-wink"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">Admin</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="javascript:void(0)" @click="loadManagement()">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Manager</span>
+                </a>
+            </li>
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+ 				<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                                <img class="img-profile rounded-circle"
+                                    src="img/undraw_profile.svg">
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Settings
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Activity Log
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <div x-show="section === 'management'">
+					    {{>management}}
+                    </div>
+                    {{!-- <div x-show="section === 'theater'">
+				    	{{>addTheater}}
+                    </div>
+                    <div x-show="section === 'showtime'">
+					    {{>addShowTime}}
+                    </div> --}}
+                    <div x-show="section === 'dashboard'">
+                        <!-- Page Heading -->
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                    class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                        </div>
+                    
+                        <!-- Content Row -->
+                        <div class="row">
+                    
+                            <!-- Earnings (Monthly) Card Example -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-primary shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Earnings (Monthly)</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <!-- Earnings (Monthly) Card Example -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                    Earnings (Annual)</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Content Row -->
+                    
+                        <div class="row">
+                    
+                            <!-- Area Chart -->
+                            <div class="col-xl-8 col-lg-7">
+                                <div class="card shadow mb-4">
+                                    <!-- Card Header - Dropdown -->
+                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
+                                        <div class="dropdown no-arrow">
+                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                aria-labelledby="dropdownMenuLink">
+                                                <div class="dropdown-header">Dropdown Header:</div>
+                                                <a class="dropdown-item" href="#">Action</a>
+                                                <a class="dropdown-item" href="#">Another action</a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item" href="#">Something else here</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Card Body -->
+                                    <div class="card-body">
+                                        <div class="chart-area">
+                                            <canvas id="myAreaChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <!-- Pie Chart -->
+                            <div class="col-xl-4 col-lg-5">
+                                <div class="card shadow mb-4">
+                                    <!-- Card Header - Dropdown -->
+                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
+                                        <div class="dropdown no-arrow">
+                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                aria-labelledby="dropdownMenuLink">
+                                                <div class="dropdown-header">Dropdown Header:</div>
+                                                <a class="dropdown-item" href="#">Action</a>
+                                                <a class="dropdown-item" href="#">Another action</a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item" href="#">Something else here</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Card Body -->
+                                    <div class="card-body">
+                                        <div class="chart-pie pt-4 pb-2">
+                                            <canvas id="myPieChart"></canvas>
+                                        </div>
+                                        <div class="mt-4 text-center small">
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle text-primary"></i> Direct
+                                            </span>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle text-success"></i> Social
+                                            </span>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle text-info"></i> Referral
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{!-- <div x-data="init()">
 	<div class="hero user-hero">
 		<div class="container">
 			<div class="row">
@@ -52,36 +323,53 @@ Profile
 				</div>
 				<div class="col-md-9 col-sm-12 col-xs-12">
 					<div class="form-style-1 user-pro">
-						<form class="user">
-							<h4>Profile details</h4>
+						<form>
+							<h4>Add Group Theater</h4>
 							<div class="row">
-								<div class="col-md-6 form-it">
-									<label>Username</label>
-									<input type="text" x-model="userForm.user_name">
-								</div>
-								<div class="col-md-6 form-it">
-									<label>Email Address</label>
-									<input type="text" x-model="userForm.email">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-6 form-it">
+								<div class="col-12 form-it">
 									<label>Name</label>
-									<input type="text" x-model="userForm.name">
-								</div>
-								<div class="col-md-6 form-it">
-									<label>Phone</label>
-									<input type="text" x-model="userForm.phone">
+									<input type="text" x-model="groupForm.name">
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-md-6 form-it">
+								<div class="col-12 form-it">
 									<label>Address</label>
-									<input type="text" x-model="userForm.address">
+									<input type="text" x-model="groupForm.address">
 								</div>
-								<div class="col-md-6 form-it">
-									<label>City</label>
-									<input type="text" x-model="userForm.city">
+							</div>
+							<div class="row">
+								<div class="col-md-2">
+									<input class="submit" type="submit" value="change" @click="changePassword($event)">
+								</div>
+							</div>
+						</form>
+
+						<form class="theater">
+							<h4>Add Theater</h4>
+							<div class="row">
+								<div class="col-12 form-it">
+									<label>Name</label>
+									<input type="text" x-model="theater.name">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12 form-it">
+									<label>Type</label>
+									<select x-model="theater.type">
+										<template>
+
+										</template>
+									</select>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12 form-it">
+									<label>Group</label>
+									<select x-model="theater.group">
+										<template x-for="(group, index) in groups">
+											
+										</template>
+								    </select>
 								</div>
 							</div>
 							<div class="row">
@@ -111,25 +399,67 @@ Profile
 							</table>
 						</div>
 					</div>
-					<div class="form-style-1 user-pro" x-show="page === 'change password'">
-						<form action="#" class="password">
-							<h4>Change password</h4>
+					<div class="form-style-1 user-pro">
+						<form>
+							<h4>Add Category</h4>
 							<div class="row">
-								<div class="col-md-6 form-it">
-									<label>Old Password</label>
-									<input type="text" x-model="passwordForm.oldPassword">
+								<div class="col-12 form-it">
+									<label>Name</label>
+									<input type="text" x-model="categoryForm.name">
+								</div>
+							</div>
+						</form>
+						<form action="#" class="">
+							<h4>Add Movie</h4>
+							<div class="row">
+								<div class="col-12 form-it">
+									<label>Name</label>
+									<input type="text" x-model="movieGroup.name">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12 form-it">
+									<label>poster</label>
+									<input type="file" x-model="movieGroup.address">
+								</div>
+								<button class="btn btn-primary"></button>
+							</div>
+							<div class="row">
+								<div class="col-12 form-it">
+									<label>trailer</label>
+									<input type="text" x-model="movieGroup.address">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12 form-it">
+									<label>describe</label>
+									<textarea x-model="movieGroup.describe"></textarea>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-6 form-it">
+									<label>director</label>
+									<input type="text" x-model="movieGroup.director">
+								</div>
+								<div class="col-6 form-it">
+									<label>writer</label>
+									<input type="text" x-model="movieGroup.writer">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
-									<label>New Password</label>
-									<input type="text" x-model="passwordForm.newPassword">
+									<label>publish</label>
+									<input type="date" x-model="movieGroup.publish">
+								</div>
+								<div class="col-md-6 form-it">
+									<label>MMPA Rating</label>
+									<input type="date" x-model="movieGroup.MMPA_rating">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
-									<label>Confirm New Password</label>
-									<input type="text" x-model="passwordForm.confPassword">
+									<label>category</label>
+									<select x-model="movieGroup.category"></select>
 								</div>
 							</div>
 							<div class="row">
@@ -139,261 +469,301 @@ Profile
 							</div>
 						</form>
 					</div>
-					<div x-show="page === 'favorite'">
-						<div class="topbar-filter user">
-							<p>Found <span x-text="favoriteData.total"></span> movies in total</p>
-							<label>Sort by:</label>
-							<select x-model="favoriteData.sort">
-								<template x-for="(option, index) in Object.values(sortType)" :key="index">
-									<option x-bind:value="option.value" x-text="option.label"></option>
-								</template>
-							</select>
-							<a href="userfavoritelist.html" class="list"><i class="ion-ios-list-outline active"></i></a>
-							<a href="userfavoritegrid.html" class="grid"><i class="ion-grid "></i></a>
-						</div>
-						<template x-if="favoriteData.movies">
-							<div class="flex-wrap-movielist user-fav-list">
-								<template x-for="(item, index) in favoriteData.show" :key="index">
-									<div class="movie-item-style-2">
-										<img x-bind:src="item.movie.poster" alt="">
-										<div class="mv-item-infor">
-											<h6><a href="javascript:void(0)" x-text="item.movie.name">oblivion <span>(2012)</span></a></h6>
-											{{!-- <p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p> --}}
-											<p class="describe" x-text="item.movie.describe"></p>
-											<p class="run-time">Release: <span x-text="getDate(item.movie.publish)"></span></p>
-											<p>Director: <span x-text="item.movie.director"></span> </p>
-											{{!-- <p>Stars: <a href="#">Robert Downey Jr.,</a> <a href="#">Chris Evans,</a> <a
-													href="#">
-													Chris Hemsworth</a></p> --}}
-										</div>
-									</div>
-								</template>
-							</div>
-						</template>
-						<div class="topbar-filter">
-							<label>Movies per page:</label>
-							<select x-model="favoriteMovieShow" x-on:change="favoriteMovies = []; fetchFavoriteMovies($event, 0, favoriteMovieShow)">
-								<option value="5">5</option>
-								<option value="10">10</option>
-							</select>
-
-							<div class="pagination2">
-								<span>Page <span x-text="favoriteData.currentPage"></span> of <span x-text="page"></span>:</span>
-								<a :class="favoriteData.currentPage == 1 ? 'disable_link' : ''" href="javascript:void(0)" @click="prevPage()"><i class="ion-arrow-left-b"></i></a>
-								<template x-for="(key, index) in Array(favoriteMovieShow.page)">
-									<a x-bind:class="(favoriteData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1"></a>
-								</template>
-								<a :class="favoriteData.currentPage == favoriteData.page ? 'disable_link' : ''" href="javascript:void(0)" @click="nextPage()"><i class="ion-arrow-right-b"></i></a>
-							</div>
-						</div>
-					</div>
-					<div x-show="page === 'rate'">
-						<div class="topbar-filter">
-							<p>Found <span>3 rates</span> in total</p>
-							<label>Sort by:</label>
-							<select>
-								<option value="range">-- Choose option --</option>
-								<option value="saab">-- Choose option 2--</option>
-							</select>
-						</div>
-						<div class="movie-item-style-2 userrate">
-							<img src="images/uploads/mv1.jpg" alt="">
-							<div class="mv-item-infor">
-								<h6><a href="#">oblivion <span>(2012)</span></a></h6>
-								<p class="time sm-text">your rate:</p>
-								<p class="rate"><i class="ion-android-star"></i><span>9.0</span> /10</p>
-								<p class="time sm-text">your reviews:</p>
-								<h6>Best Marvel movie in my opinion</h6>
-								<p class="time sm">02 April 2017</p>
-								<p>“This is by far one of my favorite movies from the MCU. The introduction of new
-									Characters both good and bad also makes the movie more exciting. giving the
-									characters more of a back story can also help audiences relate more to different
-									characters better, and it connects a bond between the audience and actors or
-									characters. Having seen the movie three times does not bother me here as it is as
-									thrilling and exciting every time I am watching it. In other words, the movie is by
-									far better than previous movies (and I do love everything Marvel), the plotting is
-									splendid (they really do out do themselves in each film, there are no problems
-									watching it more than once.”</p>
-							</div>
-						</div>
-						<div class="movie-item-style-2 userrate">
-							<img src="images/uploads/mv2.jpg" alt="">
-							<div class="mv-item-infor">
-								<h6><a href="#">into the wild <span>(2014)</span></a></h6>
-								<p class="time sm-text">your rate:</p>
-								<p class="rate"><i class="ion-android-star"></i><span>7.0</span> /10</p>
-							</div>
-						</div>
-						<div class="movie-item-style-2 userrate last">
-							<img src="images/uploads/mv3.jpg" alt="">
-							<div class="mv-item-infor">
-								<h6><a href="#">blade runner<span>(2015)</span></a></h6>
-								<p class="time sm-text">your rate:</p>
-								<p class="rate"><i class="ion-android-star"></i><span>10.0</span> /10</p>
-								<p class="time sm-text">your reviews:</p>
-								<h6>A masterpiece!</h6>
-								<p class="time sm">01 February 2017</p>
-								<p>“To put it simply, the movie is fascinating, exciting and fantastic. The dialog, the
-									fight choreography, the way the story moves, the characters charisma, all and much
-									more are combined together to deliver this masterpiece. Such an amazing flow,
-									providing a fusion between the 90s and the new century, it's like the assassins are
-									living in another world, with another mindset, without people understanding it. Just
-									one advice for you though: Don't build an expectation of what you want to watch in
-									this movie, if you do, then you will ruin it. This movie has it's own flow and
-									movement, so watch it with a clear mind, and have fun.”</p>
-							</div>
-						</div>
-						<div class="topbar-filter">
-							<label>Movies per page:</label>
-							<select>
-								<option value="range">20 Movies</option>
-								<option value="saab">10 Movies</option>
-							</select>
-							<div class="pagination2">
-								<span>Page 1 of 1:</span>
-								<a class="active" href="#">1</a>
-								<a href="#"><i class="ion-arrow-right-b"></i></a>
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
-
-{{#section 'script' }}
+</div> --}}
+{{#contentFor 'scripts'}}
 <script>
 	function init() {
-		const fetchFavoriteMovies = function(offset, limit, sort) {
-			return new Promise((resolve, reject) => {
-				fetch(`/bookmark?offset=${offset}&limit=${limit}&sort=${sort}`)
-					.then(function(response) { 
-						return response.json();
-					})
-					.then((data) => {
-						if(data.isSuccess) {
-							resolve(data);
-						}
-						else {
-							throw data.message;
-						}
-					})
-					.catch(function(error) {
-						throw error;
-					})
-			});
-		};
+        const post = (url, data) => {
+           return new Promise((resolve, reject) => {
+                axios.post(url, data)
+                .then((response) => {
+                    if(response.status === 201) {
+                        resolve(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                    reject(error.response);
+                });
+           });
+        }
 
-		return {
-			page: 'profile', 
-			favoriteMovieShow: 10,
-			favoriteData: {
-				total: 0,
-				page: 1,
-				currentPage: 1,
-				sort: '',
-				movies: [],
-				show: []
-			},
-			sortType: [
-				{ value: 'name', label: 'name' },
-				{ value: 'publish', label: 'publish date' }
-			],
-			userForm: {
-				id: '{{id}}',
-				user_name: '{{user_name}}',
-				email: '{{email}}',
-				name: '{{name}}',
-				phone: '{{phone}}',
-				address: '{{address}}',
-				city: '{{city}}'
-			},
-			passwordForm: {},	
-			updateProfile(event)
-			{
-				event.preventDefault();
+        const put = (url, data) => {
+           return new Promise((resolve, reject) => {
+                axios.put(url, data)
+                .then((response) => {
+                    if(response.status === 201) {
+                        resolve(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                    reject(error.response);
+                });
+           });
+        }
 
-				axios.post('/profile', this.userForm)
-					.then(function (response)
-					{
-						console.log(response);
-					})
-					.catch(function (error)
-					{
-						console.log(error);
-					});
-			},
-			changePassword(event)
-			{
-				event.preventDefault();
+         const destroy = (url, data) => {
+           return new Promise((resolve, reject) => {
+                axios.delete(url, data)
+                .then((response) => {
+                    if(response.status === 201) {
+                        resolve(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                    reject(error.response);
+                });
+           })
+        }
 
-				if(this.passwordForm.newPassword != this.passwordForm.confPassword) {
-					alert('confirm password not match');
-					return false;
-				}
+        return {
+            modal: {
+                show: {
+                    header: true,
+                    footer: true
+                },
+                title: 'Modal',
+                content: '',
+                errors: [],
+                submitHandler: undefined
+            },
+            updateModal: function(settings) {
+                this.modal = Object.assign(this.modal, settings);
+            },
+            movie: {
+                data: {},
+                listView: [],
+                fetchData() {
+                    fetch('/movie')
+                        .then((raw) => raw.json())
+                        .then((response) => {
+                            if(response.isSuccess) {
+                                this.listView = response.data;
 
-				axios.post('/change-password', this.passwordForm)
-					.then(function (response)
-					{
+                                $('#list-movie').DataTable({
+                                    data: this.listView,
+                                    columns: [
+                                        {
+                                            data: 'name'
+                                        },
+                                        {
+                                            data: 'describe'
+                                        },
+                                        {
+                                            data: 'director'
+                                        },
+                                        {
+                                            data: 'writer'
+                                        },
+                                        {
+                                            data: 'MMPA_rating'
+                                        },
+                                        {
+                                            data: 'publish'
+                                        },
+                                        {
+                                            data: 'creationDate'
+                                        },
+                                        {
+                                            data: 'updatedOn'
+                                        }
+                                    ],
+                                    scrollX: true,
+                                    columnDefs: [
+                                    {
+                                        targets: [0,1,2,3,4,5],
+                                        createdCell: function (td) {
+                                            $(td).attr('contenteditable', true);
+                                        }
+                                    },
+                                    {
+                                        render: function (data, type, row) {
+                                            const date = moment(data);
 
-					})
-					.catch(function (error)
-					{
-						console.log(error);
-					});
-			},
-			loadingFavorite() {
-				this.page = 'favorite';
-				
-				fetch(`/bookmark/user?limit=${this.favoriteMovieShow}`)
-					.then(function(response) { 
-						return response.json();
-					})
-					.then((data) => {
-						if(data.isSuccess) {
-							this.favoriteData.total = data.data.totalBookmark;
-							this.favoriteData.page = data.data.page;
-							
-							return fetchFavoriteMovies(0, this.favoriteMovieShow, this.favoriteData.sort);
-						}
-					})
-					.then((data) => {
-						this.favoriteData.movies = this.favoriteData.movies.concat(data.data);
-						this.favoriteData.show = this.dataShow(this.favoriteData.movies, 0, this.favoriteMovieShow);
-					})
-					.catch(function(error) {
-						console.log(error);
-					})
-			},
-			dataShow(data, from = 0, limit = 10) {
-				return Array.from({ length: limit }, (_item, index) => data[index + from] );
-			},
-			prevPage(event) {
-				event.preventDefault();
-				this.favoriteData.movies--;
+                                            return date.isValid() ? date.format('DD/MM/YYYY') : '';
+                                        },
+                                        targets: [5,6,7]
+                                    }]
+                                });
+                                $('.dataTables_length').addClass('bs-select');
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        })
+                },
+                create(event) {
+                    event.preventDefault();
 
-				this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteMovieShow, this.favoriteMovieShow);
-			},
-			nextPage(event) {
-				event.preventDefault();
-				this.favoriteData.currentPage++;
+                    console.log(this.data);
+                    return;
+                    axios.post('/movie', this.data)
+                        .then((response) => {
+                            if(response.status === 201) {
+                                alert(response.data.message);
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        })
+                },
+                update(event, id) {
+                    axios.put('/movie', { id, ...this.data })
+                        .then((response) => {
+                            if(response.status === 201) {
+                                alert(response.data.message);
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        })
+                },
+                delete(event, id) {
+                    axios.delete('/movie', id)
+                        .then((response) => {
+                            if(response.status === 201) {
+                                alert(response.data.message);
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        })
+                }
+            },
+            category: {
+                table: undefined,
+                data: {},
+                listView: [],
+                addRow() {
+                    table.row.add()
+                },
+                fetchData() {
+                    fetch('/category')
+                        .then((raw) => raw.json())
+                        .then((response) => {
+                            if(response.isSuccess) {
+                                this.listView = response.data;
 
-				fetchFavoriteMovies(this.favoriteMovieShow)
-					.then((data) => {
-						this.favoriteData.movies = this.favoriteData.movies.concat(data.data);	
-						this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteMovieShow, this.favoriteMovieShow);
-					})
-					.catch((error) => {
-						console.log(error);
-					})
-			},
-			getDate(string) {
-				const date = new Date(string);
+                                this.table = $('#list-category').DataTable({
+                                    data: this.listView,
+                                    columns: [
+                                        {
+                                            data: 'name'
+                                        },
+                                        {
+                                            data: 'level'
+                                        },
+                                        {
+                                            data: 'creationDate'
+                                        },
+                                        {
+                                            data: 'updatedOn'
+                                        }
+                                    ],
+                                    columnDefs: [{
+                                        render: function (data, type, row) {
+                                            const date = moment(data);
 
-				return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
-			}
+                                            return date.isValid() ? date.format('DD/MM/YYYY') : '';
+                                        },
+                                        targets: [2,3]
+                                    }, {
+                                        render: function(data, type, row) {
+                                            return `
+                                                <div>
+                                                    <button class="btn btn-success text-uppercase" @click="category.update($event,${row.id})">update</button>
+                                                    <button class="btn btn-danger text-uppercase" @click="category.delete($event,${row.id})">delete</button>
+                                                </div>
+                                            `
+                                        },
+                                        targets: 4
+                                    }],
+                                    createdRow: function(row, data) {
+                                        $(row).attr('data-id', data.id);
+                                    }
+                                });
+                                $('.dataTables_length').addClass('bs-select');
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                },
+                create(event) {
+                    event.preventDefault();
+
+                    this.parent.modal.title = 'Create Category';
+                    this.parent.modal.content = 'category_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+
+                        post('/category', this.data)
+                            .then((data) => console.log(data))
+                            .catch(error => alert('create failed'));
+                    }
+
+                    $('#modal').modal('show');
+                },
+                update(event, id, data) {
+                    event.preventDefault();
+                    
+                    this.data = this.table.row($(`#list-category tr[data-id="${id}"]`)).data();
+                    this.parent.modal.title = 'Update Category';
+                    this.parent.modal.content = 'category_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+
+                        put('/category', { id, ...this.data })
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    alert('update failed');
+                                }   
+                            })
+                            .catch(error => alert('update failed'));
+                    }
+
+                    $('#modal').modal('show');
+                },
+                delete(event, id) {
+                    delete('/category', { id })
+                        .then((data) => console.log(data))
+                        .catch(error => alert('delete failed'));
+                }
+            },
+            group: {
+                data: {},
+                listView: []
+            },
+            theater: {
+                data: {},
+                listView: []
+            },
+            section: 'dashboard',
+            fetchReport() {
+
+            },
+            loadTheater() {
+            
+            },
+            loadManagement() {
+                this.section = 'management';
+                
+                this.category.fetchData();
+                this.category.parent = this;
+                this.movie.fetchData();
+                this.movie.parent = this;
+            }
 		}
 	}
 </script>
-{{/section }}
+{{/contentFor }}

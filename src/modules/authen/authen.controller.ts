@@ -83,4 +83,11 @@ export class AuthenController {
 
     return this.actionResponseService.responseApi(false, '', 'Authen falied');
   }
+
+  @Get('logout')
+  async logout(@Session() session: Record<string, any>, @Res() res: Response) {
+    delete session.user;
+
+    res.redirect('/');
+  }
 }

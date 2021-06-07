@@ -8297,6 +8297,10 @@ footer.full-width-ft .ft-copyright {
   font-size: 25px !important;
 }
 
+.user_icon:active {
+  background: none;
+}
+
 ul li {
   list-style-type: none;
 }

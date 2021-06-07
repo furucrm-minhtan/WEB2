@@ -5,7 +5,7 @@ import {
 } from '@nestjs/sequelize';
 import { GroupedObservable } from 'rxjs';
 import { Bookmark } from 'src/modules/bookmark/bookmark.model';
-import { Category } from 'src/model/category.model';
+import { Category } from 'src/modules/category/category.model';
 import { Review } from 'src/modules/review/review.model';
 import { GroupTheater } from 'src/modules/groupTheater/groupTheater.model';
 import { Movie } from 'src/modules/movie/movie.model';

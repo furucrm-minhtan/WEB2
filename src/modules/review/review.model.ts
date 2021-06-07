@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import {
   AutoIncrement,
   Column,
@@ -5,7 +6,8 @@ import {
   Table,
   DataType,
   BelongsTo,
-  ForeignKey
+  ForeignKey,
+  Max
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
 import { Movie } from '../movie/movie.model';
@@ -17,6 +19,10 @@ export class Review extends BaseModel<Review> {
   @AutoIncrement
   @Column
   id: number;
+
+  @Max(10)
+  @Column({ allowNull: false })
+  rate: number;
 
   @Column({ type: DataType.TEXT, allowNull: false })
   context: string;
@@ -34,4 +40,8 @@ export class Review extends BaseModel<Review> {
 
   @BelongsTo(() => Movie, 'movie_id')
   movie: Movie;
+
+  get uploadDate(): string {
+    return moment(this.getDataValue('creationDate')).format('MMM DD, YYYY');
+  }
 }

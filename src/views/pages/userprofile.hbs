@@ -1,10 +1,23 @@
-{{#section 'title'}}
+{{#contentFor 'title'}}
 Profile
-{{/section}}
+{{/contentFor}}
 
 {{> loading }}
 
-<div x-data="init()">
+{{#contentFor 'style' }}
+<style>
+	.topbar-filter.user p {
+		padding-right: 0;
+	}
+
+	.topbar-filter .pagination2 {
+		padding-left: 20px;
+	}
+</style>
+
+{{/contentFor  }}
+
+<div ng-cloak x-data="init()" x-init="setWatch($watch)">
 	<div class="hero user-hero">
 		<div class="container">
 			<div class="row">
@@ -13,7 +26,7 @@ Profile
 						<ul class="breadcumb">
 							<h1 class="mr_0 mb_10">{{user_name}}</h1>
 							<li class="active"><a href="#">Home</a></li>
-							<li><span class="ion-ios-arrow-right"></span><span x-text="page" class="mr_0"></span></li>
+							<li><span class="ion-ios-arrow-right"></span><span x-text="sheet" class="mr_0"></span></li>
 						</ul>
 					</div>
 				</div>
@@ -26,32 +39,33 @@ Profile
 				<div class="col-md-3 col-sm-12 col-xs-12">
 					<div class="user-information">
 						<div class="user-img">
-							<a href="#"><img src="images/uploads/user-img.png" alt=""><br></a>
+							<a href="javascript:void(0)" @click="$('#avatar').click()"><img src="images/uploads/user-img.png" alt=""><br></a>
 							<a href="#" class="redbtn">Change avatar</a>
+							<input id="avatar" x-show="false" />
 						</div>
 						<div class="user-fav">
 							<p>Account Details</p>
 							<ul>
 								<li class="active"><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); page = 'profile'">Profile</a></li>
+										x-on:click="$event.preventDefault(); sheet = 'profile'">Profile</a></li>
 								<li><a href="javascript:void(0)"
 										x-on:click="loadingFavorite()">Favorite movies</a></li>
 								<li><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); page = 'rate'">Rated movies</a></li>
+										x-on:click="loadingRating()">Rated movies</a></li>
 							</ul>
 						</div>
 						<div class="user-fav">
 							<p>Others</p>
 							<ul>
 								<li><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); page = 'change password'">Change
+										x-on:click="$event.preventDefault(); sheet = 'change password'">Change
 										password</a></li>
 							</ul>
 						</div>
 					</div>
 				</div>
 				<div class="col-md-9 col-sm-12 col-xs-12">
-					<div class="form-style-1 user-pro" action="#" x-show="page === 'profile'">
+					<div class="form-style-1 user-pro" action="#" x-show="sheet === 'profile'">
 						<form class="user">
 							<h4>Profile details</h4>
 							<div class="row">
@@ -91,7 +105,7 @@ Profile
 							</div>
 						</form>
 					</div>
-					<div class="form-style-1 user-pro" x-show="page === 'change password'">
+					<div class="form-style-1 user-pro" x-show="sheet === 'change password'">
 						<form action="#" class="password">
 							<h4>Change password</h4>
 							<div class="row">
@@ -119,11 +133,11 @@ Profile
 							</div>
 						</form>
 					</div>
-					<div x-show="page === 'favorite'">
+					<div x-show="sheet === 'favorite'">
 						<div class="topbar-filter user">
 							<p>Found <span x-text="favoriteData.total"></span> movies in total</p>
 							<label>Sort by:</label>
-							<select x-model="favoriteData.sort">
+							<select x-model="favoriteData.sort" x-on:change="">
 								<template x-for="(option, index) in Object.values(sortType)" :key="index">
 									<option x-bind:value="option.value" x-text="option.label"></option>
 								</template>
@@ -133,7 +147,7 @@ Profile
 						</div>
 						<template x-if="favoriteData.movies">
 							<div class="flex-wrap-movielist user-fav-list">
-								<template x-for="(item, index) in favoriteData.show" :key="index">
+								<template x-for="(item, index) in favoriteData.movies" :key="index">
 									<div class="movie-item-style-2">
 										<img x-bind:src="item.movie.poster" alt="">
 										<div class="mv-item-infor">
@@ -152,87 +166,59 @@ Profile
 						</template>
 						<div class="topbar-filter">
 							<label>Movies per page:</label>
-							<select x-model="favoriteMovieShow" x-on:change="favoriteMovies = []; fetchFavoriteMovies($event, 0, favoriteMovieShow)">
+							<select x-model="favoriteData.numberShow">
 								<option value="5">5</option>
 								<option value="10">10</option>
 							</select>
 
 							<div class="pagination2">
-								<span>Page <span x-text="favoriteData.currentPage"></span> of <span x-text="page"></span>:</span>
-								<a :class="favoriteData.currentPage == 1 ? 'disable_link' : ''" href="javascript:void(0)" @click="prevPage()"><i class="ion-arrow-left-b"></i></a>
-								<template x-for="(key, index) in Array(favoriteMovieShow.page)">
-									<a x-bind:class="(favoriteData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1"></a>
+								<span>Page <span style="margin-right: 0" x-text="favoriteData.currentPage"></span> of <span x-text="favoriteData.page"></span>:</span>
+								<template x-for="(page, index) in createArray(favoriteData.page)">
+									<a x-bind:class="(favoriteData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1" @click="fetchFavoriteDataPage(page)"></a>
 								</template>
-								<a :class="favoriteData.currentPage == favoriteData.page ? 'disable_link' : ''" href="javascript:void(0)" @click="nextPage()"><i class="ion-arrow-right-b"></i></a>
 							</div>
 						</div>
 					</div>
-					<div x-show="page === 'rate'">
+					<div x-show="sheet === 'rate'">
 						<div class="topbar-filter">
-							<p>Found <span>3 rates</span> in total</p>
+							<p>Found <span x-text="ratingData.total" style="margin: 0"></span> rates in total</p>
 							<label>Sort by:</label>
-							<select>
-								<option value="range">-- Choose option --</option>
-								<option value="saab">-- Choose option 2--</option>
+							<select x-model="ratingData.sort">
+								<template x-for="(option, index) in Object.values(sortType)" :key="index">
+									<option x-bind:value="option.value" x-text="option.label"></option>
+								</template>
 							</select>
 						</div>
-						<div class="movie-item-style-2 userrate">
-							<img src="images/uploads/mv1.jpg" alt="">
-							<div class="mv-item-infor">
-								<h6><a href="#">oblivion <span>(2012)</span></a></h6>
-								<p class="time sm-text">your rate:</p>
-								<p class="rate"><i class="ion-android-star"></i><span>9.0</span> /10</p>
-								<p class="time sm-text">your reviews:</p>
-								<h6>Best Marvel movie in my opinion</h6>
-								<p class="time sm">02 April 2017</p>
-								<p>“This is by far one of my favorite movies from the MCU. The introduction of new
-									Characters both good and bad also makes the movie more exciting. giving the
-									characters more of a back story can also help audiences relate more to different
-									characters better, and it connects a bond between the audience and actors or
-									characters. Having seen the movie three times does not bother me here as it is as
-									thrilling and exciting every time I am watching it. In other words, the movie is by
-									far better than previous movies (and I do love everything Marvel), the plotting is
-									splendid (they really do out do themselves in each film, there are no problems
-									watching it more than once.”</p>
+						<template x-if="ratingData.movies">
+							<div>
+								<template x-for="(review, index) in ratingData.movies">
+									<div class="movie-item-style-2 userrate">
+										<img x-bind:src="review.movie.poster" alt="">
+										<div class="mv-item-infor">
+											<h6><a x-bind:href="'/movie/'+ review.movie.id" x-text="review.movie.name"></a></h6>
+											<p class="time sm-text">your rate:</p>
+											<p class="rate"><i class="ion-android-star"></i><span x-text="review.rate"></span> /10</p>
+											{{!-- <p class="time sm-text">your reviews:</p>
+											<h6>Best Marvel movie in my opinion</h6> --}}
+											<p class="time sm" x-text="getDate(review.creationDate)"></p>
+											<p x-text="review.movie.content"></p>
+										</div>
+									</div>
+								</template>
 							</div>
-						</div>
-						<div class="movie-item-style-2 userrate">
-							<img src="images/uploads/mv2.jpg" alt="">
-							<div class="mv-item-infor">
-								<h6><a href="#">into the wild <span>(2014)</span></a></h6>
-								<p class="time sm-text">your rate:</p>
-								<p class="rate"><i class="ion-android-star"></i><span>7.0</span> /10</p>
-							</div>
-						</div>
-						<div class="movie-item-style-2 userrate last">
-							<img src="images/uploads/mv3.jpg" alt="">
-							<div class="mv-item-infor">
-								<h6><a href="#">blade runner<span>(2015)</span></a></h6>
-								<p class="time sm-text">your rate:</p>
-								<p class="rate"><i class="ion-android-star"></i><span>10.0</span> /10</p>
-								<p class="time sm-text">your reviews:</p>
-								<h6>A masterpiece!</h6>
-								<p class="time sm">01 February 2017</p>
-								<p>“To put it simply, the movie is fascinating, exciting and fantastic. The dialog, the
-									fight choreography, the way the story moves, the characters charisma, all and much
-									more are combined together to deliver this masterpiece. Such an amazing flow,
-									providing a fusion between the 90s and the new century, it's like the assassins are
-									living in another world, with another mindset, without people understanding it. Just
-									one advice for you though: Don't build an expectation of what you want to watch in
-									this movie, if you do, then you will ruin it. This movie has it's own flow and
-									movement, so watch it with a clear mind, and have fun.”</p>
-							</div>
-						</div>
+						</template>	
 						<div class="topbar-filter">
 							<label>Movies per page:</label>
-							<select>
-								<option value="range">20 Movies</option>
-								<option value="saab">10 Movies</option>
+							<select x-model="ratingData.numberShow">
+								<option value="5">5</option>
+								<option value="10">10</option>
 							</select>
+
 							<div class="pagination2">
-								<span>Page 1 of 1:</span>
-								<a class="active" href="#">1</a>
-								<a href="#"><i class="ion-arrow-right-b"></i></a>
+								<span>Page <span x-text="ratingData.currentPage" style="margin: 0"></span> of <span x-text="ratingData.page"></span>:</span>
+								<template x-for="(page, index) in Array(ratingData.page)">
+									<a x-bind:class="(ratingData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1" @click="fetchRatingDataPage(page)"></a>
+								</template>
 							</div>
 						</div>
 					</div>
@@ -242,7 +228,7 @@ Profile
 	</div>
 </div>
 
-{{#section 'script' }}
+{{#contentFor "scripts"}}
 <script>
 	function init() {
 		const fetchFavoriteMovies = function(offset, limit, sort) {
@@ -265,16 +251,45 @@ Profile
 			});
 		};
 
+		const fetchRatingMovies = function(offset, limit, sort) {
+			return new Promise((resolve, reject) => {
+				fetch(`/review?offset=${offset}&limit=${limit}&sort=${sort}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							resolve(data);
+						}
+						else {
+							throw data.message;
+						}
+					})
+					.catch(function(error) {
+						throw error;
+					})
+			});
+		};
+
+
 		return {
-			page: 'profile', 
-			favoriteMovieShow: 10,
+			sheet: 'profile', 
 			favoriteData: {
 				total: 0,
 				page: 1,
 				currentPage: 1,
-				sort: '',
+				sort: 'name',
 				movies: [],
-				show: []
+				numberShow: 5
+			},
+			ratingData: {
+				total: 0,
+				page: 1,
+				currentPage: 1,
+				sort: 'name',
+				movies: [],
+				show: [],
+				numberShow: 5
 			},
 			sortType: [
 				{ value: 'name', label: 'name' },
@@ -294,10 +309,10 @@ Profile
 			{
 				event.preventDefault();
 
-				axios.post('/profile', this.userForm)
+				axios.put('/profile', this.userForm)
 					.then(function (response)
 					{
-						console.log(response);
+						alert(response.message);
 					})
 					.catch(function (error)
 					{
@@ -323,46 +338,89 @@ Profile
 						console.log(error);
 					});
 			},
+			fetchFavoriteDataPage(page) {
+				this.favoriteData.currentPage = page + 1;
+
+				fetchFavoriteMovies(page * this.favoriteData.numberShow, this.favoriteData.numberShow, this.favoriteData.sort)
+					.then((data) => {
+						this.favoriteData.movies = data.data;	
+					})
+					.catch((error) => {
+						console.log(error);
+					})	
+			},
 			loadingFavorite() {
-				this.page = 'favorite';
+				this.sheet = 'favorite';
 				
-				fetch(`/bookmark/user?limit=${this.favoriteMovieShow}`)
+				fetch(`/bookmark/user?limit=${this.favoriteData.numberShow}`)
 					.then(function(response) { 
 						return response.json();
 					})
 					.then((data) => {
 						if(data.isSuccess) {
 							this.favoriteData.total = data.data.totalBookmark;
-							this.favoriteData.page = data.data.page;
+							this.favoriteData.page = Math.ceil(this.favoriteData.total / this.favoriteData.numberShow);
 							
-							return fetchFavoriteMovies(0, this.favoriteMovieShow, this.favoriteData.sort);
+							return fetchFavoriteMovies(0, this.favoriteData.numberShow, this.favoriteData.sort);
 						}
 					})
 					.then((data) => {
-						this.favoriteData.movies = this.favoriteData.movies.concat(data.data);
-						this.favoriteData.show = this.dataShow(this.favoriteData.movies, 0, this.favoriteMovieShow);
+						this.favoriteData.movies = data.data;
 					})
 					.catch(function(error) {
 						console.log(error);
 					})
 			},
-			dataShow(data, from = 0, limit = 10) {
-				return Array.from({ length: limit }, (_item, index) => data[index + from] );
-			},
-			prevPage(event) {
-				event.preventDefault();
-				this.favoriteData.movies--;
+			fetchRateDataPage(page) {
+				this.ratingData.currentPage = page + 1;
 
-				this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteMovieShow, this.favoriteMovieShow);
-			},
-			nextPage(event) {
-				event.preventDefault();
-				this.favoriteData.currentPage++;
-
-				fetchFavoriteMovies(this.favoriteMovieShow)
+				fetchRatingMovies(page * this.ratingData.numberShow, this.ratingData.numberShow)
 					.then((data) => {
-						this.favoriteData.movies = this.favoriteData.movies.concat(data.data);	
-						this.favoriteData.show = this.dataShow(this.favoriteData.movies, this.favoriteData.page * this.favoriteMovieShow, this.favoriteMovieShow);
+						this.ratingData.movies = data.data;	
+					})
+					.catch((error) => {
+						console.log(error);
+					})	
+			},
+			loadingRating() {
+				this.sheet = 'rate';
+				
+				fetch(`/review/user?limit=${this.ratingData.numberShow}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							this.ratingData.total = data.data.totalRate;
+							this.ratingData.page = Math.ceil(this.ratingData.total / this.ratingData.numberShow);
+							
+							return fetchRatingMovies(0, this.ratingData.numberShow, this.ratingData.sort);
+						}
+					})
+					.then((data) => {
+						this.ratingData.movies = data.data;
+					})
+					.catch(function(error) {
+						console.log(error);
+					})
+			},
+			prevPageRate(event) {
+				this.ratingData.currentPage--;
+
+				fetchRatingMovies(this.ratingData.numberShow)
+					.then((data) => {
+						this.ratingData.movies = data.data;	
+					})
+					.catch((error) => {
+						console.log(error);
+					})
+			},
+			nextPageRate(event) {
+				this.ratingData.currentPage++;
+
+				fetchRatingMovies(this.ratingData.numberShow)
+					.then((data) => {
+						this.ratingData.movies = data.data;	
 					})
 					.catch((error) => {
 						console.log(error);
@@ -372,8 +430,17 @@ Profile
 				const date = new Date(string);
 
 				return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+			},
+			createArray(number) {
+				return Array.from({ length: number }, (_item, index) => index);
+			},
+			setWatch(watch) {
+				watch('favoriteData.sort', () => this.fetchFavoriteDataPage(0));
+				watch('favoriteData.numberShow', () => this.fetchFavoriteDataPage(0));
+				watch('ratingData.sort', () => this.fetchRateDataPage(0));
+				watch('ratingData.numberShow', () => this.fetchRateDataPage(0));
 			}
 		}
 	}
 </script>
-{{/section }}
+{{/contentFor }}

@@ -12,7 +12,7 @@ import {
   BelongsToMany
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
-import { Category } from '../../model/category.model';
+import { Category } from '../category/category.model';
 import { Review } from '../review/review.model';
 import { Bookmark } from '../bookmark/bookmark.model';
 import { ShowTime } from '../showTime/showtime.model';

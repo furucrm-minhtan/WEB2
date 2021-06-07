@@ -13,7 +13,7 @@ export class AuthenMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     if (!req.session.user) {
       res.locals.errorMessage = 'need authen to access';
-      res.redirect(`/${req.headers.referer}`);
+      res.redirect(`/`);
     }
 
     next();
