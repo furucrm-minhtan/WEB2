@@ -25,7 +25,8 @@ export class ReviewService {
       },
       include: [{ model: Movie, order: [sort] }],
       offset: +offset,
-      limit: +limit
+      limit: +limit,
+      order: [[{ model: Movie, as: 'movie' }, sort, 'DESC']]
     });
 
     return reviews;

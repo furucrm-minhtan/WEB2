@@ -159,4 +159,15 @@ export class UserService {
       }
     );
   }
+
+  async uploadAvatar(id: number, avatar: string) {
+    return this.usersRepository.update(
+      { avatar },
+      {
+        where: {
+          id
+        }
+      }
+    );
+  }
 }
