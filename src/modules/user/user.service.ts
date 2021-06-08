@@ -150,7 +150,7 @@ export class UserService {
   ): Promise<[number, User[]]> {
     const hashPassword = Helper.hashPassword(password);
 
-    return await this.usersRepository.update(
+    return this.usersRepository.update(
       { password: hashPassword },
       {
         where: {

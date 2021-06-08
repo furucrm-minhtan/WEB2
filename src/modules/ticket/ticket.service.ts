@@ -28,7 +28,7 @@ export class TicketService {
     limit = 10,
     sort = 'name'
   ): Promise<Ticket[]> {
-    const reviews: Ticket[] = await this.ticketRepository.findAll({
+    return this.ticketRepository.findAll({
       where: {
         userId: id
       },
@@ -37,7 +37,5 @@ export class TicketService {
       limit,
       order: [[{ model: Movie, as: 'movie' }, sort, 'DESC']]
     });
-
-    return reviews;
   }
 }
