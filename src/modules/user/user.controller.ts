@@ -16,7 +16,12 @@ import { UserSession } from '../authen/dto/authen.dto';
 import { Bookmark } from '../bookmark/bookmark.model';
 import { BookmarkService } from '../bookmark/bookmark.service';
 import { Movie } from '../movie/movie.model';
-import { ChangePassword, ResetPassword, UserProfile, UserRegister } from './dto/user.dto';
+import {
+  ChangePassword,
+  ResetPassword,
+  UserProfile,
+  UserRegister
+} from './dto/user.dto';
 import { User } from './user.model';
 import { UserService } from './user.service';
 
@@ -161,5 +166,34 @@ export class UserController {
       '',
       'create user failed'
     );
+  }
+
+  @Put('user/avatar')
+  async uploadAvatar(
+    @Session() session: Record<string, any>,
+    @Body('avatar') avatar: string
+  ) {
+    let message = '';
+
+    try {
+      const userSession: UserSession = session?.user;
+
+      if (!userSession) {
+        throw new Error('user not authen');
+      }
+
+      this.userService.uploadAvatar(userSession.id, avatar);
+
+      return this.actionResponseService.responseApi(
+        true,
+        '',
+        'upload avatar completed'
+      );
+    } catch (error) {
+      message = error;
+      console.log(error);
+    }
+
+    return this.actionResponseService.responseApi(false, '', message);
   }
 }

@@ -27,13 +27,13 @@ export class ReviewController {
     @Query()
     { offset, limit, sort }: { offset: number; limit: number; sort: string }
   ): Promise<ActionResponseService> {
-    // const { id }: { id: number } = user;
     try {
-      const id = 1;
+      const id: number = user?.id;
       const data: Review[] = await this.reviewService.getRatingMovie(
         id,
         offset,
-        limit
+        limit,
+        sort
       );
 
       return this.actionResponseService.responseApi(true, data, '');

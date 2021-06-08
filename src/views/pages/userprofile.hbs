@@ -39,26 +39,28 @@ Profile
 				<div class="col-md-3 col-sm-12 col-xs-12">
 					<div class="user-information">
 						<div class="user-img">
-							<a href="javascript:void(0)" @click="$('#avatar').click()"><img src="images/uploads/user-img.png" alt=""><br></a>
-							<a href="#" class="redbtn">Change avatar</a>
-							<input id="avatar" x-show="false" />
+							<a href="javascript:void(0)"><img id="avatar" x-bind:src="avatar ? avatar : 'images/uploads/user-img.png'" alt="" onclick="$('#upload-avatar').click()"><br></a>
+							<a href="javascript:void(0)" class="redbtn" @click="uploadAvatar()">Change avatar</a>
+							<input id="upload-avatar" type="file" x-show="false" accept="image/*" x-on:change="loadImageFile($event)"/>
 						</div>
 						<div class="user-fav">
 							<p>Account Details</p>
 							<ul>
-								<li class="active"><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); sheet = 'profile'">Profile</a></li>
-								<li><a href="javascript:void(0)"
+								<li x-bind:class="sheet == 'profile' ?  'active' : '' "><a href="javascript:void(0)"
+										x-on:click="sheet = 'profile'">Profile</a></li>
+								<li x-bind:class="sheet == 'favorite' ?  'active' : '' "><a href="javascript:void(0)"
 										x-on:click="loadingFavorite()">Favorite movies</a></li>
-								<li><a href="javascript:void(0)"
+								<li x-bind:class="sheet == 'rate' ?  'active' : '' "><a href="javascript:void(0)"
 										x-on:click="loadingRating()">Rated movies</a></li>
+								<li x-bind:class="sheet == 'ticket' ?  'active' : '' "><a href="javascript:void(0)"
+										x-on:click="loadingTicket()">Ticket movies</a></li>
 							</ul>
 						</div>
 						<div class="user-fav">
 							<p>Others</p>
 							<ul>
-								<li><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); sheet = 'change password'">Change
+								<li x-bind:class="sheet == 'favorite' ?  'change_password' : '' "><a href="javascript:void(0)"
+										x-on:click="sheet = 'change_password'">Change
 										password</a></li>
 							</ul>
 						</div>
@@ -105,7 +107,7 @@ Profile
 							</div>
 						</form>
 					</div>
-					<div class="form-style-1 user-pro" x-show="sheet === 'change password'">
+					<div class="form-style-1 user-pro" x-show="sheet === 'change_password'">
 						<form action="#" class="password">
 							<h4>Change password</h4>
 							<div class="row">
@@ -222,6 +224,50 @@ Profile
 							</div>
 						</div>
 					</div>
+					<div x-show="sheet === 'ticket'">
+						<div class="topbar-filter">
+							<p>Found <span x-text="ticketData.total" style="margin: 0"></span> tickets in total</p>
+							<label>Sort by:</label>
+							<select x-model="ticketData.sort">
+								<template x-for="(option, index) in Object.values(sortType)" :key="index">
+									<option x-bind:value="option.value" x-text="option.label"></option>
+								</template>
+							</select>
+						</div>
+						<template x-if="ticketData.movies">
+							<div>
+								<template x-for="(ticket, index) in ticketData.movies">
+									<div class="movie-item-style-2 userrate">
+										<img x-bind:src="ticket.movie.poster" alt="">
+										<div class="mv-item-infor">
+											<h6><a x-bind:href="'/movie/'+ ticket.movie.id" x-text="ticket.movie.name"></a></h6>
+											<p class="time sm-text">your rate:</p>
+											<p class="rate"><i class="ion-android-star"></i><span x-text="ticket.rate"></span> /10</p>
+											{{!-- <p class="time sm-text">your reviews:</p>
+											<h6>Best Marvel movie in my opinion</h6> --}}
+											<p class="time sm" x-text="getDate(ticket.creationDate)"></p>
+											<p x-text="ticket.movie.content"></p>
+										</div>
+									</div>
+								</template>
+							</div>
+						</template>	
+						<div class="topbar-filter">
+							<label>Movies per page:</label>
+							<select x-model="ticketData.numberShow">
+								<option value="5">5</option>
+								<option value="10">10</option>
+							</select>
+
+							<div class="pagination2">
+								<span>Page <span x-text="ticketData.currentPage" style="margin: 0"></span> of <span x-text="ticketData.page"></span>:</span>
+								<template x-for="(page, index) in Array(ticketData.page)">
+									<a x-bind:class="(ticketData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)" x-text="index + 1" @click="fetchTicketDataPage(page)"></a>
+								</template>
+							</div>
+						</div>
+						
+					</div>
 				</div>
 			</div>
 		</div>
@@ -271,9 +317,30 @@ Profile
 			});
 		};
 
+		const fetchTicketUser = function(offset, limit, sort) {
+			return new Promise((resolve, reject) => {
+				fetch(`/ticket/user/fetch?offset=${offset}&limit=${limit}&sort=${sort}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							resolve(data);
+						}
+						else {
+							throw data.message;
+						}
+					})
+					.catch(function(error) {
+						throw error;
+					})
+			});
+		};
+
 
 		return {
-			sheet: 'profile', 
+			sheet: 'profile',
+			avatar: '{{avatar}}'; 
 			favoriteData: {
 				total: 0,
 				page: 1,
@@ -283,6 +350,15 @@ Profile
 				numberShow: 5
 			},
 			ratingData: {
+				total: 0,
+				page: 1,
+				currentPage: 1,
+				sort: 'name',
+				movies: [],
+				show: [],
+				numberShow: 5
+			},
+			ticketData: {
 				total: 0,
 				page: 1,
 				currentPage: 1,
@@ -404,28 +480,39 @@ Profile
 						console.log(error);
 					})
 			},
-			prevPageRate(event) {
-				this.ratingData.currentPage--;
+			fetchTicketDataPage(page) {
+				this.ticketData.currentPage = page + 1;
 
-				fetchRatingMovies(this.ratingData.numberShow)
+				fetchTicketMovies(page * this.ticketData.numberShow, this.ticketData.numberShow)
 					.then((data) => {
-						this.ratingData.movies = data.data;	
+						this.ticketData.movies = data.data;	
 					})
 					.catch((error) => {
 						console.log(error);
-					})
+					})	
 			},
-			nextPageRate(event) {
-				this.ratingData.currentPage++;
-
-				fetchRatingMovies(this.ratingData.numberShow)
-					.then((data) => {
-						this.ratingData.movies = data.data;	
+			loadingTicket() {
+				this.sheet = 'ticket';
+				
+				fetch(`/ticket/user`)
+					.then(function(response) { 
+						return response.json();
 					})
-					.catch((error) => {
+					.then((data) => {
+						if(data.isSuccess) {
+							this.ticketData.total = data.data.totalTicket;
+							this.ticketData.page = Math.ceil(this.ticketData.total / this.ticketData.numberShow);
+							
+							return fetchTicketUser(0, this.ticketData.numberShow, this.ticketData.sort);
+						}
+					})
+					.then((data) => {
+						this.ticketData.movies = data.data;
+					})
+					.catch(function(error) {
 						console.log(error);
 					})
-			},
+			}
 			getDate(string) {
 				const date = new Date(string);
 
@@ -433,6 +520,34 @@ Profile
 			},
 			createArray(number) {
 				return Array.from({ length: number }, (_item, index) => index);
+			},
+			loadImageFile(event) {
+				const files = event.target.files;
+
+				if(!files.length || files[0].size > 5e6) {
+					alert("File to large, limit is 5MB");
+					return;
+				}
+
+				const render = new FileReader();
+				render.onload = function() {
+					$('avatar').attr('src', this.result);
+				}
+				render.onerror = function(event) {
+					alert("Failed to read file!\n\n" + reader.error);;
+					this.abort();
+				}
+
+				render.readAsDataURL(files[0]);
+			},
+			uploadAvatar() {
+				axios.put('/user/avatar', { avatar: this.avatar })
+					.then((response) => {
+						alert(response.data.message);
+					})
+					.catch((error) => {
+						alert('upload file falied');
+					})
 			},
 			setWatch(watch) {
 				watch('favoriteData.sort', () => this.fetchFavoriteDataPage(0));

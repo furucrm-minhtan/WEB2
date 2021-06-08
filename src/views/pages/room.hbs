@@ -186,7 +186,7 @@ Booking Ticket
             groups,
             theaters,
             bookingSeat(el, seatId) {
-                axios.post('/api/ticket', { seatId, showId: this.showSelected })
+                axios.post('/ticket', { seatId, showId: this.showSelected })
                     .then(() => {
                         alert('success');
                         $(el).attr('src', '/images/seat01-booked.png')

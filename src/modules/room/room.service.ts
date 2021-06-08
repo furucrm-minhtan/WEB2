@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import * as moment from 'moment';
+import moment from 'moment';
 import { operatorsAliases } from 'src/core/config/sequelize.config';
 import { ShowTime } from '../showTime/showtime.model';
 import { Room } from './room.model';

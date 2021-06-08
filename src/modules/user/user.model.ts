@@ -23,6 +23,9 @@ export class User extends BaseModel<User> {
   @Column
   id: number;
 
+  @Column({ type: DataType.TEXT, allowNull: true })
+  avatar: string;
+
   @AllowNull(false)
   @Column
   name: string;

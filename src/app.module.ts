@@ -1,3 +1,5 @@
+import { SmsModule } from './modules/sms/sms.module';
+import { SmsService } from './modules/sms/sms.service';
 import { HomeModule } from './modules/home/home.module';
 import { HomeService } from './modules/home/home.service';
 import { CategoryModule } from './modules/category/category.module';
@@ -34,6 +36,7 @@ import { UserController } from './modules/user/user.controller';
 
 @Module({
   imports: [
+    SmsModule,
     HomeModule,
     CategoryModule,
     AdminModule,
