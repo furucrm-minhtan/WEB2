@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Movie } from './movie.model';
-import * as moment from 'moment';
+import moment from 'moment';
 import { operatorsAliases } from 'src/core/config/sequelize.config';
 import { GroupTheater } from '../groupTheater/groupTheater.model';
 import { Theater } from '../theater/theater.model';
