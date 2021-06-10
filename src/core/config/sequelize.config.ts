@@ -55,40 +55,58 @@ export const operatorsAliases = {
   $col: Op.col
 };
 
+const CommonBasicSequelize = (
+  configService: ConfigService
+): SequelizeModuleOptions => ({
+  dialect: configService.get('DB_DRIVER') || 'mysql',
+  host: configService.get('DB_HOST') || 'localhost',
+  port: configService.get('DB_PORT') || 3306,
+  username: configService.get('DB_USERNAME') || 'root',
+  password: configService.get('DB_PASSWORD'),
+  database: configService.get('DB_NAME') || 'local',
+  autoLoadModels: true,
+  synchronize: true,
+  models: [
+    User,
+    Ticket,
+    Theater,
+    ShowTime,
+    Seat,
+    Room,
+    Movie,
+    GroupTheater,
+    Review,
+    Category,
+    Bookmark,
+    TheaterMovie
+  ],
+  operatorsAliases
+});
+
+const localSequelize = (configService: ConfigService): SequelizeModuleOptions =>
+  CommonBasicSequelize(configService);
+
+const productionSequelize = (
+  configService: ConfigService
+): SequelizeModuleOptions => {
+  return {
+    ...CommonBasicSequelize(configService),
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: false,
+        require: true
+      }
+    }
+  };
+};
+
 export default class SequelizeConfig {
   static getSequelizeConfig(
-    configService: ConfigService,
-    operatorsAliases: any
+    configService: ConfigService
   ): SequelizeModuleOptions {
-    return {
-      dialect: configService.get('DB_DRIVER') || 'mysql',
-      host: configService.get('DB_HOST') || 'localhost',
-      port: configService.get('DB_PORT') || 3306,
-      username: configService.get('DB_USERNAME') || 'root',
-      password: configService.get('DB_PASS'),
-      database: configService.get('DB_NAME') || 'local',
-      autoLoadModels: true,
-      synchronize: true,
-      ssl: configService.get('SSL') || false,
-      models: [
-        User,
-        Ticket,
-        Theater,
-        ShowTime,
-        Seat,
-        Room,
-        Movie,
-        GroupTheater,
-        Review,
-        Category,
-        Bookmark,
-        TheaterMovie
-      ],
-      operatorsAliases
-      // sync: {
-      //   force: true
-      // }
-    };
+    return configService.get('ENVIRONMENT') === 'local'
+      ? localSequelize(configService)
+      : productionSequelize(configService);
   }
 }
 
@@ -97,6 +115,6 @@ export const sequelizeConfigAsync: SequelizeModuleAsyncOptions = {
   useFactory: async (
     configService: ConfigService
   ): Promise<SequelizeModuleOptions> =>
-    SequelizeConfig.getSequelizeConfig(configService, operatorsAliases),
+    SequelizeConfig.getSequelizeConfig(configService),
   inject: [ConfigService]
 };

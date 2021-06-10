@@ -13,6 +13,9 @@ import { PagingDTO } from '../app.dto';
 import { UserSession } from '../authen/dto/authen.dto';
 import { Movie } from '../movie/movie.model';
 import { ShowTime } from '../showTime/showtime.model';
+import { SmsService } from '../sms/sms.service';
+import { User } from '../user/user.model';
+import { UserService } from '../user/user.service';
 import { TicketBooking } from './dto/ticket.dto';
 import { Ticket } from './ticket.model';
 import { TicketService } from './ticket.service';
@@ -21,6 +24,8 @@ import { TicketService } from './ticket.service';
 export class TicketController {
   constructor(
     private readonly ticketService: TicketService,
+    private readonly userService: UserService,
+    private readonly smsService: SmsService,
     private readonly actionResponseService: ActionResponseService
   ) {}
 
@@ -67,6 +72,12 @@ export class TicketController {
   ): Promise<Record<string, any>> {
     try {
       await this.ticketService.booking({ seatId, showId, userId });
+      const user: User = await this.userService.getUser(userId);
+      if (user?.phone)
+        this.smsService.send({
+          to: user.phone,
+          text: 'thank for booking ticket'
+        });
 
       return this.actionResponseService.responseApi(true, '', '');
     } catch (error) {
