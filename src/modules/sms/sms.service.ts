@@ -6,17 +6,17 @@ import Vonage from '@vonage/server-sdk';
 export class SmsService {
   private vonage;
 
-  constructor(configService: ConfigService) {
+  constructor(private readonly configService: ConfigService) {
     this.vonage = new Vonage({
       apiKey: configService.get('SMS_APIKEY') || 'a02f0851',
       apiSecret: configService.get('SMS_SECRETKEY') || 'yDfj8JCtn1cbQfaG'
     });
   }
 
-  send({ from, to, text }): Promise<any> {
+  send({ to, text }): Promise<any> {
     return new Promise((resolve, reject) => {
       this.vonage.message.sendSms(
-        from,
+        this.configService.get('SMS_FROM'),
         to,
         text,
         (err: string, responseData: Record<string, any>) => {
