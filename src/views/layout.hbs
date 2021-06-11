@@ -35,7 +35,7 @@
     <div class="login-wrapper" id="forgot-password-content" x-data="{ email: '' }">
         <div class="login-content">
             <a href="#" class="close">x</a>
-            <h3>Forgot Password</h3>
+            <h3>Quên mật khẩu ?</h3>
             <form method="post">
                 <div class="row">
                     <label for="username">
@@ -45,7 +45,7 @@
                     </label>
                 </div>
                 <div class="row">
-                    <button x-on:click="forgotPassword($event, email)">submit</button>
+                    <button x-on:click="forgotPassword($event, email)">Gửi</button>
                 </div>
             </form>
         </div>
@@ -53,11 +53,11 @@
     <div class="login-wrapper" id="login-content" x-data="{ userName: '', password: ''}">
         <div class="login-content">
             <a href="#" class="close">x</a>
-            <h3>Login</h3>
+            <h3>Đăng Nhập</h3>
             <form method="post">
                 <div class="row">
                     <label for="username">
-                        Username:
+                        Tài khoản:
                         <input x-model="userName" type="text" name="username" id="username"
                             pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{8,20}$" required="required" />
                     </label>
@@ -65,7 +65,7 @@
 
                 <div class="row">
                     <label for="password">
-                        Password:
+                        Mật khẩu:
                         <input x-model="password" type="password" name="password" id="password"
                             pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
                             required="required" />
@@ -74,17 +74,17 @@
                 <div class="row">
                     <div class="remember">
                         <div>
-                            <input type="checkbox" name="remember" value="Remember me"><span>Remember me</span>
+                            <input type="checkbox" name="remember" value="Remember me"><span>Lưu thông tin</span>
                         </div>
-                        <a href="#" class="forgotPasswordLink">Forget password ?</a>
+                        <a href="#" class="forgotPasswordLink">Quên mật khẩu ?</a>
                     </div>
                 </div>
                 <div class="row">
-                    <button  x-on:click="loginHandler($event, { userName, password })">Login</button>
+                    <button  x-on:click="loginHandler($event, { userName, password })">Đăng nhập</button>
                 </div>
             </form>
             <div class="row">
-                <p>Or via social</p>
+                <p>Mạng xã hội</p>
                 <div class="social-btn-2">
                     <a class="fb" href="#"><i class="ion-social-facebook"></i>Facebook</a>
                     <a class="tw" href="#"><i class="ion-social-twitter"></i>twitter</a>
@@ -96,11 +96,11 @@
     <div class="login-wrapper" id="signup-content" x-data="{ user_name: '', email: '', password: '', confPassword: '' }">
         <div class="login-content">
             <a href="#" class="close">x</a>
-            <h3>sign up</h3>
+            <h3>Đăng Ký</h3>
             <form method="post" action="#">
                   <div class="row">
                     <label for="username-2">
-                        Full Name:
+                        Họ và tên:
                         <input x-model="name" type="text" name="name" id="full-name"
                             required="required" />
                     </label>
@@ -108,7 +108,7 @@
 
                 <div class="row">
                     <label for="username-2">
-                        Username:
+                        Tài khoản:
                         <input x-model="user_name" type="text" name="username" id="username-2"
                             pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{8,20}$" required="required" />
                     </label>
@@ -116,7 +116,7 @@
 
                 <div class="row">
                     <label for="email-2">
-                        your email:
+                        Email:
                         <input x-model="email" type="text" name="email" id="email-2"
                             pattern="^[^\s@]+@[^\s@]+$"
                             required="required" />
@@ -124,7 +124,7 @@
                 </div>
                 <div class="row">
                     <label for="password-2">
-                        Password:
+                        Mật khẩu:
                         <input x-model="password" type="password" name="password" id="password-registrantion"
                             pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
                             required="required" />
@@ -132,14 +132,14 @@
                 </div>
                 <div class="row">
                     <label for="repassword-2">
-                        re-type Password:
+                        Xác minh mật khẩu:
                         <input x-model="confPassword" type="password" name="password" id="repassword-registration"
                             pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
                             required="required" />
                     </label>
                 </div>
                 <div class="row">
-                    <button type="submit" @click="registration($event, { user_name, email, password, name}, confPassword)">sign up</button>
+                    <button type="submit" @click="registration($event, { user_name, email, password, name}, confPassword)">Đăng ký</button>
                 </div>
             </form>
         </div>
@@ -241,13 +241,13 @@
                             <li class="dropdown">
                                 <a href="#" class="user_icon btn btn-default dropdown-toggle lv1" data-toggle="dropdown"><i class="fas fa-user"></i></a>
                                 <ul class="dropdown-menu level1">
-                                    <li><a href="/dashboard">Profile</a></li>
-                                    <li><a href="/authen/logout">Logout</a></li>
+                                    <li><a href="/dashboard">Thông tin cá nhân</a></li>
+                                    <li><a href="/authen/logout">Đăng xuất</a></li>
                                 </ul>
                             </li>
                         {{else}}
-                            <li class="loginLink"><a href="#">LOG In</a></li>
-                            <li class="btn signupLink"><a href="#">sign up</a></li>
+                            <li class="loginLink"><a href="#">Đăng nhập</a></li>
+                            <li class="btn signupLink"><a href="#">Đăng ký</a></li>
                         {{/if}}
                     </ul>
                 </div>
@@ -302,9 +302,9 @@
                 <div class="flex-child-ft item3">
                     <h4>Legal</h4>
                     <ul>
-                        <li><a href="#">Terms of Use</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Điều khoản sử dụng</a></li>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#">An toàn</a></li>
                     </ul>
                 </div>
                 <div class="flex-child-ft item4">
@@ -322,7 +322,7 @@
                     <form action="#">
                         <input type="text" placeholder="Enter your email...">
                     </form>
-                    <a href="#" class="btn">Subscribe now <i class="ion-ios-arrow-forward"></i></a>
+                    <a href="#" class="btn">Đăng ký ngay <i class="ion-ios-arrow-forward"></i></a>
                 </div>
             </div>
         </div>
