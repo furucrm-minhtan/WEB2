@@ -28,6 +28,62 @@
     <!-- CSS files -->
     <link rel="stylesheet" href="/css/plugins.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/fontawesome/all.min.css" />
+    <style>
+        .search {
+            position: relative;
+            width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            display: flex;
+        }
+
+        .search-input input[type=text] {
+            border: none;
+            border-bottom: 1px solid;
+            background: transparent;
+            color: #fff;
+        }
+
+        .search-result {
+            position: absolute;
+            top: 10;
+            left: 0;
+            right: 0;
+            z-index: 1000; 
+            display: flex;
+        }
+
+        .search-image {
+            max-width: 100px;
+        }
+
+        .search-content {
+            margin-left: 10px;
+            margin-top: 10px;
+            border-bottom: 1px solid;
+        }
+
+        .search-content h3 {
+            color: #fff;
+        }
+
+        .search-content P:last-child {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            width: 250px;
+        }
+
+        .search-result .search-content, .search-result .search-image {
+            flex: 1 1 auto;   
+            margin-top: 10px;
+        }
+    </style>
+
     {{{block "style"}}}
 </head>
 
@@ -164,6 +220,36 @@
                         <li class="hidden">
                             <a href="#page-top"></a>
                         </li>
+                        <li class="dropdown first">
+                            <a class="btn btn-default dropdown-toggle lv1" data-toggle="dropdown">
+                                Category <i class="fa fa-angle-down" aria-hidden="true"></i>
+                            </a>
+                            <ul class="dropdown-menu level1" style="color: #fff">
+                                {{#each categories}}
+                                    <li>
+                                        <a href="/movie-list/{{ id }}">{{name}}</a>
+                                    </li>
+                                {{/each  }}
+                            </ul>
+                        </li>
+                        <li class="search" x-data="initSearch()">
+                            <div class="search-input">
+                                <input type="text" x-on:input.debound.500="fetchMovies($event.target.value)"/>
+                                <i class="icon-search"></i>
+                            </div>
+                            <div class="search-result" x-show="movies.length">
+                                <template x-for="movie in movies">
+                                     <div class="search-image">
+                                        <img x-bind:src="poster" />
+                                    </div>
+                                    <div class="search-content">
+                                        <h4 x-text="title"></h4>
+                                        <p><i class="ion-android-star"></i><span x-text="movie_rate"></span> /10</p>
+                                        {{!-- <p>Deleniti tempora eos doloremque in pariatur debitis blanditiis delectus cumque. Repellendus dolorum fugiat rerum accusantium magnam pariatur consequatur ad mollitia. Beatae commodi nam. Omnis cumque vitae pariatur maiores incidunt laudantium consectetur voluptatibus fuga. Officia consequatur quia necessitatibus maxime aperiam non sit vel.</p> --}}
+                                    </div>
+                                </template>
+                            </div>
+                        </li>
                         {{!-- <li class="dropdown first">
                             <a class="btn btn-default dropdown-toggle lv1" data-toggle="dropdown">
                                 Home <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -254,26 +340,28 @@
                 <!-- /.navbar-collapse -->
             </nav>
 
-            <div class="top-search" x-data="initSearch()">
-                <select>
-                    <option value="united">TV show</option>
-                    <option value="saab">Others</option>
-                </select>
-                <input type="text" x-on:input.debound.500="fetchMovies($event.target.value)"/>
+            {{!-- <div>
+                <div class="top-search" x-data="initSearch()">
+                    <select>
+                        <option value="united">TV show</option>
+                        <option value="saab">Others</option>
+                    </select>
+                    <input type="text" x-on:input.debound.500="fetchMovies($event.target.value)"/>
+                    <template>
+
+                    </template>
+                </div>
                 <div class="search-result">
-                    {{!-- <div class="search-image">
+                    <div class="search-image">
                         <img src="http://dummyimage.com/180x250.png/cc0000/ffffff" />
-                    </div> --}}
+                    </div>
                     {{!-- <div class="search-content">
                         <h3>Human Communications Planner</h3>
                         <p><i class="ion-android-star"></i><span>7.4</span> /10</p>
                         <p>Deleniti tempora eos doloremque in pariatur debitis blanditiis delectus cumque. Repellendus dolorum fugiat rerum accusantium magnam pariatur consequatur ad mollitia. Beatae commodi nam. Omnis cumque vitae pariatur maiores incidunt laudantium consectetur voluptatibus fuga. Officia consequatur quia necessitatibus maxime aperiam non sit vel.</p>
                     </div> --}}
                 </div>
-                <template>
-
-                </template>
-            </div>
+            </div> --}}
         </div>
     </header>
 
@@ -409,10 +497,10 @@
             return {
                 movies: [],
                 loading: false,
-                fetchMovie() {
-                    fetch('/search')    
+                fetchMovies(key) {
+                    fetch(`/search?name=${key}`)    
                     .then((raw) => raw.json())
-                    then((data) => {
+                    .then((data) => {
                        if(data.isSuccess) {
                             this.movies = data.data;
                        }

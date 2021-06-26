@@ -8,9 +8,7 @@ import { GroupTheaterOptions } from '../groupTheater/dto/groupTheater.dto';
 import { TheaterOptions } from '../theater/dto/theater.dto';
 import { MovieDetail, MovieItem } from './dto/movie.dto';
 import { User } from '../user/user.model';
-import { Review } from '../review/review.model';
-import { col, fn, where } from 'sequelize';
-import { literal } from 'sequelize';
+import { col, fn } from 'sequelize';
 const { $between, $eq } = operatorsAliases;
 
 @Injectable()
@@ -19,6 +17,10 @@ export class MovieService {
     @Inject('MOVIES_REPOSITORY')
     private movieRepository: typeof Movie
   ) {}
+
+  async count(options = {}) {
+    return this.movieRepository.count(options);
+  }
 
   async findAll(options = {}): Promise<Movie[]> {
     return this.movieRepository.findAll<Movie>(options);
