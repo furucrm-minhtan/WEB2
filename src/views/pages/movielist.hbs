@@ -1,0 +1,290 @@
+{{#contentFor  'title'}}
+Movie List
+{{/contentFor}}
+
+{{>loading  }}
+
+<div x-data="init()" x-init="loadingMovie()">
+	<div class="hero common-hero">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="hero-ct">
+						<h1> movie listing - list</h1>
+						<ul class="breadcumb">
+							<li class="active"><a href="/">Home</a></li>
+							<li><span class="ion-ios-arrow-right"></span> movie listing
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="page-single movie_list">
+		<div class="container">
+			<div class="row ipad-width2">
+				<div class="col-md-8 col-sm-12 col-xs-12">
+					<div class="topbar-filter">
+						<p>Found <span x-text="movieData.total"></span> movies in total</p>
+						<label>Sort by:</label>
+						<select x-model="movieData.sort">
+				            <template x-for="(option, index) in Object.values(sortType)" :key="index">
+                                <option x-bind:value="option.value" x-text="option.label"></option>
+                            </template>
+                        </select>
+						{{!-- <a href="movielist.html" class="list"><i
+								class="ion-ios-list-outline active"></i></a>
+						<a href="moviegrid.html" class="grid"><i class="ion-grid"></i></a> --}}
+					</div>
+					<template x-for="movie in movieData.movies" :key="movie.id">
+						<div class="movie-item-style-2">
+							<img x-bind:src="movie.poster" alt="">
+							<div class="mv-item-infor">
+								<h6><a x-bind:href="'/movie/' + movie.id" x-text="movie.name"></a>
+								</h6>
+								<p class="rate"><i class="ion-android-star"></i><span x-text="decimalFix(movie['userReviews.movie_rate'] ?? '0')"></span>
+									/10</p>
+								<p class="describe" x-text="movie.describe"></p>
+								<p class="run-time"> Run Time: <span x-text="movie.run_time"></span> . MMPA: <span x-text="movie.MMPA_rating"></span>
+									. Release: <span x-text="getDate(movie.publish)"></span></p>
+								<p>Director: <a href="#" x-text="movie.director">Joss Whedon</a></p>
+								{{!-- <p>Stars: <a href="#">Robert Downey Jr.,</a> <a href="#">Chris
+										Evans,</a> <a href="#"> Chris Hemsworth</a></p> --}}
+							</div>	
+						</div>
+					</template>
+					<div class="topbar-filter">
+						<label>Movies per page:</label>
+						<select x-model="movieData.numberShow">
+							<option value="5">5</option>
+							<option value="10">10</option>
+						</select>
+					
+						<div class="pagination2">
+							<span>Page <span style="margin-right: 0" x-text="movieData.currentPage"></span> of <span
+									x-text="movieData.page"></span>:</span>
+							<template x-for="(page, index) in createArray(movieData.page)">
+								<a x-bind:class="(movieData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)"
+									x-text="index + 1" @click="fetchMovieDataPage(page)"></a>
+							</template>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-12 col-xs-12">
+					<div class="sidebar">
+						<div class="searh-form">
+							<h4 class="sb-title">Search for movie</h4>
+							<form class="form-style-1" action="#">
+								<div class="row">
+									<div class="col-md-12 form-it">
+										<label>Movie name</label>
+										<input type="text"
+											placeholder="Enter keywords">
+									</div>
+									<div class="col-md-12 form-it">
+										<label>Genres & Subgenres</label>
+										<div class="group-ip">
+											<select name="skills"
+												multiple=""
+												class="ui fluid dropdown">
+												<option value="">Enter
+													to filter genres
+												</option>
+												<option value="Action1">
+													Action 1
+												</option>
+												<option value="Action2">
+													Action 2
+												</option>
+												<option value="Action3">
+													Action 3
+												</option>
+												<option value="Action4">
+													Action 4
+												</option>
+												<option value="Action5">
+													Action 5
+												</option>
+											</select>
+										</div>
+
+									</div>
+									<div class="col-md-12 form-it">
+										<label>Rating Range</label>
+
+										<select>
+											<option value="range">-- Select
+												the rating range below
+												--</option>
+											<option value="saab">-- Select
+												the rating range below
+												--</option>
+											<option value="saab">-- Select
+												the rating range below
+												--</option>
+											<option value="saab">-- Select
+												the rating range below
+												--</option>
+										</select>
+
+									</div>
+									<div class="col-md-12 form-it">
+										<label>Release Year</label>
+										<div class="row">
+											<div class="col-md-6">
+												<select>
+													<option
+														value="range">
+														From
+													</option>
+													<option
+														value="number">
+														10
+													</option>
+													<option
+														value="number">
+														20
+													</option>
+													<option
+														value="number">
+														30
+													</option>
+												</select>
+											</div>
+											<div class="col-md-6">
+												<select>
+													<option
+														value="range">
+														To
+													</option>
+													<option
+														value="number">
+														20
+													</option>
+													<option
+														value="number">
+														30
+													</option>
+													<option
+														value="number">
+														40
+													</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-12 ">
+										<input class="submit" type="submit"
+											value="submit">
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="ads">
+							<img src="images/uploads/ads1.png" alt="">
+						</div>
+						<div class="sb-facebook sb-it">
+							<h4 class="sb-title">Find us on Facebook</h4>
+							<iframe src="#"
+								data-src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftemplatespoint.net%2F%3Ffref%3Dts&tabs=timeline&width=340&height=315px&small_header=true&adapt_container_width=false&hide_cover=false&show_facepile=true&appId"
+								height="315"
+								style="width:100%;border:none;overflow:hidden"></iframe>
+						</div>
+						<div class="sb-twitter sb-it">
+							<h4 class="sb-title">Tweet to us</h4>
+							<div class="slick-tw">
+								<div class="tweet item" id="">
+									<!-- Put your twiter id here -->
+								</div>
+								<div class="tweet item" id="">
+									<!-- Put your 2nd twiter account id here -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{{#contentFor "scripts"}}
+<script>
+	function init() {
+		const fetchMovies = function(offset, limit, sort) {
+			const cateId = '{{cateId}}';
+			return new Promise((resolve, reject) => {
+				fetch(`/movie-list/${cateId}/fetch?offset=${offset}&limit=${limit}&sort=${sort}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							resolve(data);
+						}
+						else {
+							throw data.message;
+						}
+					})
+					.catch(function(error) {
+						throw error;
+					})
+			});
+		};
+
+
+		return {
+			movieData: {
+				total: '{{totalMovie}}',
+				page: 1,
+				currentPage: 1,
+				sort: 'name',
+				movies: [],
+				numberShow: 5
+			},
+			sortType: [
+				{ value: 'name', label: 'name' },
+				{ value: 'publish', label: 'publish date' }
+			],
+			fetchMovieDataPage(page) {
+				this.movieData.currentPage = page + 1;
+
+				fetchMovies(page * this.movieData.numberShow, this.movieData.numberShow, this.movieData.sort)
+					.then((data) => {
+						this.movieData.movies = data.data;	
+					})
+					.catch((error) => {
+						console.log(error);
+					})	
+			},
+			loadingMovie() {
+				this.movieData.page = Math.ceil(this.movieData.total / this.movieData.numberShow);
+
+				fetchMovies(0, this.movieData.numberShow, this.movieData.sort)
+					.then((data) => {
+						this.movieData.movies = data.data;
+					})
+					.catch(function(error) {
+						console.log(error);
+					})
+			},
+			getDate(string) {
+				const date = new Date(string);
+
+				return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+			},
+			createArray(number) {
+				return Array.from({ length: number }, (_item, index) => index);
+			},
+			decimalFix(value, fix = 2) {
+    			return Number(value) ? parseFloat(value).toFixed(fix) : 0;
+			},
+			setWatch(watch) {
+				watch('movieData.sort', () => this.fetchMovieDataPage(0));
+				watch('movieData.numberShow', () => this.fetchMovieDataPage(0));
+			}
+		}
+	}
+</script>
+{{/contentFor }}
