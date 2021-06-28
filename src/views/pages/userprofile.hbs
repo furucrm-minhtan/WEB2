@@ -25,7 +25,7 @@ Profile
 					<div class="hero-ct">
 						<ul class="breadcumb">
 							<h1 class="mr_0 mb_10">{{user_name}}</h1>
-							<li class="active"><a href="#">Home</a></li>
+							<li class="active"><a href="#">Trang chủ</a></li>
 							<li><span class="ion-ios-arrow-right"></span><span x-text="sheet" class="mr_0"></span></li>
 						</ul>
 					</div>
@@ -40,28 +40,27 @@ Profile
 					<div class="user-information">
 						<div class="user-img">
 							<a href="javascript:void(0)"><img id="avatar" x-bind:src="avatar ? avatar : 'images/uploads/user-img.png'" alt="" onclick="$('#upload-avatar').click()"><br></a>
-							<a href="javascript:void(0)" class="redbtn" @click="uploadAvatar()">Change avatar</a>
+							<a href="javascript:void(0)" class="redbtn" @click="uploadAvatar()">Đổi ảnh đại diện</a>
 							<input id="upload-avatar" type="file" x-show="false" accept="image/*" x-on:change="loadImageFile($event)"/>
 						</div>
 						<div class="user-fav">
-							<p>Account Details</p>
+							<p>Chi tiết tài khoản</p>
 							<ul>
 								<li x-bind:class="sheet == 'profile' ?  'active' : '' "><a href="javascript:void(0)"
-										x-on:click="sheet = 'profile'">Profile</a></li>
+										x-on:click="sheet = 'profile'">Thông tin cá nhân</a></li>
 								<li x-bind:class="sheet == 'favorite' ?  'active' : '' "><a href="javascript:void(0)"
-										x-on:click="loadingFavorite()">Favorite movies</a></li>
+										x-on:click="loadingFavorite()">Bộ phim yêu thích</a></li>
 								<li x-bind:class="sheet == 'rate' ?  'active' : '' "><a href="javascript:void(0)"
-										x-on:click="loadingRating()">Rated movies</a></li>
+										x-on:click="loadingRating()">Bộ phim được đánh giá</a></li>
 								<li x-bind:class="sheet == 'ticket' ?  'active' : '' "><a href="javascript:void(0)"
-										x-on:click="loadingTicket()">Ticket movies</a></li>
+										x-on:click="loadingTicket()">Vé xem phim</a></li>
 							</ul>
 						</div>
 						<div class="user-fav">
 							<p>Others</p>
 							<ul>
 								<li x-bind:class="sheet == 'favorite' ?  'change_password' : '' "><a href="javascript:void(0)"
-										x-on:click="sheet = 'change_password'">Change
-										password</a></li>
+										x-on:click="sheet = 'change_password'">Thay đổi mật khẩu</a></li>
 							</ul>
 						</div>
 					</div>
@@ -69,34 +68,34 @@ Profile
 				<div class="col-md-9 col-sm-12 col-xs-12">
 					<div class="form-style-1 user-pro" action="#" x-show="sheet === 'profile'">
 						<form class="user">
-							<h4>Profile details</h4>
+							<h4>Chi Tiết Thông Tin Cá Nhân</h4>
 							<div class="row">
 								<div class="col-md-6 form-it">
-									<label>Username</label>
+									<label>Tài khoản</label>
 									<input type="text" x-model="userForm.user_name">
 								</div>
 								<div class="col-md-6 form-it">
-									<label>Email Address</label>
+									<label>Địa chỉ Email</label>
 									<input type="text" x-model="userForm.email">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
-									<label>Name</label>
+									<label>Tên</label>
 									<input type="text" x-model="userForm.name">
 								</div>
 								<div class="col-md-6 form-it">
-									<label>Phone</label>
+									<label>Số điện thoại</label>
 									<input type="text" x-model="userForm.phone">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
-									<label>Address</label>
+									<label>Địa chỉ</label>
 									<input type="text" x-model="userForm.address">
 								</div>
 								<div class="col-md-6 form-it">
-									<label>City</label>
+									<label>Thành phố</label>
 									<input type="text" x-model="userForm.city">
 								</div>
 							</div>
@@ -109,22 +108,22 @@ Profile
 					</div>
 					<div class="form-style-1 user-pro" x-show="sheet === 'change_password'">
 						<form action="#" class="password">
-							<h4>Change password</h4>
+							<h4>Thay Đổi Mật Khẩu</h4>
 							<div class="row">
 								<div class="col-md-6 form-it">
-									<label>Old Password</label>
+									<label>Mật khẩu cũ</label>
 									<input type="text" x-model="passwordForm.oldPassword">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
-									<label>New Password</label>
+									<label>Mật khẩu mới</label>
 									<input type="text" x-model="passwordForm.newPassword">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
-									<label>Confirm New Password</label>
+									<label>Xác minh mật khẩu mới</label>
 									<input type="text" x-model="passwordForm.confPassword">
 								</div>
 							</div>
