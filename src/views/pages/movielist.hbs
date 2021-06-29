@@ -1,5 +1,5 @@
 {{#contentFor  'title'}}
-Movie List
+Danh sách Phim
 {{/contentFor}}
 
 {{>loading  }}
@@ -10,10 +10,10 @@ Movie List
 			<div class="row">
 				<div class="col-md-12">
 					<div class="hero-ct">
-						<h1> movie listing - list</h1>
+						<h1> Danh Sách Phim Đang Chiếu - Danh Sách</h1>
 						<ul class="breadcumb">
-							<li class="active"><a href="/">Home</a></li>
-							<li><span class="ion-ios-arrow-right"></span> movie listing
+							<li class="active"><a href="/">Trang chủ</a></li>
+							<li><span class="ion-ios-arrow-right"></span> Danh sách phim đang chiếu
 							</li>
 						</ul>
 					</div>
@@ -26,7 +26,7 @@ Movie List
 			<div class="row ipad-width2">
 				<div class="col-md-8 col-sm-12 col-xs-12">
 					<div class="topbar-filter">
-						<p>Found <span x-text="movieData.total"></span> movies in total</p>
+						<p>Tổng số <span x-text="movieData.total"></span> phim tìm thấy</p>
 						<label>Sort by:</label>
 						<select x-model="movieData.sort">
 				            <template x-for="(option, index) in Object.values(sortType)" :key="index">
@@ -55,14 +55,14 @@ Movie List
 						</div>
 					</template>
 					<div class="topbar-filter">
-						<label>Movies per page:</label>
+						<label>Phim trên mỗi trang:</label>
 						<select x-model="movieData.numberShow">
 							<option value="5">5</option>
 							<option value="10">10</option>
 						</select>
 					
 						<div class="pagination2">
-							<span>Page <span style="margin-right: 0" x-text="movieData.currentPage"></span> of <span
+							<span>Trang <span style="margin-right: 0" x-text="movieData.currentPage"></span> của <span
 									x-text="movieData.page"></span>:</span>
 							<template x-for="(page, index) in createArray(movieData.page)">
 								<a x-bind:class="(movieData.currentPage == index + 1) ? 'active' : '' " href="javascript:void(0)"
@@ -74,11 +74,11 @@ Movie List
 				<div class="col-md-4 col-sm-12 col-xs-12">
 					<div class="sidebar">
 						<div class="searh-form">
-							<h4 class="sb-title">Search for movie</h4>
+							<h4 class="sb-title">Tìm kiếm phim</h4>
 							<form class="form-style-1" action="#">
 								<div class="row">
 									<div class="col-md-12 form-it">
-										<label>Movie name</label>
+										<label>Tên phim</label>
 										<input type="text"
 											placeholder="Enter keywords">
 									</div>
@@ -111,7 +111,7 @@ Movie List
 
 									</div>
 									<div class="col-md-12 form-it">
-										<label>Rating Range</label>
+										<label>Phạm vi đánh giá</label>
 
 										<select>
 											<option value="range">-- Select
@@ -130,7 +130,7 @@ Movie List
 
 									</div>
 									<div class="col-md-12 form-it">
-										<label>Release Year</label>
+										<label>Năm phát hành</label>
 										<div class="row">
 											<div class="col-md-6">
 												<select>
@@ -185,7 +185,7 @@ Movie List
 							<img src="images/uploads/ads1.png" alt="">
 						</div>
 						<div class="sb-facebook sb-it">
-							<h4 class="sb-title">Find us on Facebook</h4>
+							<h4 class="sb-title">Tìm chúng tôi trên Facebook</h4>
 							<iframe src="#"
 								data-src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftemplatespoint.net%2F%3Ffref%3Dts&tabs=timeline&width=340&height=315px&small_header=true&adapt_container_width=false&hide_cover=false&show_facepile=true&appId"
 								height="315"
