@@ -7,6 +7,8 @@ import {
   Render
 } from '@nestjs/common';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
+import { GroupTheater } from '../groupTheater/groupTheater.model';
+import { GroupTheaterService } from '../groupTheater/grouptheater.service';
 import { Movie } from '../movie/movie.model';
 import { MovieListService } from './movietlist.service';
 
@@ -14,7 +16,8 @@ import { MovieListService } from './movietlist.service';
 export class MovieListController {
   constructor(
     private readonly movieListService: MovieListService,
-    private readonly actionResponseService: ActionResponseService
+    private readonly actionResponseService: ActionResponseService,
+    private readonly groupTheaterService: GroupTheaterService
   ) {}
 
   @Get(':cateId')
@@ -24,13 +27,16 @@ export class MovieListController {
   ): Promise<Record<string, any>> {
     try {
       const totalMovie: number = await this.movieListService.countMovie(cateId);
+      const groups: GroupTheater[] = await this.groupTheaterService.findAll({
+        raw: true
+      });
 
-      return { cateId, totalMovie };
+      return { cateId, totalMovie, groups: JSON.stringify(groups) };
     } catch (error) {
       console.log(error);
     }
 
-    return { cateId, totalMovie: 0 };
+    return { cateId, totalMovie: 0, groups: '' };
   }
 
   @Get(':cateId/fetch')

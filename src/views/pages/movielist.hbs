@@ -86,26 +86,11 @@ Movie List
 										<label>Genres & Subgenres</label>
 										<div class="group-ip">
 											<select name="skills"
-												multiple=""
 												class="ui fluid dropdown">
-												<option value="">Enter
-													to filter genres
-												</option>
-												<option value="Action1">
-													Action 1
-												</option>
-												<option value="Action2">
-													Action 2
-												</option>
-												<option value="Action3">
-													Action 3
-												</option>
-												<option value="Action4">
-													Action 4
-												</option>
-												<option value="Action5">
-													Action 5
-												</option>
+												<option value="">--None--</option>
+												<template x-for="(group, index) in groupTheaters" :key="index">
+													<option value="group.name" x-text="group.name"></option>
+												</template>
 											</select>
 										</div>
 
@@ -235,6 +220,7 @@ Movie List
 
 
 		return {
+			groupTheaters: [],
 			movieData: {
 				total: '{{totalMovie}}',
 				page: 1,

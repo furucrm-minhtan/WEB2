@@ -66,7 +66,7 @@
             border-bottom: 1px solid;
         }
 
-        .search-content h3 {
+        .search-content h4 {
             color: #fff;
         }
 
@@ -81,6 +81,11 @@
         .search-result .search-content, .search-result .search-image {
             flex: 1 1 auto;   
             margin-top: 10px;
+        }
+
+        .search-result {
+            display: flex;
+            flex-direction: column;
         }
     </style>
 
@@ -224,10 +229,10 @@
                             <a class="btn btn-default dropdown-toggle lv1" data-toggle="dropdown">
                                 Category <i class="fa fa-angle-down" aria-hidden="true"></i>
                             </a>
-                            <ul class="dropdown-menu level1" style="color: #fff">
+                            <ul class="dropdown-menu level1">
                                 {{#each categories}}
                                     <li>
-                                        <a href="/movie-list/{{ id }}">{{name}}</a>
+                                        <a href="/movie-list/{{ id }}" style="color: #fff">{{name}}</a>
                                     </li>
                                 {{/each  }}
                             </ul>
@@ -238,14 +243,20 @@
                                 <i class="icon-search"></i>
                             </div>
                             <div class="search-result" x-show="movies.length">
-                                <template x-for="movie in movies">
-                                     <div class="search-image">
-                                        <img x-bind:src="poster" />
-                                    </div>
-                                    <div class="search-content">
-                                        <h4 x-text="title"></h4>
-                                        <p><i class="ion-android-star"></i><span x-text="movie_rate"></span> /10</p>
-                                        {{!-- <p>Deleniti tempora eos doloremque in pariatur debitis blanditiis delectus cumque. Repellendus dolorum fugiat rerum accusantium magnam pariatur consequatur ad mollitia. Beatae commodi nam. Omnis cumque vitae pariatur maiores incidunt laudantium consectetur voluptatibus fuga. Officia consequatur quia necessitatibus maxime aperiam non sit vel.</p> --}}
+                                <template x-for="movie in movies" :key="movie.id">
+                                    <div>
+                                        <div class="search-image">
+                                            <img x-bind:src="movie.poster" />
+                                        </div>
+                                        <div class="search-content">
+                                            <h4 x-text="movie.name"></h4>
+                                            <p><i class="ion-android-star"></i><span x-text="decimalFix(movie['userReviews.movie_rate'] ?? '0')"></span> /10
+                                            </p>
+                                            {{!-- <p>Deleniti tempora eos doloremque in pariatur debitis blanditiis delectus cumque. Repellendus dolorum
+                                                fugiat rerum accusantium magnam pariatur consequatur ad mollitia. Beatae commodi nam. Omnis cumque vitae
+                                                pariatur maiores incidunt laudantium consectetur voluptatibus fuga. Officia consequatur quia necessitatibus
+                                                maxime aperiam non sit vel.</p> --}}
+                                        </div>
                                     </div>
                                 </template>
                             </div>
@@ -498,7 +509,7 @@
                 movies: [],
                 loading: false,
                 fetchMovies(key) {
-                    fetch(`/search?name=${key}`)    
+                    fetch(`/search/movie?name=${key}`)    
                     .then((raw) => raw.json())
                     .then((data) => {
                        if(data.isSuccess) {
@@ -506,6 +517,9 @@
                        }
                     })
                     .catch((error) => console.log(error));
+                },
+			    decimalFix(value, fix = 2) {
+         			return Number(value) ? parseFloat(value).toFixed(fix) : 0;
                 }
             }
         }
