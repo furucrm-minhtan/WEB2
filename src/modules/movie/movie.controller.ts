@@ -63,22 +63,6 @@ export class MovieController {
     }
   }
 
-  @Get('search')
-  async searchMovieBasic(@Query('name') name: string) {
-    try {
-      const movies: Movie[] = await this.movieService.findAll({
-        where: {
-          name
-        }
-      });
-
-      return this.actionResponseService.responseApi(true, movies, '');
-    } catch (error) {
-      console.log(error);
-    }
-    return this.actionResponseService.responseApi(false, [], '');
-  }
-
   @Get(':id/review')
   async fetchReviewMovie(@Param('id') id: number) {
     try {

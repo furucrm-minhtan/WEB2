@@ -1,4 +1,5 @@
-import { MovieListModule } from './modules/productList/movielist.module';
+import { SearchModule } from './modules/search/search.module';
+import { MovieListModule } from './modules/movietList/movielist.module';
 import { SmsModule } from './modules/sms/sms.module';
 import { HomeModule } from './modules/home/home.module';
 import { CategoryModule } from './modules/category/category.module';
@@ -34,6 +35,7 @@ import { UserController } from './modules/user/user.controller';
 
 @Module({
   imports: [
+    SearchModule,
     MovieListModule,
     SmsModule,
     HomeModule,
