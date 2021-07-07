@@ -54,6 +54,7 @@
             right: 0;
             z-index: 1000; 
             display: flex;
+            background: #0A1931;
         }
 
         .search-image {
@@ -86,6 +87,10 @@
         .search-result {
             display: flex;
             flex-direction: column;
+        }
+
+        .search-item {
+            display: flex;
         }
     </style>
 
@@ -232,7 +237,7 @@
                             <ul class="dropdown-menu level1">
                                 {{#each categories}}
                                     <li>
-                                        <a href="/movie-list/{{ id }}" style="color: #fff">{{name}}</a>
+                                        <a href="/movie-list/{{ id }}" style="color: #000">{{name}}</a>
                                     </li>
                                 {{/each  }}
                             </ul>
@@ -244,7 +249,7 @@
                             </div>
                             <div class="search-result" x-show="movies.length">
                                 <template x-for="movie in movies" :key="movie.id">
-                                    <div>
+                                    <div class="search-item">
                                         <div class="search-image">
                                             <img x-bind:src="movie.poster" />
                                         </div>

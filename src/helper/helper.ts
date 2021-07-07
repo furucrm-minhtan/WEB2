@@ -20,4 +20,8 @@ export default class Helper {
         return obj;
       }, {});
   }
+
+  static escapeSingleQuotes(string) {
+    return string.replace(/\'/g, `\\'`);
+  }
 }
