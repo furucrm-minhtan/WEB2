@@ -150,7 +150,7 @@ Booking Ticket
                                                 <ul>
                                                     <template x-for="(col, index) in row" :key="index">
                                                         <li class="single-seat">
-                                                            <img x-bind:src="col.isBooked ? '/images/seat01.png' : '/images/seat01-free.png' " alt="seat" x-bind:data-seat="key + '-' + col.id" @click="bookingSeat($el, col.id, key + '-' + col.id)">
+                                                            <img x-bind:src="col.isBooked ? '/images/seat01.png' : '/images/seat01-free.png' " alt="seat" x-bind:data-seat="key + '-' + col.id" @click="bookingSeat(event.target, col.isBooked, col.id, key + '-' + col.id)">
                                                             <span class="sit-num" x-show="!col.isBooked" x-text="col.position"></span>
                                                         </li>
                                                     </template>
@@ -185,8 +185,18 @@ Booking Ticket
             rowName,
             groups,
             theaters,
-            bookingSeat(el, seatId, seatPosition) {
-                axios.post('/ticket', { seatId, show: this.showSelected, movieName:' {{name}}', seatPosition, theaterAddress: getTheaterAddress(), price: this.showTime.price })
+            bookedByUser,
+            bookingSeat(el, isBooked, seatId, seatPosition) {
+                if(isBooked) {
+                    alert('this seat show is booked');
+                    return false;   
+                }
+                if(bookedByUser.indexOf((item) => item.id === seatId) != -1) {
+                    alert('You booked this seat');
+                    return false;
+                }
+                
+                axios.post('/ticket', { seatId, show: this.showSelected, movieName:' {{name}}', seatPosition, theaterAddress: this.getTheaterAddress(), price: this.showSelected.price })
                     .then((data) => {
                         if(data.status === 201 && data.data.isSuccess) {
                             alert(data.data.message);
@@ -243,6 +253,7 @@ Booking Ticket
                 this.showSelected = showTime;
                 const row = showTime.room.rows;
                 const seats = showTime.room.seats;
+                this.getTicketInShowTime();
 
                 formatSeat = {};
                 if(seats.length) {
@@ -256,6 +267,16 @@ Booking Ticket
                 }
                 this.seats = formatSeat;      
             },
+            getTicketInShowTime() {
+                fetch(`/ticket/${this.showSelected.id}`)
+                .then((response) => response.JSON())
+                .then((data) => {
+                    if(data.isSuccess) {
+                        this.bookedByUser = data.data;
+                    }
+                })
+                .catch((error) => console.log(error))
+            },
             getDay(string) {
                 const date = new Date(string);
 
@@ -263,7 +284,7 @@ Booking Ticket
             },
             getTheaterAddress() {
                 const group = groups.find((item) => item.id == this.groupSelected);
-                const theater = theaters.find((item) => item.id == this.theaterSelected);
+                const theater = theaters[this.groupSelected].find((item) => item.id == this.theaterSelected);
 
                 return `${group.address} ${theater.name} ${this.showSelected.room.name}`;
             }

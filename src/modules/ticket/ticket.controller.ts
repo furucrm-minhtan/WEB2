@@ -124,11 +124,15 @@ export class TicketController {
   }
 
   @Get(':id')
-  async fetchUserTicket(@Param('id') userId: number) {
+  async fetchUserTicket(
+    @Param('id', ParseIntPipe) userId: number,
+    @Query('showId', ParseIntPipe) showId: number
+  ) {
     try {
       const tickets: Ticket[] = await this.ticketService.fetchTicket({
         where: {
-          userId
+          userId,
+          showId
         },
         include: [
           {
