@@ -11,6 +11,7 @@ import {
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { PagingDTO } from '../app.dto';
 import { UserSession } from '../authen/dto/authen.dto';
+import { MailService } from '../mail/mail.service';
 import { Movie } from '../movie/movie.model';
 import { ShowTime } from '../showTime/showtime.model';
 import { SmsService } from '../sms/sms.service';
@@ -26,6 +27,7 @@ export class TicketController {
     private readonly ticketService: TicketService,
     private readonly userService: UserService,
     private readonly smsService: SmsService,
+    private readonly mailService: MailService,
     private readonly actionResponseService: ActionResponseService
   ) {}
 
@@ -68,23 +70,57 @@ export class TicketController {
 
   @Post()
   async buyTicket(
-    @Body() { seatId, showId, userId }: TicketBooking
+    @Session() session: Record<string, any>,
+    @Body()
+    {
+      seatId,
+      show,
+      movieName,
+      seatPosition,
+      theaterAddress,
+      price
+    }: Record<string, any>
   ): Promise<Record<string, any>> {
     try {
-      await this.ticketService.booking({ seatId, showId, userId });
+      const userId: number = session?.user?.id;
+      const showId: number = show?.id;
+      const ticket = await this.ticketService.booking({
+        seatId,
+        showId,
+        userId
+      });
+      console.log(ticket);
       const user: User = await this.userService.getUser(userId);
-      if (user?.phone)
-        this.smsService.send({
-          to: user.phone,
-          text: 'thank for booking ticket'
-        });
+      if (user?.phone) {
+        this.smsService
+          .send({
+            to: user.phone,
+            text: 'thank for booking ticket'
+          })
+          .then((response) => console.log(response))
+          .catch((error) => console.log(error));
+      }
 
-      return this.actionResponseService.responseApi(true, '', '');
+      if (user?.email) {
+        this.mailService.sendBookingTicketMail(user?.email, {
+          movieName,
+          movieStartDate: `${show.date} ${show.start}`,
+          seat: seatPosition,
+          theaterAddress,
+          price
+        });
+      }
+
+      return this.actionResponseService.responseApi(
+        true,
+        '',
+        'booking success please check your mail and sms'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(true, 'booking falied', '');
+    return this.actionResponseService.responseApi(true, '', 'booking falied');
   }
 
   @Get(':id')

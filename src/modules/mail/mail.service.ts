@@ -1,7 +1,6 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import * as os from 'os';
-import { ResetPassword } from './dto/mail.dto';
+import { ResetPassword, InformationTicket } from './dto/mail.dto';
 
 @Injectable()
 export class MailService {
@@ -34,6 +33,17 @@ export class MailService {
       {
         url
       }
+    );
+  }
+
+  async sendBookingTicketMail(email: string, context: InformationTicket) {
+    await this.sendMail(
+      [email],
+      {
+        subject: 'Thank for booking ticket',
+        template: './informationTicket'
+      },
+      context
     );
   }
 

@@ -150,7 +150,7 @@ Booking Ticket
                                                 <ul>
                                                     <template x-for="(col, index) in row" :key="index">
                                                         <li class="single-seat">
-                                                            <img x-bind:src="col.isBooked ? '/images/seat01.png' : '/images/seat01-free.png' " alt="seat" @click="bookingSeat($el, col.id)">
+                                                            <img x-bind:src="col.isBooked ? '/images/seat01.png' : '/images/seat01-free.png' " alt="seat" x-bind:data-seat="key + '-' + col.id" @click="bookingSeat($el, col.id, key + '-' + col.id)">
                                                             <span class="sit-num" x-show="!col.isBooked" x-text="col.position"></span>
                                                         </li>
                                                     </template>
@@ -185,11 +185,17 @@ Booking Ticket
             rowName,
             groups,
             theaters,
-            bookingSeat(el, seatId) {
-                axios.post('/ticket', { seatId, showId: this.showSelected })
-                    .then(() => {
-                        alert('success');
-                        $(el).attr('src', '/images/seat01-booked.png')
+            bookingSeat(el, seatId, seatPosition) {
+                axios.post('/ticket', { seatId, show: this.showSelected, movieName:' {{name}}', seatPosition, theaterAddress: getTheaterAddress(), price: this.showTime.price })
+                    .then((data) => {
+                        if(data.status === 201 && data.data.isSuccess) {
+                            alert(data.data.message);
+                            $(el).attr('src', '/images/seat01-booked.png')
+                        }
+                        else if(data.status === 201 && !data.isSuccess) {
+                            alert(data.data.message);
+                        }
+                        
                     })
                     .catch(() => {
                         alert('falied')
@@ -234,7 +240,7 @@ Booking Ticket
                 }
             },
             formatSeatsData(showTime) {
-                this.showSelected = showTime.id;
+                this.showSelected = showTime;
                 const row = showTime.room.rows;
                 const seats = showTime.room.seats;
 
@@ -248,13 +254,18 @@ Booking Ticket
                     
                     }
                 }
-                console.log(formatSeat);
                 this.seats = formatSeat;      
             },
             getDay(string) {
                 const date = new Date(string);
 
                 return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+            },
+            getTheaterAddress() {
+                const group = groups.find((item) => item.id == this.groupSelected);
+                const theater = theaters.find((item) => item.id == this.theaterSelected);
+
+                return `${group.address} ${theater.name} ${this.showSelected.room.name}`;
             }
         }
     }
