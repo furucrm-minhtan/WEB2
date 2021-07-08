@@ -11,4 +11,8 @@ export class GroupTheaterService {
   async findAll(options = {}) {
     return this.groupTheaterRepository.findAll(options);
   }
+
+  createGroupTheater(groupThearterNew: GroupTheater ){
+    return this.groupTheaterRepository.create(groupThearterNew);
+  }
 }

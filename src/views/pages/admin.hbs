@@ -32,7 +32,7 @@ Admin
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.html">
+                <a class="nav-link" href="javascript:void(0)" @click="loadDashBoard()">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
@@ -45,6 +45,16 @@ Admin
                 <a class="nav-link collapsed" href="javascript:void(0)" @click="loadManagement()">
                     <i class="fas fa-fw fa-cog"></i>
                     <span>Manager</span>
+                </a>
+            </li>
+
+             <!-- Divider -->
+            <hr class="sidebar-divider">
+
+             <li class="nav-item">
+                <a class="nav-link collapsed" href="#">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Statistic</span>
                 </a>
             </li>
         </ul>
@@ -742,7 +752,52 @@ Admin
             },
             group: {
                 data: {},
-                listView: []
+                listView: [],
+                 addRow() {
+                    table.row.add()
+                },
+                fetchData() {
+                    fetch('/group')
+                        .then((raw) => raw.json())
+                        .then((response) => {
+                            if(response.isSuccess) {
+                                this.listView = response.data;
+
+                                this.table = $('#list-group').DataTable({
+                                    data: this.listView,
+                                    columns: [
+                                        {
+                                            data: 'name'
+                                        },
+                                        {
+                                            data: 'address'
+                                        },
+                                    ],
+                                    
+                                    createdRow: function(row, data) {
+                                        $(row).attr('data-id', data.id);
+                                    }
+                                });
+                                $('.dataTables_length').addClass('bs-select');
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                },
+                create(event) {
+                    event.preventDefault();
+
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+
+                        post('/group', this.data)
+                            .then((data) => console.log(data))
+                            .catch(error => alert('create failed'));
+                    }
+
+                    $('#modal').modal('show');
+                }
             },
             theater: {
                 data: {},
@@ -762,7 +817,11 @@ Admin
                 this.category.parent = this;
                 this.movie.fetchData();
                 this.movie.parent = this;
+            },
+            loadDashBoard(){
+                this.section ='dashboard'
             }
+
 		}
 	}
 </script>
