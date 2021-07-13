@@ -787,13 +787,15 @@ Admin
                     $('#modal').modal('show');
                 },
                 delete(event, id) {
-                    
+                    event.preventDefault();
+
                     destroy('/category', { id })
                         .then((data) => console.log(data))
                         .catch(error => alert('delete failed'));
                 }
             },
             group: {
+                table: undefined,
                 data: {},
                 listView: [],
                  addRow() {
@@ -819,10 +821,20 @@ Admin
                                             data: 'address'
                                         },
                                     ],
-                                    
+                                    columnDefs: [{
+                                        render: function(data, type, row) {
+                                            return `
+                                                <div>
+                                                    <button class="btn btn-success text-uppercase" @click="group.update($event,${row.id})">update</button>
+                                                    <button class="btn btn-danger text-uppercase" @click="group.delete($event,${row.id})">delete</button>
+                                                </div>
+                                            `
+                                        },
+                                        targets: 2
+                                    }],
                                     createdRow: function(row, data) {
                                         $(row).attr('data-id', data.id);
-                                    }
+                                    },
                                 });
                                 $('.dataTables_length').addClass('bs-select');
                             }
@@ -834,6 +846,8 @@ Admin
                 create(event) {
                     event.preventDefault();
 
+                    this.parent.modal.title = 'Create Group';
+                    this.parent.modal.content = 'group_form';
                     this.parent.modal.submitHandler = (event) => {
                         event.stopPropagation();
 
@@ -843,15 +857,144 @@ Admin
                     }
 
                     $('#modal').modal('show');
+                },
+                update(event, id, data) {
+                    event.preventDefault();
+                    
+                    this.data = this.table.row($(`#list-group tr[data-id="${id}"]`)).data();
+                    this.parent.modal.title = 'Update group';
+                    this.parent.modal.content = 'group_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+
+                        put('/group', { id, ...this.data })
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    alert('update failed');
+                                }   
+                            })
+                            .catch(error => alert('update failed'));
+                    }
+
+                    $('#modal').modal('show');
+                },
+                delete(event, id) {
+                    event.preventDefault();
+
+                    destroy('/group', { id })
+                        .then((data) => console.log(data))
+                        .catch(error => alert('delete failed'));
                 }
             },
             theater: {
+                table: undefined,
                 data: {},
-                listView: []
+                listView: [],
+                fetchData() {
+                    if ($.fn.dataTable.isDataTable('#list-theater'))
+                    {
+                        return false;
+                    }
+                    fetch('/theater')
+                        .then((raw) => raw.json())
+                        .then((response) =>
+                        {
+                            if (response.isSuccess)
+                            {
+                                this.listView = response.data;
+
+                                this.table = $('#list-group').DataTable({
+                                    data: this.listView,
+                                    columns: [
+                                        {
+                                            data: 'name'
+                                        },
+                                        {
+                                            data: 'type'
+                                        },
+                                        {
+                                            data: 'group_id'
+                                        }
+                                    ],
+                                    columnDefs: [{
+                                        render: function (data, type, row)
+                                        {
+                                            return `
+                                                <div>
+                                                    <button class="btn btn-success text-uppercase" @click="theater.update($event,${row.id})">update</button>
+                                                    <button class="btn btn-danger text-uppercase" @click="theater.delete($event,${row.id})">delete</button>
+                                                </div>
+                                            `
+                                        },
+                                        targets: 3
+                                    }],
+                                    createdRow: function (row, data)
+                                    {
+                                        $(row).attr('data-id', data.id);
+                                    },
+                                });
+                                $('.dataTables_length').addClass('bs-select');
+                            }
+                        })
+                        .catch((error) =>
+                        {
+                            console.log(error);
+                        });
+                }
+                create(event) {
+                    event.preventDefault();
+
+                    this.parent.modal.title = 'Create Theater';
+                    this.parent.modal.content = 'theater_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+
+                        post('/group', this.data)
+                            .then((data) => console.log(data))
+                            .catch(error => alert('create failed'));
+                    }
+
+                    $('#modal').modal('show');
+                },
+                update(event, id, data) {
+                    event.preventDefault();
+                    
+                    this.data = this.table.row($(`#list-theater tr[data-id="${id}"]`)).data();
+                    this.parent.modal.title = 'Update theater';
+                    this.parent.modal.content = 'theater_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+
+                        put('/theater', { id, ...this.data })
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    alert('update failed');
+                                }   
+                            })
+                            .catch(error => alert('update failed'));
+                    }
+
+                    $('#modal').modal('show');
+                },
+                delete(event, id) {
+                    event.preventDefault();
+
+                    destroy('/theater', { id })
+                        .then((data) => console.log(data))
+                        .catch(error => alert('delete failed'));
+                }
             },
             section: 'dashboard',
             fetchReport() {
-
+               
             },
             loadTheater() {
             
