@@ -798,7 +798,7 @@ Admin
                 table: undefined,
                 data: {},
                 listView: [],
-                 addRow() {
+                addRow() {
                     table.row.add()
                 },
                 fetchData() {
@@ -894,6 +894,9 @@ Admin
                 table: undefined,
                 data: {},
                 listView: [],
+                addRow() {
+                    table.row.add()
+                },
                 fetchData() {
                     if ($.fn.dataTable.isDataTable('#list-theater'))
                     {
@@ -1006,6 +1009,10 @@ Admin
                 this.category.parent = this;
                 this.movie.fetchData();
                 this.movie.parent = this;
+                this.group.fetchData();
+                this.group.parent = this;
+                this.theater.fetchData();
+                this.theater.parent = this;
             },
             loadDashBoard(){
                 this.section ='dashboard'
