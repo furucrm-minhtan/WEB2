@@ -340,8 +340,10 @@
                         </li>
                         <li><a href="#">Help</a></li> --}}
                         {{#if user}}
-                            <li class="dropdown">
-                                <a href="#" class="user_icon btn btn-default dropdown-toggle lv1" data-toggle="dropdown"><i class="fas fa-user"></i></a>
+                            <li class="dropdown first">
+                                <a class="btn btn-default dropdown-toggle lv1" data-toggle="dropdown" data-hover="dropdown">
+                                    user <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                </a>
                                 <ul class="dropdown-menu level1">
                                     <li><a href="/dashboard">Profile</a></li>
                                     <li><a href="/authen/logout">Logout</a></li>

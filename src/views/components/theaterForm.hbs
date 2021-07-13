@@ -7,15 +7,11 @@
 		</div>
 		<div class="col-12 col-md-6">
 			<label for="category">category</label>
-			<select id="category" class="custom-select" x-model="movie.data.category">
-				<template x-for="(cate, index) in category.listView">
-					<option x-bind:value="cate.id" x-text="cate.name"></option>
-				</template>
-			</select>
+			<select id="category" class="custom-select" x-model="movie.data.category"></select>
 		</div>
 	</div>
-	<div class="row">
-		<div class="col-12">
+	<div class="row mt-5">
+		<div class="col-12 col-md-6">
 			<label id="">Poster</label>
 			<div class="input-group">
 				<div class="input-group-prepend">
@@ -28,7 +24,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-12">
+		<div class="col-12 col-md-6">
 			<label for="trailer">Movie Trailer</label>
 			<input id="trailer" class="form-control " type="text" x-model="movie.data.trailer" />
 		</div>
@@ -56,5 +52,8 @@
 			<label for="publish">Publish</label>
 			<input id="publish" class="form-control" type="date" x-model="movie.data.publish" />
 		</div>
+	</div>
+	<div class="text-center mt-5">
+		<input class="btn btn-primary px-5" type="submit" value="Add Movie" @click="movie.create($event)">
 	</div>
 </form>

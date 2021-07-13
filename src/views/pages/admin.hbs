@@ -547,16 +547,20 @@ Admin
                 this.modal = Object.assign(this.modal, settings);
             },
             movie: {
+                table: undefined,
                 data: {},
                 listView: [],
                 fetchData() {
+                    if($.fn.dataTable.isDataTable('#list-movie')) {
+                        return false;
+                    }
                     fetch('/movie')
                         .then((raw) => raw.json())
                         .then((response) => {
                             if(response.isSuccess) {
                                 this.listView = response.data;
 
-                                $('#list-movie').DataTable({
+                                this.table = $('#list-movie').DataTable({
                                     data: this.listView,
                                     columns: [
                                         {
@@ -587,19 +591,33 @@ Admin
                                     scrollX: true,
                                     columnDefs: [
                                     {
-                                        targets: [0,1,2,3,4,5],
-                                        createdCell: function (td) {
-                                            $(td).attr('contenteditable', true);
-                                        }
-                                    },
-                                    {
                                         render: function (data, type, row) {
                                             const date = moment(data);
 
                                             return date.isValid() ? date.format('DD/MM/YYYY') : '';
                                         },
                                         targets: [5,6,7]
-                                    }]
+                                    },
+                                    {
+                                        render: function(data, type, row) {
+                                            return `
+                                                <div>
+                                                    <button class="btn btn-success text-uppercase" @click="movie.update($event,${row.id})">update</button>
+                                                    <button class="btn btn-danger text-uppercase" @click="movie.delete($event,${row.id})">delete</button>
+                                                </div>
+                                            `
+                                        },
+                                        targets: 8
+                                    }, 
+                                    /**{ 
+                                        className: "text-truncate", targets: [ 1 ] 
+                                    },*/
+                                    {  
+                                        width: 400, targets: 1 
+                                    }],
+                                    createdRow: function(row, data) {
+                                        $(row).attr('data-id', data.id);
+                                    }
                                 });
                                 $('.dataTables_length').addClass('bs-select');
                             }
@@ -611,39 +629,60 @@ Admin
                 create(event) {
                     event.preventDefault();
 
-                    console.log(this.data);
-                    return;
-                    axios.post('/movie', this.data)
-                        .then((response) => {
-                            if(response.status === 201) {
-                                alert(response.data.message);
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        })
+                    this.parent.modal.title = 'Create Movie';
+                    this.parent.modal.content = 'movie_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+
+                        post('/movie', this.data)
+                            .then((data) => console.log(data))
+                            .catch(error => alert('create failed'));
+                    }
+
+                    $('#modal').modal('show');
                 },
                 update(event, id) {
-                    axios.put('/movie', { id, ...this.data })
-                        .then((response) => {
-                            if(response.status === 201) {
-                                alert(response.data.message);
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        })
+                    event.preventDefault();
+
+                    this.data = this.table.row($(`#list-movie tr[data-id="${id}"]`)).data();
+                    this.parent.modal.title = 'Update Movie';
+                    this.parent.modal.content = 'movie_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+
+                        put('/movie', { id, ...this.data })
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    alert('update failed');
+                                }   
+                            })
+                            .catch(error => alert('update failed'));
+                    }
+
+                    $('#modal').modal('show');
+                },
+                readFileUpload(event) {
+                    event.preventDefault();
+                    const file = event.target.files[0];
+                    if(!file) return;
+
+                    const fr = new FileReader();
+                    fr.onload = function () {
+                        parent.movie.data.poster = fr.result.split(',').pop();
+                    }
+
+                    fr.readAsDataURL(file);
                 },
                 delete(event, id) {
-                    axios.delete('/movie', id)
-                        .then((response) => {
-                            if(response.status === 201) {
-                                alert(response.data.message);
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        })
+                    event.preventDefault();
+
+                    destroy('/movie', { id })
+                        .then((data) => console.log(data))
+                        .catch(error => alert('delete failed'));
                 }
             },
             category: {
@@ -654,6 +693,9 @@ Admin
                     table.row.add()
                 },
                 fetchData() {
+                    if($.fn.dataTable.isDataTable('#list-category')) {
+                        return false;
+                    }
                     fetch('/category')
                         .then((raw) => raw.json())
                         .then((response) => {
@@ -745,7 +787,8 @@ Admin
                     $('#modal').modal('show');
                 },
                 delete(event, id) {
-                    delete('/category', { id })
+                    
+                    destroy('/category', { id })
                         .then((data) => console.log(data))
                         .catch(error => alert('delete failed'));
                 }
@@ -757,6 +800,9 @@ Admin
                     table.row.add()
                 },
                 fetchData() {
+                    if($.fn.dataTable.isDataTable('#list-group')) {
+                        return false;
+                    }
                     fetch('/group')
                         .then((raw) => raw.json())
                         .then((response) => {

@@ -55,9 +55,15 @@ export class MovieController {
 
   @Get(':id/booking')
   @Render('room')
-  async loadRoomView(@Param('id') id: number): Promise<Record<string, any>> {
+  async loadRoomView(
+    @Session() session: Record<string, any>,
+    @Param('id') id: number
+  ): Promise<Record<string, any>> {
     try {
-      return this.movieService.loadBookingPage(id);
+      const userId: string = session?.user?.id;
+      const data = await this.movieService.loadBookingPage(id);
+
+      return { ...data, userId };
     } catch (error) {
       console.log(error);
     }

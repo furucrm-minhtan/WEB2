@@ -11,6 +11,9 @@
           <div x-show="modal.content === 'preview_image'">
               <image class="w-100" x-bind:src="modal.data" />
           </div>
+          <div x-show="modal.content === 'movie_form'">
+              {{>movieForm}}
+          </div>
           <div x-show="modal.content === 'category_form'">
               {{>categoryForm}}
           </div>

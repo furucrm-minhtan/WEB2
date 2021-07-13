@@ -19,65 +19,9 @@
     </div>
 
     <div class="col-12">
-        <form action="#" class="mt-5 mt-lg-0">
-            <h4 class="text-center">Add Movie For Theater</h4>
-            <div class="row mt-5">
-                <div class="col-12 col-md-6">
-                    <label>Name</label>
-                    <input class="form-control" type="text" x-model="movie.data.name">
-                </div>
-                <div class="col-12 col-md-6">
-                    <label for="category">category</label>
-                    <select id="category" class="custom-select" x-model="movie.data.category"></select>
-                </div>
-            </div>
-            <div class="row mt-5">
-                <div class="col-12 col-md-6">
-                    <label id="">Poster</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="upload-poster">Upload</span>
-                        </div>
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="poster"
-                                aria-describedby="inputGroupFileAddon01">
-                            <label class="custom-file-label" for="poster">Choose file</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6">
-                    <label for="trailer">Movie Trailer</label>
-                    <input id="trailer" class="form-control " type="text" x-model="movie.data.trailer" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="describe">Describe</label>
-                <textarea id="describe" class="form-control" rows="10" x-model="movie.data.describe"></textarea>
-            </div>
-            <div class="row mt-5">
-                <div class="col-12 col-md-6">
-                    <label for="director">Director</label>
-                    <input id="director" class="form-control " type="text" x-model="movie.data.director" />
-                </div>
-                <div class="col-12 col-md-6">
-                    <label for="writer">Writer</label>
-                    <input id="writer" class="form-control" type="text" x-model="movie.data.writer" />
-                </div>
-            </div>
-            <div class="row mt-5">
-                <div class="col-12 col-md-6">
-                    <label for="MMPA_rate">MMPA Rating</label>
-                    <input id="MMPA_rate" class="form-control" type="date" x-model="movie.data.MMPA_rating" />
-                </div>
-                <div class="col-12 col-md-6">
-                    <label for="publish">Publish</label>
-                    <input id="publish" class="form-control" type="date" x-model="movie.data.publish" />
-                </div>
-            </div>
-            <div class="text-center mt-5">
-                <input class="btn btn-primary px-5" type="submit" value="Add Movie" @click="movie.create($event)">
-            </div>
-        </form>
+        <div class="text-right">
+            <button type="button" class="btn btn-primary" @click="movie.create($event)">New</button>
+        </div>
 
         <table class="mx-5" id="list-movie" class="table table-striped table-bordered" width="100%">
             <thead>
@@ -90,6 +34,7 @@
                     <th class="th-sm">Publish</th>
                     <th class="th-sm">Create Date</th>
                     <th class="th-sm">Update Date</th>
+                    <th class="th-sm"></th>
                 </tr>
             </thead>
         </table>

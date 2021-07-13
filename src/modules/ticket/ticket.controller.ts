@@ -81,8 +81,12 @@ export class TicketController {
       price
     }: Record<string, any>
   ): Promise<Record<string, any>> {
+    let errorMessage = '';
     try {
       const userId: number = session?.user?.id;
+      if (!userId) {
+        throw new Error('you neeed authen');
+      }
       const showId: number = show?.id;
       const ticket = await this.ticketService.booking({
         seatId,
@@ -117,18 +121,23 @@ export class TicketController {
         'booking success please check your mail and sms'
       );
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
+      errorMessage = error.message;
     }
-
-    return this.actionResponseService.responseApi(true, '', 'booking falied');
+    return this.actionResponseService.responseApi(false, '', errorMessage);
   }
 
   @Get(':id')
   async fetchUserTicket(
-    @Param('id', ParseIntPipe) userId: number,
-    @Query('showId', ParseIntPipe) showId: number
+    @Session() session: Record<string, any>,
+    @Param('id', ParseIntPipe) showId: number
   ) {
+    let errorMessage = '';
     try {
+      const userId = session?.user?.id;
+      if (!userId) {
+        throw new Error('You need authen');
+      }
       const tickets: Ticket[] = await this.ticketService.fetchTicket({
         where: {
           userId,
@@ -145,9 +154,10 @@ export class TicketController {
 
       return this.actionResponseService.responseApi(true, tickets, '');
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
+      errorMessage = error.message;
     }
 
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(false, '', errorMessage);
   }
 }
