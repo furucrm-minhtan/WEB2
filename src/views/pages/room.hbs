@@ -150,7 +150,7 @@ Booking Ticket
                                                 <ul>
                                                     <template x-for="(col, index) in row" :key="index">
                                                         <li class="single-seat">
-                                                            <img x-bind:src="col.isBooked ? '/images/seat01.png' : '/images/seat01-free.png' " alt="seat" @click="bookingSeat($el, col.id)">
+                                                            <img x-bind:src="showStatusSeat(col)" alt="seat" x-bind:data-seat="key + '-' + col.id" @click="bookingSeat(event.target, col, key + '-' + col.id)">
                                                             <span class="sit-num" x-show="!col.isBooked" x-text="col.position"></span>
                                                         </li>
                                                     </template>
@@ -182,14 +182,31 @@ Booking Ticket
             showSelected: '',
             seats: [],
             showTimes: [],
+            bookedByUser: [],
             rowName,
             groups,
             theaters,
-            bookingSeat(el, seatId) {
-                axios.post('/ticket', { seatId, showId: this.showSelected })
-                    .then(() => {
-                        alert('success');
-                        $(el).attr('src', '/images/seat01-booked.png')
+            bookingSeat(el, seat, seatPosition) {
+                if(seat.isBooked && seat.ticket.user_id == '{{userId}}') {
+                    alert('You booked this seat');
+                    return false;
+                }
+                else if(seat.isBooked) {
+                    alert('this seat show is booked');
+                    return false;   
+                }
+               
+                
+                axios.post('/ticket', { seatId: seat.id, show: this.showSelected, movieName:' {{name}}', seatPosition, theaterAddress: this.getTheaterAddress(), price: this.showSelected.price })
+                    .then((data) => {
+                        if(data.status === 201 && data.data.isSuccess) {
+                            alert(data.data.message);
+                            $(el).attr('src', '/images/seat01-booked.png')
+                        }
+                        else if(data.status === 201 && !data.isSuccess) {
+                            alert(data.data.message);
+                        }
+                        
                     })
                     .catch(() => {
                         alert('falied')
@@ -234,27 +251,56 @@ Booking Ticket
                 }
             },
             formatSeatsData(showTime) {
-                this.showSelected = showTime.id;
+                this.showSelected = showTime;
                 const row = showTime.room.rows;
                 const seats = showTime.room.seats;
-
+                this.getTicketInShowTime();
+                console.log(this.bookedByUser);
                 formatSeat = {};
                 if(seats.length) {
                     for(i = 1; i <= row; i++) {
                         formatSeat[rowName[i]] = seats.filter((seat) => {
-                                                    seat.isBooked = showTime.tickets.find(ticket => ticket.seat_id == seat.id) != undefined;
+                                                    seat.ticket = showTime.tickets.find(ticket => ticket.seat_id == seat.id);
+                                                    seat.isBooked = seat.ticket != undefined;
                                                     return seat.row === i
                                                  });
                     
                     }
                 }
-                console.log(formatSeat);
                 this.seats = formatSeat;      
+            },
+            showStatusSeat(seat) {
+                if(seat.isBooked && seat.ticket.user_id == '{{userId}}') {
+                    return '/images/seat01-booked.png'
+                }
+                else if(seat.isBooked) {
+                    return '/images/seat01.png';
+                }
+                else {
+                    return '/images/seat01-free.png'
+                }
+            },
+            getTicketInShowTime() {
+                fetch(`/ticket/${this.showSelected.id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if(data.isSuccess) {
+                        this.bookedByUser = data.data;
+                        console.log(this.bookedByUser);
+                    }
+                })
+                .catch((error) => console.log(error))
             },
             getDay(string) {
                 const date = new Date(string);
 
                 return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+            },
+            getTheaterAddress() {
+                const group = groups.find((item) => item.id == this.groupSelected);
+                const theater = theaters[this.groupSelected].find((item) => item.id == this.theaterSelected);
+
+                return `${group.address} ${theater.name} ${this.showSelected.room.name}`;
             }
         }
     }

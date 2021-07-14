@@ -340,7 +340,7 @@ Profile
 
 		return {
 			sheet: 'profile',
-			avatar: '{{avatar}}'; 
+			avatar: '{{avatar}}', 
 			favoriteData: {
 				total: 0,
 				page: 1,
@@ -512,7 +512,7 @@ Profile
 					.catch(function(error) {
 						console.log(error);
 					})
-			}
+			},
 			getDate(string) {
 				const date = new Date(string);
 
