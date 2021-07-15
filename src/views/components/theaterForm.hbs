@@ -18,7 +18,7 @@
 		</div>
 		<div class="col-12 col-md-6">
 			<label>Group</label>
-			<select class="custom-select" x-model="theater.data.group">
+			<select class="custom-select" x-model="theater.data.groupId">
 				<template x-for="(item, index) in group.listView" :key="index">
 					<option x-bind:value="item.id" x-text="item.name"></option>
 				</template>

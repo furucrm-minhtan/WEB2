@@ -64,4 +64,27 @@
 			<input id="publish" class="form-control" type="date" x-model="movie.data.publish" />
 		</div>
 	</div>
+	<div>
+		<label for="theaters">Theaters</label>
+		<div class="row">
+			<div class="col-12 col-md-5">
+				<select id="select-theaters" class="custom-select" multiple>
+					<template x-for="(item, index) in (movie.theaters || [])" :key="index">
+						<option x-bind:value="item.id" x-text="item.name"></option>
+					</template>
+				</select>
+			</div>
+			<div class="col-12 col-md-2 text-center">
+				<button type="button" class="btn btn-primary px-3" @click="movie.moveLeftTheater(event)"><i class="fas fa-chevron-left"></i></button>
+				<button type="button" class="btn btn-primary px-3" @click="movie.moveRightTheater(event)"><i class="fas fa-chevron-right"></i></button>
+			</div>
+			<div class="col-12 col-md-5">
+				<select id="selected-theaters" class="custom-select" multiple x-model="movie.theaterIds">
+					<template x-for="(item, index) in (movie.selectedTheaters || [])" :key="index">
+						<option x-bind:value="item.id" x-text="item.name" selected></option>
+					</template>
+				</select>
+			</div>
+		</div>
+	</div>
 </form>

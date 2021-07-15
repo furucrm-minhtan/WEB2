@@ -1,6 +1,9 @@
 <div class="mx-2 my-5">
     {{>modal}}
+
+    
     <div class="col-12">
+        <h1 class="text-center">Category</h1>
         <div class="text-right">
             <button type="button" class="btn btn-primary" @click="category.create($event)">New</button>
         </div>
@@ -19,6 +22,7 @@
     </div>
 
     <div class="col-12">
+        <h1 class="text-center">Movie</h1>
         <div class="text-right">
             <button type="button" class="btn btn-primary" @click="movie.create($event)">New</button>
         </div>
@@ -40,7 +44,8 @@
         </table>
     </div>
 
-    <div>
+    <div class="col-12">
+        <h1 class="text-center">Group Theater</h1>
         <div class="text-right">
             <button type="button" class="btn btn-primary" @click="group.create($event)">New</button>
         </div>
@@ -55,7 +60,8 @@
         </table>
     </div>
 
-    <div>
+    <div class="col-12"> 
+        <h1 class="text-center">Theater</h1>
         <div class="text-right">
             <button type="button" class="btn btn-primary" @click="theater.create($event)">New</button>
         </div>

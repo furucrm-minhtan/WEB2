@@ -628,7 +628,7 @@ Admin
                 },
                 create(event) {
                     event.preventDefault();
-
+                    this.data = {};
                     this.parent.modal.title = 'Create Movie';
                     this.parent.modal.content = 'movie_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -780,7 +780,9 @@ Admin
                 },
                 create(event) {
                     event.preventDefault();
-
+                    this.data = {
+                        level: 1
+                    };
                     this.parent.modal.title = 'Create Category';
                     this.parent.modal.content = 'category_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -906,6 +908,8 @@ Admin
                 create(event) {
                     event.preventDefault();
 
+                    this.data = {};
+
                     this.parent.modal.title = 'Create Group';
                     this.parent.modal.content = 'group_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -983,6 +987,9 @@ Admin
                 table: undefined,
                 data: {},
                 listView: [],
+                theaters: [],
+                selectedTheaters: [],
+                theaterIds: [],
                 addRow() {
                     table.row.add()
                 },
@@ -1039,7 +1046,12 @@ Admin
                 },
                 create(event) {
                     event.preventDefault();
-
+                    const firstGroup = this.parent.group.listView[0]?.id ?? '';
+                    this.theaters = this.parent.theater.listView;
+                    this.data = {
+                        type: "2D",
+                        groupId: firstGroup
+                    };
                     this.parent.modal.title = 'Create Theater';
                     this.parent.modal.content = 'theater_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -1053,12 +1065,11 @@ Admin
                         }
                         form.classList.remove('was-validated');
 
-                        post('/group', this.data)
+                        post('/theater', this.data)
                            .then((data) => {
                                 if(data.isSuccess) {
                                     this.listView.push(data.data);
                                     this.table.row.add(data.data).draw();
-                                    this.data = {};
                                     $('#modal').modal('hide');
                                 }
                                 else {
@@ -1111,6 +1122,30 @@ Admin
                     destroy('/theater', { id })
                         .then((data) => console.log(data))
                         .catch(error => alert('delete failed'));
+                },
+                moveLeftTheater(event) {
+                    event.preventDefault();
+
+                    const theaters = $('#select-theaters option:selected');
+                    if(theaters.length) {
+                        const ids = theaters.attr('id');
+                        const newTheaters = this.theaters.filter((theater) => !ids.includes(theater.id));
+
+                        this.selectedTheaters = this.theaters.filter((theater) => ids.includes(theater.id));
+                        this.theaters = newTheaters;
+                    }
+                },
+                moveRightTheater(event) {
+                    event.preventDefault();
+
+                    const theaters = $('#selected-theaters option:selected');
+                    if(theaters.length) {
+                        const ids = theaters.attr('id');
+                        const newTheaters = this.selectedTheaters.filter((theater) => !ids.includes(theater.id));
+
+                        this.theaters = this.selectedTheaters.filter((theater) => ids.includes(theater.id));
+                        this.selectedTheaters = newTheaters;
+                    }
                 }
             },
             section: 'dashboard',
