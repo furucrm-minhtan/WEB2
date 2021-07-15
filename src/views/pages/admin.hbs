@@ -634,9 +634,31 @@ Admin
                     this.parent.modal.submitHandler = (event) => {
                         event.stopPropagation();
 
+                        const form = document.getElementById('movie-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form.classList.add('was-validated');   
+                            
+                            return false;       
+                        }
+                        form.classList.remove('was-validated');
+
                         post('/movie', this.data)
-                            .then((data) => console.log(data))
-                            .catch(error => alert('create failed'));
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    this.listView.push(data.data);
+                                    this.table.row.add(data.data).draw();
+                                    this.data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    throw data.message;
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert(error);
+                            });
                     }
 
                     $('#modal').modal('show');
@@ -649,6 +671,15 @@ Admin
                     this.parent.modal.content = 'movie_form';
                     this.parent.modal.submitHandler = (event) => {
                         event.stopPropagation();
+
+                        const form = document.getElementById('movie-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
 
                         put('/movie', { id, ...this.data })
                             .then((data) => {
@@ -754,10 +785,31 @@ Admin
                     this.parent.modal.content = 'category_form';
                     this.parent.modal.submitHandler = (event) => {
                         event.stopPropagation();
+                        const form = document.getElementById('category-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
 
                         post('/category', this.data)
-                            .then((data) => console.log(data))
-                            .catch(error => alert('create failed'));
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    this.listView.push(data.data);
+                                    this.table.row.add(data.data).draw();
+                                    this.data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    throw data.message;
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert(error);
+                            });
                     }
 
                     $('#modal').modal('show');
@@ -770,6 +822,14 @@ Admin
                     this.parent.modal.content = 'category_form';
                     this.parent.modal.submitHandler = (event) => {
                         event.stopPropagation();
+                        const form = document.getElementById('category-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
 
                         put('/category', { id, ...this.data })
                             .then((data) => {
@@ -805,7 +865,7 @@ Admin
                     if($.fn.dataTable.isDataTable('#list-group')) {
                         return false;
                     }
-                    fetch('/group')
+                    fetch('/groupthearter')
                         .then((raw) => raw.json())
                         .then((response) => {
                             if(response.isSuccess) {
@@ -849,11 +909,32 @@ Admin
                     this.parent.modal.title = 'Create Group';
                     this.parent.modal.content = 'group_form';
                     this.parent.modal.submitHandler = (event) => {
-                        event.stopPropagation();
+                        const form = document.getElementById('group-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');   
 
-                        post('/group', this.data)
-                            .then((data) => console.log(data))
-                            .catch(error => alert('create failed'));
+                        post('/groupthearter', this.data)
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    this.listView.push(data.data);
+                                    this.table.row.add(data.data).draw();
+                                    this.data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    throw data.message;
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert(error);
+                            });
                     }
 
                     $('#modal').modal('show');
@@ -865,9 +946,17 @@ Admin
                     this.parent.modal.title = 'Update group';
                     this.parent.modal.content = 'group_form';
                     this.parent.modal.submitHandler = (event) => {
-                        event.stopPropagation();
+                        const form = document.getElementById('group-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');   
 
-                        put('/group', { id, ...this.data })
+                        put('/groupthearter', { id, ...this.data })
                             .then((data) => {
                                 if(data.isSuccess) {
                                     data = {};
@@ -885,7 +974,7 @@ Admin
                 delete(event, id) {
                     event.preventDefault();
 
-                    destroy('/group', { id })
+                    destroy('/groupthearter', { id })
                         .then((data) => console.log(data))
                         .catch(error => alert('delete failed'));
                 }
@@ -910,7 +999,7 @@ Admin
                             {
                                 this.listView = response.data;
 
-                                this.table = $('#list-group').DataTable({
+                                this.table = $('#list-theater').DataTable({
                                     data: this.listView,
                                     columns: [
                                         {
@@ -920,7 +1009,7 @@ Admin
                                             data: 'type'
                                         },
                                         {
-                                            data: 'group_id'
+                                            data: 'groupId'
                                         }
                                     ],
                                     columnDefs: [{
@@ -947,18 +1036,39 @@ Admin
                         {
                             console.log(error);
                         });
-                }
+                },
                 create(event) {
                     event.preventDefault();
 
                     this.parent.modal.title = 'Create Theater';
                     this.parent.modal.content = 'theater_form';
                     this.parent.modal.submitHandler = (event) => {
-                        event.stopPropagation();
+                        const form = document.getElementById('theater-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
 
                         post('/group', this.data)
-                            .then((data) => console.log(data))
-                            .catch(error => alert('create failed'));
+                           .then((data) => {
+                                if(data.isSuccess) {
+                                    this.listView.push(data.data);
+                                    this.table.row.add(data.data).draw();
+                                    this.data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    throw data.message;
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert(error);
+                            });
                     }
 
                     $('#modal').modal('show');
@@ -970,7 +1080,15 @@ Admin
                     this.parent.modal.title = 'Update theater';
                     this.parent.modal.content = 'theater_form';
                     this.parent.modal.submitHandler = (event) => {
-                        event.stopPropagation();
+                        const form = document.getElementById('theater-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
 
                         put('/theater', { id, ...this.data })
                             .then((data) => {

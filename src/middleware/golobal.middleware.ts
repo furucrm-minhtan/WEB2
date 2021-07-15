@@ -11,7 +11,7 @@ declare module 'express-session' {
 @Injectable()
 export class GolobalMiddleware implements NestMiddleware {
   use(@Req() req: Request, res: Response, next: NextFunction) {
-    res.locals.user = req.session.user ?? undefined;
+    res.locals.user = req.session?.user;
 
     next();
   }

@@ -8,27 +8,34 @@ import {
   Post,
   Put
 } from '@nestjs/common';
-import { GroupTheater } from './groupTheater.model';
-import { GroupTheaterService } from './grouptheater.service';
-import { GroupTheaterOptions, UpdateGroup } from './dto/groupTheater.dto';
-import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { ValidationError } from 'sequelize';
+import { ActionResponseService } from '../actionResponse/actionresponse.service';
+import { CreateTheater, UpdateTheater } from './dto/theater.dto';
+import { Theater } from './theater.model';
+import { TheaterService } from './theater.service';
 
-@Controller('groupthearter')
-export class GroupthearterController {
+@Controller('theater')
+export class TheaterController {
   constructor(
-    private groupthearterService: GroupTheaterService,
+    private theaterService: TheaterService,
     private actionResponseService: ActionResponseService
   ) {}
 
   @Get()
-  async fetchGroup() {
+  async fetchTheater(): Promise<ActionResponseService> {
     try {
-      const groups: GroupTheater[] = await this.groupthearterService.findAll({
-        attributes: ['id', 'name', 'address', 'creationDate', 'updatedOn']
+      const categories: Theater[] = await this.theaterService.findAll({
+        attributes: [
+          'id',
+          'name',
+          'type',
+          'groupId',
+          'creationDate',
+          'updatedOn'
+        ]
       });
 
-      return this.actionResponseService.responseApi(true, groups, '');
+      return this.actionResponseService.responseApi(true, categories, '');
     } catch (error) {
       console.log(error);
     }
@@ -37,39 +44,40 @@ export class GroupthearterController {
   }
 
   @Post()
-  async create(@Body() data: GroupTheaterOptions) {
+  async create(@Body() data: CreateTheater): Promise<ActionResponseService> {
     let errorMessage = '';
     try {
-      const group: GroupTheater = await this.groupthearterService.createGroupTheater(
-        (data as unknown) as GroupTheater
+      const theater: Theater = await this.theaterService.createTheater(
+        (data as unknown) as Theater
       );
-
-      return this.actionResponseService.responseApi(true, group, '');
+      return this.actionResponseService.responseApi(true, theater, '');
     } catch (error) {
+      errorMessage = 'create failed';
       if (error instanceof ValidationError) {
         errorMessage = error.errors[0].message;
       }
       console.log(error.message);
     }
+
     return this.actionResponseService.responseApi(false, '', errorMessage);
   }
 
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateGroup
+    @Body() data: UpdateTheater
   ): Promise<ActionResponseService> {
     let errorMessage = '';
     try {
-      const group: [
+      const theater: [
         number,
-        GroupTheater[]
-      ] = await this.groupthearterService.updateGroupTheater(
+        Theater[]
+      ] = await this.theaterService.updateTheater(
         id,
-        (data as unknown) as GroupTheater
+        (data as unknown) as Theater
       );
 
-      return this.actionResponseService.responseApi(true, group, '');
+      return this.actionResponseService.responseApi(true, theater, '');
     } catch (error) {
       if (error instanceof ValidationError) {
         errorMessage = error.errors[0].message;
@@ -85,9 +93,7 @@ export class GroupthearterController {
     @Param('id', ParseIntPipe) id: number
   ): Promise<ActionResponseService> {
     try {
-      const deleted: number = await this.groupthearterService.deleteGroupTheater(
-        id
-      );
+      const deleted: number = await this.theaterService.deleteTheater(id);
 
       return this.actionResponseService.responseApi(true, deleted, '');
     } catch (error) {

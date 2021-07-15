@@ -340,6 +340,9 @@
                         </li>
                         <li><a href="#">Help</a></li> --}}
                         {{#if user}}
+                            {{#if user.is_admin}}
+                            <li><a href="/admin">Admin</a></li>
+                            {{else  }}
                             <li class="dropdown first">
                                 <a class="btn btn-default dropdown-toggle lv1" data-toggle="dropdown" data-hover="dropdown">
                                     user <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -349,8 +352,9 @@
                                     <li><a href="/authen/logout">Logout</a></li>
                                 </ul>
                             </li>
+                            {{/if  }}
                         {{else}}
-                            <li class="loginLink"><a href="#">LOG In</a></li>
+                            <li class="loginLink"><a href="#">Log In</a></li>
                             <li class="btn signupLink"><a href="#">sign up</a></li>
                         {{/if}}
                     </ul>
