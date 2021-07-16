@@ -550,6 +550,9 @@ Admin
                 table: undefined,
                 data: {},
                 listView: [],
+                theaters: [],
+                selectedTheaters: [],
+                theaterIds: new Set(),
                 fetchData() {
                     if($.fn.dataTable.isDataTable('#list-movie')) {
                         return false;
@@ -628,12 +631,13 @@ Admin
                 },
                 create(event) {
                     event.preventDefault();
-                    this.data = {};
+                    this.data = { MMPA_rating: 'PA-13' };
+                    this.theaters = this.parent.theater.listView;
                     this.parent.modal.title = 'Create Movie';
                     this.parent.modal.content = 'movie_form';
                     this.parent.modal.submitHandler = (event) => {
                         event.stopPropagation();
-
+                        
                         const form = document.getElementById('movie-form');
                         if (!form.checkValidity()) {
                             event.preventDefault();
@@ -642,8 +646,16 @@ Admin
                             return false;       
                         }
                         form.classList.remove('was-validated');
+                        const selectedTheaters = $('#selected-theaters option:selected');
+                        if(!selectedTheaters.length) {
+                            $('#theaters-error').show();
 
-                        post('/movie', this.data)
+                            return false;
+                        }
+                        $('#theaters-error').hide();
+                        $.each(selectedTheaters, (key, element) => this.theaterIds.add($(element).val()));
+
+                        post('/movie', { data: this.data, theaters: Array.from(this.theaterIds) })
                             .then((data) => {
                                 if(data.isSuccess) {
                                     this.listView.push(data.data);
@@ -702,8 +714,8 @@ Admin
                     if(!file) return;
 
                     const fr = new FileReader();
-                    fr.onload = function () {
-                        parent.movie.data.poster = fr.result.split(',').pop();
+                    fr.onload = () => {
+                        this.data.poster = fr.result.split(',').pop();
                     }
 
                     fr.readAsDataURL(file);
@@ -714,6 +726,32 @@ Admin
                     destroy('/movie', { id })
                         .then((data) => console.log(data))
                         .catch(error => alert('delete failed'));
+                },
+                moveRightTheater(event) {
+                    event.preventDefault();
+
+                    const theaters = $('#select-theaters option:selected');
+                    if(theaters.length) {
+                        const ids = [];
+                        $.each(theaters, ( key, element ) => ids.push(+$(element).val()) );
+                        const newTheaters = this.theaters.filter((theater) => !ids.includes(theater.id));
+
+                        this.selectedTheaters = this.selectedTheaters.concat(this.theaters.filter((theater) => ids.includes(theater.id)));
+                        this.theaters = newTheaters;
+                    }
+                },
+                moveLeftTheater(event) {
+                    event.preventDefault();
+
+                    const theaters = $('#selected-theaters option:selected');
+                    if(theaters.length) {
+                        const ids = [];
+                        $.each(theaters, ( key, element ) => ids.push(+$(element).val()) );
+                        const newTheaters = this.selectedTheaters.filter((theater) => !ids.includes(theater.id));
+
+                        this.theaters = this.theaters.concat(this.selectedTheaters.filter((theater) => ids.includes(theater.id)));
+                        this.selectedTheaters = newTheaters;
+                    }
                 }
             },
             category: {
@@ -987,9 +1025,6 @@ Admin
                 table: undefined,
                 data: {},
                 listView: [],
-                theaters: [],
-                selectedTheaters: [],
-                theaterIds: [],
                 addRow() {
                     table.row.add()
                 },
@@ -1047,7 +1082,7 @@ Admin
                 create(event) {
                     event.preventDefault();
                     const firstGroup = this.parent.group.listView[0]?.id ?? '';
-                    this.theaters = this.parent.theater.listView;
+
                     this.data = {
                         type: "2D",
                         groupId: firstGroup
@@ -1122,30 +1157,6 @@ Admin
                     destroy('/theater', { id })
                         .then((data) => console.log(data))
                         .catch(error => alert('delete failed'));
-                },
-                moveLeftTheater(event) {
-                    event.preventDefault();
-
-                    const theaters = $('#select-theaters option:selected');
-                    if(theaters.length) {
-                        const ids = theaters.attr('id');
-                        const newTheaters = this.theaters.filter((theater) => !ids.includes(theater.id));
-
-                        this.selectedTheaters = this.theaters.filter((theater) => ids.includes(theater.id));
-                        this.theaters = newTheaters;
-                    }
-                },
-                moveRightTheater(event) {
-                    event.preventDefault();
-
-                    const theaters = $('#selected-theaters option:selected');
-                    if(theaters.length) {
-                        const ids = theaters.attr('id');
-                        const newTheaters = this.selectedTheaters.filter((theater) => !ids.includes(theater.id));
-
-                        this.theaters = this.selectedTheaters.filter((theater) => ids.includes(theater.id));
-                        this.selectedTheaters = newTheaters;
-                    }
                 }
             },
             section: 'dashboard',

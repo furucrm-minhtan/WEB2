@@ -22,6 +22,7 @@ import { Review } from '../review/review.model';
 import { TheaterOptions } from '../theater/dto/theater.dto';
 import { Theater } from '../theater/theater.model';
 import { TheaterService } from '../theater/theater.service';
+import { TheaterMovie } from '../theaterMovie/theaterMovie.model';
 import { User } from '../user/user.model';
 import {
   CreateMovie,
@@ -94,10 +95,17 @@ export class MovieController {
   }
 
   @Post()
-  async create(@Body() data: CreateMovie) {
+  async create(
+    @Body() { data, theaters }: { data: CreateMovie; theaters: number[] }
+  ) {
     try {
+      console.log(theaters);
       const movie: Movie = await this.movieService.createMovie(data as Movie);
-
+      movie.theaters = theaters.reduce((result, id) => {
+        result.push(Theater.build({ id } as Theater));
+        return result;
+      }, []);
+      movie.save();
       return this.actionResponseService.responseApi(true, movie, '');
     } catch (error) {
       console.log(error);
