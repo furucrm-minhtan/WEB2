@@ -81,18 +81,23 @@ export class ShowTimeService {
     return Helper.sortLiteralObject(showTimesDisplay);
   }
 
-  async createShowTime(showTime: GenerateShowTime): Promise<ShowTime> {
-    return await this.showTimeRepository.create(showTime as ShowTime);
+  create(data: ShowTime): Promise<ShowTime> {
+    return this.showTimeRepository.create(data);
   }
 
-  async updateShowTime(
-    id: number,
-    showTime: GenerateShowTime
-  ): Promise<[number, ShowTime[]]> {
-    return await this.showTimeRepository.update(showTime as ShowTime, {
+  update(id: number, data: ShowTime): Promise<[number, ShowTime[]]> {
+    return this.showTimeRepository.update(data, {
       where: {
         id
       }
     });
+  }
+
+  delete(options: Record<string, any>) {
+    return this.showTimeRepository.destroy(options);
+  }
+
+  deleteWithId(id: number) {
+    return this.showTimeRepository.destroy({ where: { id } });
   }
 }

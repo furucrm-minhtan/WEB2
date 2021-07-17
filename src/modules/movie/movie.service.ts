@@ -228,7 +228,10 @@ export class MovieService {
       return this.movieRepository
         .update(data, { where: { id: data.id }, transaction: t })
         .then(async (result: [number, Movie[]]) => {
-          await this.theaterMovieService.delete({ movieId: result[1][0].id });
+          await this.theaterMovieService.delete({
+            movieId: result[1][0].id,
+            transaction: t
+          });
 
           return this.theaterMovieService.createAssociationsTheater(
             result[1][0].id,

@@ -48,9 +48,9 @@ export class RoomController {
   @Post()
   async create(@Body() data: CreateRoom) {
     try {
-      const room: Room = await this.roomService.createRoom(data as Room);
+      await this.roomService.create(data as Room);
 
-      return this.actionResponseService.responseApi(true, room, '');
+      return this.actionResponseService.responseApi(true, '', '');
     } catch (error) {
       console.log(error);
     }
@@ -63,12 +63,9 @@ export class RoomController {
     @Body() data: UpdateRoom
   ) {
     try {
-      const movie: [number, Room[]] = await this.roomService.updateRoom(
-        id,
-        data as Room
-      );
+      await this.roomService.update(id, data as Room);
 
-      return this.actionResponseService.responseApi(true, movie, '');
+      return this.actionResponseService.responseApi(true, '', '');
     } catch (error) {
       console.log(error);
     }
@@ -78,7 +75,7 @@ export class RoomController {
   @Delete(':id')
   async delete(@Param('id', ParseIntPipe) id: number) {
     try {
-      const deleted: number = await this.roomService.deleteRoom(id);
+      const deleted: number = await this.roomService.deleteWithId(id);
 
       return this.actionResponseService.responseApi(true, deleted, '');
     } catch (error) {
