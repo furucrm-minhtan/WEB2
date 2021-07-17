@@ -88,7 +88,7 @@ export class TheaterController {
     return this.actionResponseService.responseApi(false, '', errorMessage);
   }
 
-  @Delete()
+  @Delete(':id')
   async delete(
     @Param('id', ParseIntPipe) id: number
   ): Promise<ActionResponseService> {

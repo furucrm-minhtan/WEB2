@@ -85,7 +85,9 @@ export class MovieController {
   @Get()
   async fetchMovie() {
     try {
-      const movies: Movie[] = await this.movieService.findAll();
+      const movies: Movie[] = await this.movieService.findAll({
+        include: Theater
+      });
 
       return this.actionResponseService.responseApi(true, movies, '');
     } catch (error) {
@@ -96,39 +98,36 @@ export class MovieController {
 
   @Post()
   async create(
-    @Body() { data, theaters }: { data: CreateMovie; theaters: number[] }
+    @Body() { data, theaterIds }: { data: CreateMovie; theaterIds: number[] }
   ) {
     try {
-      console.log(theaters);
-      const movie: Movie = await this.movieService.createMovie(data as Movie);
-      movie.theaters = theaters.reduce((result, id) => {
-        result.push(Theater.build({ id } as Theater));
-        return result;
-      }, []);
-      movie.save();
-      return this.actionResponseService.responseApi(true, movie, '');
+      await this.movieService.createMovieWithTheaters(
+        data as Movie,
+        theaterIds
+      );
+      return this.actionResponseService.responseApi(true, '', '');
     } catch (error) {
       console.log(error);
     }
-    return this.actionResponseService.responseApi(false, [], '');
+    return this.actionResponseService.responseApi(false, [], 'create failed');
   }
 
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateMovie
+    @Body() { data, theaterIds }: { data: UpdateMovie; theaterIds: number[] }
   ) {
     try {
-      const movie: [number, Movie[]] = await this.movieService.updateMovie(
-        id,
-        data as Movie
+      await this.movieService.updateMovieWithTheaters(
+        data as Movie,
+        theaterIds
       );
 
-      return this.actionResponseService.responseApi(true, movie, '');
+      return this.actionResponseService.responseApi(true, '', '');
     } catch (error) {
       console.log(error);
     }
-    return this.actionResponseService.responseApi(false, [], '');
+    return this.actionResponseService.responseApi(false, [], 'update failed');
   }
 
   @Delete(':id')
@@ -140,6 +139,6 @@ export class MovieController {
     } catch (error) {
       console.log(error);
     }
-    return this.actionResponseService.responseApi(false, [], '');
+    return this.actionResponseService.responseApi(false, [], 'delete failed');
   }
 }

@@ -69,10 +69,10 @@ export class CategoryController {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(false, '', 'update failed');
   }
 
-  @Delete()
+  @Delete(':id')
   async delete(
     @Param('id', ParseIntPipe) id: number
   ): Promise<ActionResponseService> {

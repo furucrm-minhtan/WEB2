@@ -506,7 +506,7 @@ Admin
            return new Promise((resolve, reject) => {
                 axios.put(url, data)
                 .then((response) => {
-                    if(response.status === 201) {
+                    if(response.status === 200) {
                         resolve(response.data);
                     }
                 })
@@ -521,7 +521,7 @@ Admin
            return new Promise((resolve, reject) => {
                 axios.delete(url, data)
                 .then((response) => {
-                    if(response.status === 201) {
+                    if(response.status === 200) {
                         resolve(response.data);
                     }
                 })
@@ -533,6 +533,7 @@ Admin
         }
 
         return {
+            errorMessages: [],
             modal: {
                 show: {
                     header: true,
@@ -545,6 +546,11 @@ Admin
             },
             updateModal: function(settings) {
                 this.modal = Object.assign(this.modal, settings);
+            },
+            formatDate(value, format) {
+                const date = moment(value);
+
+                return date.isValid() ? date.format(format) : ''; 
             },
             movie: {
                 table: undefined,
@@ -562,7 +568,7 @@ Admin
                         .then((response) => {
                             if(response.isSuccess) {
                                 this.listView = response.data;
-
+                                console.log(response.data);
                                 this.table = $('#list-movie').DataTable({
                                     data: this.listView,
                                     columns: [
@@ -618,8 +624,9 @@ Admin
                                     {  
                                         width: 400, targets: 1 
                                     }],
-                                    createdRow: function(row, data) {
+                                    createdRow: function(row, data, index) {
                                         $(row).attr('data-id', data.id);
+                                        $(row).attr('data-index', index);
                                     }
                                 });
                                 $('.dataTables_length').addClass('bs-select');
@@ -647,19 +654,15 @@ Admin
                         }
                         form.classList.remove('was-validated');
                         const selectedTheaters = $('#selected-theaters option:selected');
-                        if(!selectedTheaters.length) {
-                            $('#theaters-error').show();
-
-                            return false;
-                        }
-                        $('#theaters-error').hide();
+                        
                         $.each(selectedTheaters, (key, element) => this.theaterIds.add($(element).val()));
 
-                        post('/movie', { data: this.data, theaters: Array.from(this.theaterIds) })
+                        post('/movie', { data: this.data, theaterIds: Array.from(this.theaterIds) })
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    this.listView.push(data.data);
-                                    this.table.row.add(data.data).draw();
+                                    this.data.theaters = [...this.selectedTheaters];
+                                    this.listView.push(this.data);
+                                    this.table.row.add(this.data).draw();
                                     this.data = {};
                                     $('#modal').modal('hide');
                                 }
@@ -677,8 +680,13 @@ Admin
                 },
                 update(event, id) {
                     event.preventDefault();
+                    const index = $(`#list-movie tr[data-id="${id}"]`).data('index');
+                    if(index == undefined) return;
 
-                    this.data = this.table.row($(`#list-movie tr[data-id="${id}"]`)).data();
+                    this.data = this.listView[index];
+                    this.selectedTheaters = this.data.theaters;
+                    $.each(this.selectedTheaters, (key, element) => this.theaterIds.add($(element).val()));
+                    this.theaters = this.parent.theater.listView.filter((theater) => !this.theaterIds.includes(theater.id));
                     this.parent.modal.title = 'Update Movie';
                     this.parent.modal.content = 'movie_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -692,8 +700,11 @@ Admin
                             return false;
                         }
                         form.classList.remove('was-validated');
+                        const selectedTheaters = $('#selected-theaters option:selected');
+                        
+                        $.each(selectedTheaters, (key, element) => this.theaterIds.add($(element).val()));
 
-                        put('/movie', { id, ...this.data })
+                        put('/movie', { data: this.data, theaterIds: Array.from(this.theaterIds) })
                             .then((data) => {
                                 if(data.isSuccess) {
                                     data = {};
@@ -723,8 +734,15 @@ Admin
                 delete(event, id) {
                     event.preventDefault();
 
-                    destroy('/movie', { id })
-                        .then((data) => console.log(data))
+                    destroy(`/movie/${id}`, {})
+                        .then((data) => {
+                            if(data.isSuccess) {
+                                const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                                this.listView.splice(index, 1);
+                                this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
+                                alert('delete success');
+                            }
+                        })
                         .catch(error => alert('delete failed'));
                 },
                 moveRightTheater(event) {
@@ -805,8 +823,9 @@ Admin
                                         },
                                         targets: 4
                                     }],
-                                    createdRow: function(row, data) {
+                                    createdRow: function(row, data, index) {
                                         $(row).attr('data-id', data.id);
+                                        $(row).attr('data-index', index);
                                     }
                                 });
                                 $('.dataTables_length').addClass('bs-select');
@@ -856,8 +875,13 @@ Admin
                 },
                 update(event, id, data) {
                     event.preventDefault();
-                    
-                    this.data = this.table.row($(`#list-category tr[data-id="${id}"]`)).data();
+                    const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                    if(index == undefined) {
+                        alert('data not exist');
+                        return;
+                    };
+
+                    this.data = this.listView[index];
                     this.parent.modal.title = 'Update Category';
                     this.parent.modal.content = 'category_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -871,17 +895,21 @@ Admin
                         }
                         form.classList.remove('was-validated');
 
-                        put('/category', { id, ...this.data })
+                        put(`/category/${id}`, { name: this.data.name, level: this.data.level })
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    data = {};
+                                    this.listView[index] = { ...this.data };
+                                    this.table.row($(`#list-category tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
                                 }
                                 else {
                                     alert('update failed');
                                 }   
                             })
-                            .catch(error => alert('update failed'));
+                            .catch(error => {
+                                console.log(error);
+                                alert('update failed');
+                            });
                     }
 
                     $('#modal').modal('show');
@@ -889,8 +917,18 @@ Admin
                 delete(event, id) {
                     event.preventDefault();
 
-                    destroy('/category', { id })
-                        .then((data) => console.log(data))
+                    destroy(`/category/${id}`, {})
+                        .then((data) => {   
+                            if(data.isSuccess) {
+                                const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                                this.listView.splice(index, 1);
+                                this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
+                                alert('delete success');
+                            }
+                            else {
+                                throw "";
+                            }
+                        })
                         .catch(error => alert('delete failed'));
                 }
             },
@@ -920,9 +958,24 @@ Admin
                                         {
                                             data: 'address'
                                         },
+                                        {
+                                            data: 'creationDate'
+                                        },
+                                        {
+                                            data: 'updatedOn'
+                                        }
                                     ],
                                     columnDefs: [{
-                                        render: function(data, type, row) {
+                                        render: function (data, type, row)
+                                        {
+                                            const date = moment(data);
+
+                                            return date.isValid() ? date.format('DD/MM/YYYY') : '';
+                                        },
+                                        targets: [2, 3]
+                                    }, {
+                                        render: function (data, type, row)
+                                        {
                                             return `
                                                 <div>
                                                     <button class="btn btn-success text-uppercase" @click="group.update($event,${row.id})">update</button>
@@ -930,11 +983,12 @@ Admin
                                                 </div>
                                             `
                                         },
-                                        targets: 2
+                                        targets: 4
                                     }],
-                                    createdRow: function(row, data) {
+                                    createdRow: function(row, data, index) {
                                         $(row).attr('data-id', data.id);
-                                    },
+                                        $(row).attr('data-index', index);
+                                    }
                                 });
                                 $('.dataTables_length').addClass('bs-select');
                             }
@@ -983,8 +1037,13 @@ Admin
                 },
                 update(event, id, data) {
                     event.preventDefault();
-                    
-                    this.data = this.table.row($(`#list-group tr[data-id="${id}"]`)).data();
+                    const index = $(`#list-group tr[data-id="${id}"]`).data('index');
+                    if(index == undefined) {
+                        alert('data not exist');
+                        return;
+                    };
+
+                    this.data = this.listView[index];
                     this.parent.modal.title = 'Update group';
                     this.parent.modal.content = 'group_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -998,17 +1057,21 @@ Admin
                         }
                         form.classList.remove('was-validated');   
 
-                        put('/groupthearter', { id, ...this.data })
+                        put(`/groupthearter/${id}`, { name: this.data.name, address: this.data.address })
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    data = {};
+                                    this.listView[index] = { ...this.data };
+                                    this.table.row($(`#list-group tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
                                 }
                                 else {
                                     alert('update failed');
                                 }   
                             })
-                            .catch(error => alert('update failed'));
+                            .catch (error => {
+                                console.log(error);
+                                alert('update failed');
+                            });
                     }
 
                     $('#modal').modal('show');
@@ -1016,8 +1079,18 @@ Admin
                 delete(event, id) {
                     event.preventDefault();
 
-                    destroy('/groupthearter', { id })
-                        .then((data) => console.log(data))
+                    destroy(`/groupthearter/${id}`, {})
+                        .then((data) => {
+                            if(data.isSuccess) {
+                                const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                                this.listView.splice(index, 1);
+                                this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
+                                alert('delete success');
+                            }
+                            else {
+                                throw "";
+                            }
+                        })
                         .catch(error => alert('delete failed'));
                 }
             },
@@ -1052,9 +1125,23 @@ Admin
                                         },
                                         {
                                             data: 'groupId'
+                                        },
+                                        {
+                                            data: 'creationDate'
+                                        },
+                                        {
+                                            data: 'updatedOn'
                                         }
                                     ],
                                     columnDefs: [{
+                                        render: function (data, type, row)
+                                        {
+                                            const date = moment(data);
+
+                                            return date.isValid() ? date.format('DD/MM/YYYY') : '';
+                                        },
+                                        targets: [3, 4]
+                                    },{
                                         render: function (data, type, row)
                                         {
                                             return `
@@ -1064,12 +1151,12 @@ Admin
                                                 </div>
                                             `
                                         },
-                                        targets: 3
+                                        targets: 5
                                     }],
-                                    createdRow: function (row, data)
-                                    {
+                                    createdRow: function(row, data, index) {
                                         $(row).attr('data-id', data.id);
-                                    },
+                                        $(row).attr('data-index', index);
+                                    }
                                 });
                                 $('.dataTables_length').addClass('bs-select');
                             }
@@ -1121,8 +1208,13 @@ Admin
                 },
                 update(event, id, data) {
                     event.preventDefault();
-                    
-                    this.data = this.table.row($(`#list-theater tr[data-id="${id}"]`)).data();
+                    const index = $(`#list-theater tr[data-id="${id}"]`).data('index');
+                    if(index == undefined) {
+                        alert('data not exist');
+                        return;
+                    };
+
+                    this.data = this.listView[index];
                     this.parent.modal.title = 'Update theater';
                     this.parent.modal.content = 'theater_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -1136,17 +1228,21 @@ Admin
                         }
                         form.classList.remove('was-validated');
 
-                        put('/theater', { id, ...this.data })
+                        put(`/theater/${id}`, { name: this.data.name, type: this.data.type, groupId: this.data.groupId})
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    data = {};
+                                    this.listView[index] = { ...this.data };
+                                    this.table.row($(`#list-theater tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
                                 }
                                 else {
                                     alert('update failed');
                                 }   
                             })
-                            .catch(error => alert('update failed'));
+                            .catch(error => {
+                                console.log(error);
+                                alert('update failed');
+                            });
                     }
 
                     $('#modal').modal('show');
@@ -1154,8 +1250,19 @@ Admin
                 delete(event, id) {
                     event.preventDefault();
 
-                    destroy('/theater', { id })
-                        .then((data) => console.log(data))
+                    destroy(`/theater/${id}`, {})
+                        .then((data) => {
+                            if(data.isSuccess) {
+                                const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                                this.listView.splice(index, 1);
+                                this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
+                                alert('delete success');
+                            }
+                            else {
+                                throw "";
+                            }
+                                
+                        })
                         .catch(error => alert('delete failed'));
                 }
             },
