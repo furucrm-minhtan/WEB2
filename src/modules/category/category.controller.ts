@@ -21,7 +21,7 @@ export class CategoryController {
   ) {}
 
   @Get()
-  async fetchCategory() {
+  async fetchCategory(): Promise<ActionResponseService> {
     try {
       const categories: Category[] = await this.categoryService.fetchCategory({
         attributes: ['id', 'name', 'level', 'creationDate', 'updatedOn']
@@ -36,7 +36,7 @@ export class CategoryController {
   }
 
   @Post()
-  async create(@Body() data: AddCategory) {
+  async create(@Body() data: AddCategory): Promise<ActionResponseService> {
     try {
       const cate: Category = await this.categoryService.createCategory(
         (data as unknown) as Category
@@ -54,7 +54,7 @@ export class CategoryController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateCategory
-  ) {
+  ): Promise<ActionResponseService> {
     try {
       const cate: [
         number,
@@ -69,11 +69,13 @@ export class CategoryController {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(false, '', 'update failed');
   }
 
-  @Delete()
-  async delete(@Param('id', ParseIntPipe) id: number) {
+  @Delete(':id')
+  async delete(
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<ActionResponseService> {
     try {
       const deleted: number = await this.categoryService.deleteCategory(id);
 

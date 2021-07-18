@@ -1,6 +1,9 @@
 <div class="mx-2 my-5">
     {{>modal}}
+
+    
     <div class="col-12">
+        <h1 class="text-center">Category</h1>
         <div class="text-right">
             <button type="button" class="btn btn-primary" @click="category.create($event)">New</button>
         </div>
@@ -19,6 +22,7 @@
     </div>
 
     <div class="col-12">
+        <h1 class="text-center">Movie</h1>
         <div class="text-right">
             <button type="button" class="btn btn-primary" @click="movie.create($event)">New</button>
         </div>
@@ -40,7 +44,8 @@
         </table>
     </div>
 
-    <div>
+    <div class="col-12">
+        <h1 class="text-center">Group Theater</h1>
         <div class="text-right">
             <button type="button" class="btn btn-primary" @click="group.create($event)">New</button>
         </div>
@@ -49,13 +54,16 @@
                 <tr>
                     <th class="th-sm">Name</th>
                     <th class="th-sm">Address</th>
+                    <th class="th-sm">Create Date</th>
+                    <th class="th-sm">Update Date</th>
                     <th class="th-sm"></th>
                 </tr>
             </thead>
         </table>
     </div>
 
-    <div>
+    <div class="col-12"> 
+        <h1 class="text-center">Theater</h1>
         <div class="text-right">
             <button type="button" class="btn btn-primary" @click="theater.create($event)">New</button>
         </div>
@@ -66,6 +74,54 @@
                     <th class="th-sm">Name</th>
                     <th class="th-sm">Type</th>
                     <th class="th-sm">Group</th>
+                    <th class="th-sm">Create Date</th>
+                    <th class="th-sm">Update Date</th>
+                    <th class="th-sm"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div class="col-12"> 
+        <h1 class="text-center">Room</h1>
+        <div class="text-right">
+            <button type="button" class="btn btn-primary" @click="room.create($event)">New</button>
+        </div>
+        
+        <table class="mx-5" id="list-room" class="table" width="100%">
+            <thead>
+                <tr>
+                    <th class="th-sm">Name</th>
+                    <th class="th-sm">Rows</th>
+                    <th class="th-sm">Columns</th>
+                    <th class="th-sm">Theater</th>
+                    <th class="th-sm">Create Date</th>
+                    <th class="th-sm">Update Date</th>
+                    <th class="th-sm"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+     <div class="col-12"> 
+        <h1 class="text-center">Show Time</h1>
+        <div class="text-right">
+            <button type="button" class="btn btn-primary" @click="showTime.create($event)">New</button>
+        </div>
+        
+        <table class="mx-5" id="list-showtime" class="table" width="100%">
+            <thead>
+                <tr>
+                    <th class="th-sm">Id</th>
+                    <th class="th-sm">Date</th>
+                    <th class="th-sm">Start Time</th>
+                    <th class="th-sm">End Time</th>
+                    <th class="th-sm">Price</th>
+                    <th class="th-sm">Room</th>
+                    <th class="th-sm">Movie</th>
+                    <th class="th-sm">Theater</th>
+                    <th class="th-sm">Create Date</th>
+                    <th class="th-sm">Update Date</th>
                     <th class="th-sm"></th>
                 </tr>
             </thead>

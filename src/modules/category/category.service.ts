@@ -18,9 +18,9 @@ export class CategoryService {
 
   updateCategory(
     id: number,
-    categoryDate: Category
+    categoryData: Category
   ): Promise<[number, Category[]]> {
-    return this.categoryRepository.update(categoryDate, {
+    return this.categoryRepository.update(categoryData, {
       where: {
         id
       }

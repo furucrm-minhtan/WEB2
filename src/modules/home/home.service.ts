@@ -13,12 +13,8 @@ export class HomeService {
     const newMovie = await this.movieService.newestMovie(10);
     const comingMovie = await this.movieService.comingMovie(10);
     const topMovie = await this.movieService.topRatedMovie(10);
-    const categories = await this.cateService.fetchCategory({
-      order: [['level', 'DESC']],
-      limit: 5,
-      raw: true
-    });
+    const mostViewed = await this.movieService.mostViewed(10);
 
-    return { newMovie, comingMovie, topMovie, categories };
+    return { newMovie, comingMovie, topMovie, mostViewed };
   }
 }

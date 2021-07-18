@@ -29,8 +29,9 @@ export class Seat extends BaseModel<Seat> {
   @Column
   id: number;
 
-  @Column({ type: DataType.ENUM('A', 'B', 'C', 'D', 'E', 'F', 'G') })
-  row: string;
+  // @Column({ type: DataType.ENUM('A', 'B', 'C', 'D', 'E', 'F', 'G') })
+  @Column
+  row: number;
 
   @Column
   column: number;

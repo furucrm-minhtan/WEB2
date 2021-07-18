@@ -12,7 +12,26 @@ export class GroupTheaterService {
     return this.groupTheaterRepository.findAll(options);
   }
 
-  createGroupTheater(groupThearterNew: GroupTheater ){
+  createGroupTheater(groupThearterNew: GroupTheater) {
     return this.groupTheaterRepository.create(groupThearterNew);
+  }
+
+  updateGroupTheater(
+    id: number,
+    groupData: GroupTheater
+  ): Promise<[number, GroupTheater[]]> {
+    return this.groupTheaterRepository.update(groupData, {
+      where: {
+        id
+      }
+    });
+  }
+
+  deleteGroupTheater(id: number): Promise<number> {
+    return this.groupTheaterRepository.destroy({
+      where: {
+        id
+      }
+    });
   }
 }

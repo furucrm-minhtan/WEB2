@@ -7,13 +7,10 @@ import {
   Render,
   Session,
   Headers,
-  Redirect,
   Put
 } from '@nestjs/common';
-import session from 'express-session';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { UserSession } from '../authen/dto/authen.dto';
-import { Bookmark } from '../bookmark/bookmark.model';
 import { BookmarkService } from '../bookmark/bookmark.service';
 import { Movie } from '../movie/movie.model';
 import {

@@ -1,23 +1,35 @@
-<form action="#" class="mt-5 mt-lg-0">
+<form id="movie-form" class="needs-validation" novalidate>
 	<h4 class="text-center">Add Movie For Theater</h4>
-	<div class="row mt-5">
-		<div class="col-12 col-md-6">
+	<div class="row mt-2">
+		<div class="col-12">
 			<label>Name</label>
-			<input class="form-control" type="text" x-model="movie.data.name">
+			<input class="form-control" type="text" x-model="movie.data.name" required>
+			<div class="invalid-feedback">Name is required</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12 col-md-6">
+			<label>Run Time</label>
+			<input class="form-control" type="text" x-model="movie.data.run_time" required>
+			<div class="invalid-feedback">Run Time is required</div>
 		</div>
 		<div class="col-12 col-md-6">
 			<label for="category">category</label>
-			<select id="category" class="custom-select" x-model="movie.data.category">
+			<select id="category" class="custom-select" x-model="movie.data.category_id" required>
+				<option value="" >--None--</option>
 				<template x-for="(cate, index) in category.listView">
 					<option x-bind:value="cate.id" x-text="cate.name"></option>
 				</template>
 			</select>
+			<div class="invalid-feedback">Category is required</div>
 		</div>
 	</div>
 	<div class="row">
-		<div>
-			<image class="w-100" x-bind:src="movie.data.poster" />
-		</div>
+		<template x-if="movie.data.poster">
+			<div class="my-3 mx-auto">
+				<image class="w-100" height="400" x-bind:src="movie.data.poster" />
+			</div>
+		</template>
 		<div class="col-12">
 			<label id="">Poster</label>
 			<div class="input-group">
@@ -26,9 +38,10 @@
 				</div>
 				<div class="custom-file">
 					<input type="file" class="custom-file-input" id="poster"
-						aria-describedby="inputGroupFileAddon01" x-on:change="readFileUpload(event)">
+						aria-describedby="inputGroupFileAddon01" x-on:change="movie.readFileUpload(event)" required />
 					<label class="custom-file-label" for="poster">Choose file</label>
 				</div>
+				<div class="invalid-feedback">Poster is required</div>
 			</div>
 		</div>
 		<div class="col-12">
@@ -38,26 +51,58 @@
 	</div>
 	<div class="form-group">
 		<label for="describe">Describe</label>
-		<textarea id="describe" class="form-control" rows="10" x-model="movie.data.describe"></textarea>
+		<textarea id="describe" class="form-control" rows="10" x-model="movie.data.describe" required></textarea>
+		<div class="invalid-feedback">Describe is required</div>
 	</div>
-	<div class="row mt-5">
+	<div class="row mt-2">
 		<div class="col-12 col-md-6">
 			<label for="director">Director</label>
-			<input id="director" class="form-control " type="text" x-model="movie.data.director" />
+			<input id="director" class="form-control " type="text" x-model="movie.data.director" required/>
+			<div class="invalid-feedback">Director is required</div>
 		</div>
 		<div class="col-12 col-md-6">
 			<label for="writer">Writer</label>
-			<input id="writer" class="form-control" type="text" x-model="movie.data.writer" />
+			<input id="writer" class="form-control" type="text" x-model="movie.data.writer" required/>
+			<div class="invalid-feedback">Writer is required</div>
 		</div>
 	</div>
-	<div class="row mt-5">
+	<div class="row mt-2">
 		<div class="col-12 col-md-6">
 			<label for="MMPA_rate">MMPA Rating</label>
-			<input id="MMPA_rate" class="form-control" type="date" x-model="movie.data.MMPA_rating" />
+			<select class="custom-select" x-model="movie.data.MMPA_rating">
+				<option value="PA-13">PA-13</option>
+				<option value="PA-16">PA-16</option>
+				<option value="PA-18">PA-18</option>
+			</select>
 		</div>
 		<div class="col-12 col-md-6">
 			<label for="publish">Publish</label>
-			<input id="publish" class="form-control" type="date" x-model="movie.data.publish" />
+			<input id="publish" class="form-control" type="date" x-bind:value="formatDate(movie.data.publish, 'YYYY-MM-DD')" x-model="movie.data.publish" required/>
+			<div class="invalid-feedback">Publish is required</div>
+		</div>
+	</div>
+	<div>
+		<label for="theaters">Theaters</label>
+		<div class="row">
+			<div class="col-12 col-md-5">
+				<select id="select-theaters" class="custom-select" style="background: none; border-color: unset;" multiple>
+					<template x-for="(item, index) in movie.theaters" :key="index">
+						<option x-bind:id="item.id" x-bind:value="item.id" x-text="item.name"></option>
+					</template>
+				</select>
+			</div>
+			<div class="col-12 col-md-2 text-center">
+				<button type="button" class="btn btn-primary px-3" @click="movie.moveLeftTheater(event)"><i class="fas fa-chevron-left"></i></button>
+				<button type="button" class="btn btn-primary px-3" @click="movie.moveRightTheater(event)"><i class="fas fa-chevron-right"></i></button>
+			</div>
+			<div class="col-12 col-md-5">
+				<select id="selected-theaters" class="custom-select" multiple required>
+					<template x-for="(item, index) in movie.selectedTheaters" :key="index">
+						<option x-bind:value="item.id" x-text="item.name" selected></option>
+					</template>
+				</select>
+				<div id="theaters-error" class="invalid-feedback">Theaters is required</div>
+			</div>
 		</div>
 	</div>
 </form>

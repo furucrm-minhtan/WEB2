@@ -12,7 +12,7 @@ Admin
 {{/contentFor}}
 
 
-<div x-cloak x-data="init()" x-init="fetchReport()">
+<div x-cloak x-data="init()" x-init="loadDashBoard()">
 	<!-- Page Wrapper -->
     <div id="wrapper">
 
@@ -46,17 +46,7 @@ Admin
                     <i class="fas fa-fw fa-cog"></i>
                     <span>Manager</span>
                 </a>
-            </li>
-
-             <!-- Divider -->
-            <hr class="sidebar-divider">
-
-             <li class="nav-item">
-                <a class="nav-link collapsed" href="#">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>Statistic</span>
-                </a>
-            </li>
+            </li>      
         </ul>
         <!-- End of Sidebar -->
 
@@ -79,14 +69,12 @@ Admin
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
-                                <img class="img-profile rounded-circle"
-                                    src="img/undraw_profile.svg">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{user.user_name}}</span>
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
+                                {{!-- <a class="dropdown-item" href="#">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Profile
                                 </a>
@@ -97,9 +85,8 @@ Admin
                                 <a class="dropdown-item" href="#">
                                     <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Activity Log
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                </a> --}}
+                                <a class="dropdown-item" href="/authen/logout" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
                                 </a>
@@ -126,15 +113,13 @@ Admin
                         <!-- Page Heading -->
                         <div class="d-sm-flex align-items-center justify-content-between mb-4">
                             <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                    class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                         </div>
                     
                         <!-- Content Row -->
                         <div class="row">
                     
                             <!-- Earnings (Monthly) Card Example -->
-                            <div class="col-xl-3 col-md-6 mb-4">
+                            {{!-- <div class="col-xl-3 col-md-6 mb-4">
                                 <div class="card border-left-primary shadow h-100 py-2">
                                     <div class="card-body">
                                         <div class="row no-gutters align-items-center">
@@ -149,10 +134,10 @@ Admin
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                     
                             <!-- Earnings (Monthly) Card Example -->
-                            <div class="col-xl-3 col-md-6 mb-4">
+                            {{!-- <div class="col-xl-3 col-md-6 mb-4">
                                 <div class="card border-left-success shadow h-100 py-2">
                                     <div class="card-body">
                                         <div class="row no-gutters align-items-center">
@@ -167,7 +152,7 @@ Admin
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     
                         <!-- Content Row -->
@@ -175,71 +160,73 @@ Admin
                         <div class="row">
                     
                             <!-- Area Chart -->
-                            <div class="col-xl-8 col-lg-7">
+                            <div class="col-12">
                                 <div class="card shadow mb-4">
                                     <!-- Card Header - Dropdown -->
-                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                        <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                                        <div class="dropdown no-arrow">
-                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                aria-labelledby="dropdownMenuLink">
-                                                <div class="dropdown-header">Dropdown Header:</div>
-                                                <a class="dropdown-item" href="#">Action</a>
-                                                <a class="dropdown-item" href="#">Another action</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">Something else here</a>
+                                    <div class="card-header py-3 d-flex flex-column flex-xl-row align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold text-primary flex-shrink-0">Movie Chart <span x-text="grantChart.movie.name"></span></h6>
+                                        <form id="movie-chart-form" class="d-flex flex-column flex-xl-row col-12 needs-validation" novalidate>
+                                            {{!-- <div class="d-flex flex-column flex-xl-row col-12 col-xl-2 ">
+                                                <select class="browser-default custom-select" x-model="grantChart.movie.id" required>
+                                                    <option value="">--None--</option>
+                                                    <template x-for="(item, index) in movie.listView">
+                                                        <option x-bind:value="item.id" x-text="item.name"></option>
+                                                    </template>
+                                                </select>
+                                            </div> --}}
+                                            
+                                            <div class="d-flex flex-column flex-xl-row col-12 col-xl-4 align-items-baseline">
+                                                <label for="start-range" class="col-12 col-xl-2">Start</label>
+                                                <input id="start-range" class="col-12 col-xl-9 form-control" type="date" x-model="grantChart.movie.start" required />
                                             </div>
-                                        </div>
+                                            <div class="d-flex flex-column flex-xl-row col-12 col-xl-4   align-items-baseline">
+                                                <label for="end-range" class="col-12 col-xl-2">End</label>
+                                                <input id="end-range" class="col-12 col-xl-9 form-control" type="date" x-model="grantChart.movie.end" required />
+                                            </div>
+                                            <button class="btn btn-primary" @click="movieStatistical(event)">Render Chart</button>
+                                        </form>
                                     </div>
                                     <!-- Card Body -->
-                                    <div class="card-body">
-                                        <div class="chart-area">
-                                            <canvas id="myAreaChart"></canvas>
+                                    <div class="card-body" x-bind:style="'height: ' + (grantChart.movie.height + 100) + 'px;'">
+                                        <div class="chart-area" x-show="grantChart.movie.data.length">
+                                            <div class="mt-2">
+                                                <div id="grant-chart-movie"></div>
+                                            </div>
+                                        </div>
+                                         <div class=" text-center" x-show="!grantChart.movie.data.length">
+                                             <h1>haven't data to create chart</h1>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                     
-                            <!-- Pie Chart -->
-                            <div class="col-xl-4 col-lg-5">
+                           
+                            <div class="col-12">
                                 <div class="card shadow mb-4">
-                                    <!-- Card Header - Dropdown -->
-                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                        <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
-                                        <div class="dropdown no-arrow">
-                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                aria-labelledby="dropdownMenuLink">
-                                                <div class="dropdown-header">Dropdown Header:</div>
-                                                <a class="dropdown-item" href="#">Action</a>
-                                                <a class="dropdown-item" href="#">Another action</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">Something else here</a>
+                                    <div class="card-header py-3 d-flex flex-column flex-xl-row align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold text-primary flex-shrink-0">Group Chart <span x-text="grantChart.group.name"></span></h6>
+                                        <form id="group-chart-form" class="d-flex flex-column flex-xl-row col-12 needs-validation" novalidate>
+                                            
+                                            <div class="d-flex flex-column flex-xl-row col-12 col-xl-4 align-items-baseline">
+                                                <label for="start-range" class="col-12 col-xl-2">Start</label>
+                                                <input id="start-range" class="col-12 col-xl-9 form-control" type="date" x-model="grantChart.group.start" required />
                                             </div>
-                                        </div>
+                                            <div class="d-flex flex-column flex-xl-row col-12 col-xl-4   align-items-baseline">
+                                                <label for="end-range" class="col-12 col-xl-2">End</label>
+                                                <input id="end-range" class="col-12 col-xl-9 form-control" type="date" x-model="grantChart.group.end" required />
+                                            </div>
+                                            <button class="btn btn-primary" @click="groupStatistical(event)">Render Chart</button>
+                                        </form>
                                     </div>
                                     <!-- Card Body -->
-                                    <div class="card-body">
-                                        <div class="chart-pie pt-4 pb-2">
-                                            <canvas id="myPieChart"></canvas>
+                                    <div class="card-body" x-bind:style="'height: ' + (grantChart.group.height + 100) + 'px;'">
+                                        <div class="chart-area" x-show="grantChart.group.data.length">
+                                            <div class="mt-2">
+                                                <div id="grant-chart-group"></div>
+                                            </div>
                                         </div>
-                                        <div class="mt-4 text-center small">
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-primary"></i> Direct
-                                            </span>
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-success"></i> Social
-                                            </span>
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-info"></i> Referral
-                                            </span>
+                                         <div class=" text-center" x-show="!grantChart.group.data.length">
+                                             <h1>haven't data to create chart</h1>
                                         </div>
                                     </div>
                                 </div>
@@ -284,208 +271,26 @@ Admin
     </div>
 </div>
 
-
-{{!-- <div x-data="init()">
-	<div class="hero user-hero">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<div class="hero-ct">
-						<ul class="breadcumb">
-							<h1 class="mr_0 mb_10">{{user_name}}</h1>
-							<li class="active"><a href="#">Home</a></li>
-							<li><span class="ion-ios-arrow-right"></span><span x-text="page" class="mr_0"></span></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="page-single">
-		<div class="container">
-			<div class="row ipad-width">
-				<div class="col-md-3 col-sm-12 col-xs-12">
-					<div class="user-information">
-						<div class="user-img">
-							<a href="#"><img src="images/uploads/user-img.png" alt=""><br></a>
-							<a href="#" class="redbtn">Change avatar</a>
-						</div>
-						<div class="user-fav">
-							<p>Account Details</p>
-							<ul>
-								<li class="active"><a href="javascript:void(0)"
-										x-on:click="page = 'Manage'">Manage</a></li>
-								<li><a href="javascript:void(0)"
-										x-on:click="loadingFavorite()">Favorite movies</a></li>
-								<li><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); page = 'rate'">Rated movies</a></li>
-							</ul>
-						</div>
-						<div class="user-fav">
-							<p>Others</p>
-							<ul>
-								<li><a href="javascript:void(0)"
-										x-on:click="$event.preventDefault(); page = 'change password'">Change
-										password</a></li>
-							</ul>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-9 col-sm-12 col-xs-12">
-					<div class="form-style-1 user-pro">
-						<form>
-							<h4>Add Group Theater</h4>
-							<div class="row">
-								<div class="col-12 form-it">
-									<label>Name</label>
-									<input type="text" x-model="groupForm.name">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-12 form-it">
-									<label>Address</label>
-									<input type="text" x-model="groupForm.address">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-2">
-									<input class="submit" type="submit" value="change" @click="changePassword($event)">
-								</div>
-							</div>
-						</form>
-
-						<form class="theater">
-							<h4>Add Theater</h4>
-							<div class="row">
-								<div class="col-12 form-it">
-									<label>Name</label>
-									<input type="text" x-model="theater.name">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-12 form-it">
-									<label>Type</label>
-									<select x-model="theater.type">
-										<template>
-
-										</template>
-									</select>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-12 form-it">
-									<label>Group</label>
-									<select x-model="theater.group">
-										<template x-for="(group, index) in groups">
-											
-										</template>
-								    </select>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-2">
-									<input class="submit" type="submit" value="save" @click="updateProfile($event)">
-								</div>
-							</div>
-						</form>
-						<div class="listview_theater">
-							<table class="table-bordered">
-								<thead>
-									<tr>
-										<th>Name</th>
-										<th>Type</th>
-										<th>Group</th>
-									</tr>
-								</thead>
-								<tbody>
-									<template x-for="(theater, index) in theaters" :key="index">
-										<tr>
-											<td></td>
-											<td></td>
-											<td></td>
-										</tr>
-									</template>
-								</tbody>
-							</table>
-						</div>
-					</div>
-					<div class="form-style-1 user-pro">
-						<form>
-							<h4>Add Category</h4>
-							<div class="row">
-								<div class="col-12 form-it">
-									<label>Name</label>
-									<input type="text" x-model="categoryForm.name">
-								</div>
-							</div>
-						</form>
-						<form action="#" class="">
-							<h4>Add Movie</h4>
-							<div class="row">
-								<div class="col-12 form-it">
-									<label>Name</label>
-									<input type="text" x-model="movieGroup.name">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-12 form-it">
-									<label>poster</label>
-									<input type="file" x-model="movieGroup.address">
-								</div>
-								<button class="btn btn-primary"></button>
-							</div>
-							<div class="row">
-								<div class="col-12 form-it">
-									<label>trailer</label>
-									<input type="text" x-model="movieGroup.address">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-12 form-it">
-									<label>describe</label>
-									<textarea x-model="movieGroup.describe"></textarea>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-6 form-it">
-									<label>director</label>
-									<input type="text" x-model="movieGroup.director">
-								</div>
-								<div class="col-6 form-it">
-									<label>writer</label>
-									<input type="text" x-model="movieGroup.writer">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-6 form-it">
-									<label>publish</label>
-									<input type="date" x-model="movieGroup.publish">
-								</div>
-								<div class="col-md-6 form-it">
-									<label>MMPA Rating</label>
-									<input type="date" x-model="movieGroup.MMPA_rating">
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-6 form-it">
-									<label>category</label>
-									<select x-model="movieGroup.category"></select>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-2">
-									<input class="submit" type="submit" value="change" @click="changePassword($event)">
-								</div>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div> --}}
 {{#contentFor 'scripts'}}
+<script src="https://www.gstatic.com/charts/loader.js" defer></script>
 <script>
+    const grantChart = {
+        movie: {
+            limit: 5,
+            name: '',
+            width: 1200,
+            height: 600,
+            data: []
+        },
+        group: {
+            limit: 5,
+            name: '',
+            width: 1200,
+            height: 600,
+            data: []
+        }
+    };
+
 	function init() {
         const post = (url, data) => {
            return new Promise((resolve, reject) => {
@@ -506,7 +311,7 @@ Admin
            return new Promise((resolve, reject) => {
                 axios.put(url, data)
                 .then((response) => {
-                    if(response.status === 201) {
+                    if(response.status === 200) {
                         resolve(response.data);
                     }
                 })
@@ -521,7 +326,7 @@ Admin
            return new Promise((resolve, reject) => {
                 axios.delete(url, data)
                 .then((response) => {
-                    if(response.status === 201) {
+                    if(response.status === 200) {
                         resolve(response.data);
                     }
                 })
@@ -533,6 +338,8 @@ Admin
         }
 
         return {
+            errorMessages: [],
+            grantChart,
             modal: {
                 show: {
                     header: true,
@@ -546,10 +353,18 @@ Admin
             updateModal: function(settings) {
                 this.modal = Object.assign(this.modal, settings);
             },
+            formatDate(value, format) {
+                const date = moment(value);
+
+                return date.isValid() ? date.format(format) : ''; 
+            },
             movie: {
                 table: undefined,
                 data: {},
                 listView: [],
+                theaters: [],
+                selectedTheaters: [],
+                theaterIds: new Set(),
                 fetchData() {
                     if($.fn.dataTable.isDataTable('#list-movie')) {
                         return false;
@@ -559,7 +374,7 @@ Admin
                         .then((response) => {
                             if(response.isSuccess) {
                                 this.listView = response.data;
-
+                                console.log(response.data);
                                 this.table = $('#list-movie').DataTable({
                                     data: this.listView,
                                     columns: [
@@ -615,8 +430,9 @@ Admin
                                     {  
                                         width: 400, targets: 1 
                                     }],
-                                    createdRow: function(row, data) {
+                                    createdRow: function(row, data, index) {
                                         $(row).attr('data-id', data.id);
+                                        $(row).attr('data-index', index);
                                     }
                                 });
                                 $('.dataTables_length').addClass('bs-select');
@@ -628,29 +444,73 @@ Admin
                 },
                 create(event) {
                     event.preventDefault();
-
+                    this.data = { MMPA_rating: 'PA-13' };
+                    this.theaters = this.parent.theater.listView;
                     this.parent.modal.title = 'Create Movie';
                     this.parent.modal.content = 'movie_form';
                     this.parent.modal.submitHandler = (event) => {
                         event.stopPropagation();
+                        
+                        const form = document.getElementById('movie-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form.classList.add('was-validated');   
+                            
+                            return false;       
+                        }
+                        form.classList.remove('was-validated');
+                        const selectedTheaters = $('#selected-theaters option:selected');
+                        
+                        $.each(selectedTheaters, (key, element) => this.theaterIds.add($(element).val()));
 
-                        post('/movie', this.data)
-                            .then((data) => console.log(data))
-                            .catch(error => alert('create failed'));
+                        post('/movie', { data: this.data, theaterIds: Array.from(this.theaterIds) })
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    this.data.theaters = [...this.selectedTheaters];
+                                    this.listView.push(this.data);
+                                    this.table.row.add(this.data).draw();
+                                    this.data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    throw data.message;
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert(error);
+                            });
                     }
 
                     $('#modal').modal('show');
                 },
                 update(event, id) {
                     event.preventDefault();
+                    const index = $(`#list-movie tr[data-id="${id}"]`).data('index');
+                    if(index == undefined) return;
 
-                    this.data = this.table.row($(`#list-movie tr[data-id="${id}"]`)).data();
+                    this.data = this.listView[index];
+                    this.selectedTheaters = this.data.theaters;
+                    $.each(this.selectedTheaters, (key, element) => this.theaterIds.add($(element).val()));
+                    this.theaters = this.parent.theater.listView.filter((theater) => !this.theaterIds.includes(theater.id));
                     this.parent.modal.title = 'Update Movie';
                     this.parent.modal.content = 'movie_form';
                     this.parent.modal.submitHandler = (event) => {
                         event.stopPropagation();
 
-                        put('/movie', { id, ...this.data })
+                        const form = document.getElementById('movie-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
+                        const selectedTheaters = $('#selected-theaters option:selected');
+                        
+                        $.each(selectedTheaters, (key, element) => this.theaterIds.add($(element).val()));
+
+                        put('/movie', { data: this.data, theaterIds: Array.from(this.theaterIds) })
                             .then((data) => {
                                 if(data.isSuccess) {
                                     data = {};
@@ -671,8 +531,8 @@ Admin
                     if(!file) return;
 
                     const fr = new FileReader();
-                    fr.onload = function () {
-                        parent.movie.data.poster = fr.result.split(',').pop();
+                    fr.onload = () => {
+                        this.data.poster = fr.result;
                     }
 
                     fr.readAsDataURL(file);
@@ -680,9 +540,42 @@ Admin
                 delete(event, id) {
                     event.preventDefault();
 
-                    destroy('/movie', { id })
-                        .then((data) => console.log(data))
+                    destroy(`/movie/${id}`, {})
+                        .then((data) => {
+                            if(data.isSuccess) {
+                                const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                                this.listView.splice(index, 1);
+                                this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
+                                alert('delete success');
+                            }
+                        })
                         .catch(error => alert('delete failed'));
+                },
+                moveRightTheater(event) {
+                    event.preventDefault();
+
+                    const theaters = $('#select-theaters option:selected');
+                    if(theaters.length) {
+                        const ids = [];
+                        $.each(theaters, ( key, element ) => ids.push(+$(element).val()) );
+                        const newTheaters = this.theaters.filter((theater) => !ids.includes(theater.id));
+
+                        this.selectedTheaters = this.selectedTheaters.concat(this.theaters.filter((theater) => ids.includes(theater.id)));
+                        this.theaters = newTheaters;
+                    }
+                },
+                moveLeftTheater(event) {
+                    event.preventDefault();
+
+                    const theaters = $('#selected-theaters option:selected');
+                    if(theaters.length) {
+                        const ids = [];
+                        $.each(theaters, ( key, element ) => ids.push(+$(element).val()) );
+                        const newTheaters = this.selectedTheaters.filter((theater) => !ids.includes(theater.id));
+
+                        this.theaters = this.theaters.concat(this.selectedTheaters.filter((theater) => ids.includes(theater.id)));
+                        this.selectedTheaters = newTheaters;
+                    }
                 }
             },
             category: {
@@ -736,8 +629,9 @@ Admin
                                         },
                                         targets: 4
                                     }],
-                                    createdRow: function(row, data) {
+                                    createdRow: function(row, data, index) {
                                         $(row).attr('data-id', data.id);
+                                        $(row).attr('data-index', index);
                                     }
                                 });
                                 $('.dataTables_length').addClass('bs-select');
@@ -749,39 +643,79 @@ Admin
                 },
                 create(event) {
                     event.preventDefault();
-
+                    this.data = {
+                        level: 1
+                    };
                     this.parent.modal.title = 'Create Category';
                     this.parent.modal.content = 'category_form';
                     this.parent.modal.submitHandler = (event) => {
                         event.stopPropagation();
+                        const form = document.getElementById('category-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
 
                         post('/category', this.data)
-                            .then((data) => console.log(data))
-                            .catch(error => alert('create failed'));
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    this.listView.push(data.data);
+                                    this.table.row.add(data.data).draw();
+                                    this.data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    throw data.message;
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert(error);
+                            });
                     }
 
                     $('#modal').modal('show');
                 },
                 update(event, id, data) {
                     event.preventDefault();
-                    
-                    this.data = this.table.row($(`#list-category tr[data-id="${id}"]`)).data();
+                    const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                    if(index == undefined) {
+                        alert('data not exist');
+                        return;
+                    };
+
+                    this.data = this.listView[index];
                     this.parent.modal.title = 'Update Category';
                     this.parent.modal.content = 'category_form';
                     this.parent.modal.submitHandler = (event) => {
                         event.stopPropagation();
+                        const form = document.getElementById('category-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
 
-                        put('/category', { id, ...this.data })
+                        put(`/category/${id}`, { name: this.data.name, level: this.data.level })
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    data = {};
+                                    this.listView[index] = { ...this.data };
+                                    this.table.row($(`#list-category tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
                                 }
                                 else {
                                     alert('update failed');
                                 }   
                             })
-                            .catch(error => alert('update failed'));
+                            .catch(error => {
+                                console.log(error);
+                                alert('update failed');
+                            });
                     }
 
                     $('#modal').modal('show');
@@ -789,8 +723,18 @@ Admin
                 delete(event, id) {
                     event.preventDefault();
 
-                    destroy('/category', { id })
-                        .then((data) => console.log(data))
+                    destroy(`/category/${id}`, {})
+                        .then((data) => {   
+                            if(data.isSuccess) {
+                                const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                                this.listView.splice(index, 1);
+                                this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
+                                alert('delete success');
+                            }
+                            else {
+                                throw "";
+                            }
+                        })
                         .catch(error => alert('delete failed'));
                 }
             },
@@ -805,7 +749,7 @@ Admin
                     if($.fn.dataTable.isDataTable('#list-group')) {
                         return false;
                     }
-                    fetch('/group')
+                    fetch('/groupthearter')
                         .then((raw) => raw.json())
                         .then((response) => {
                             if(response.isSuccess) {
@@ -820,9 +764,24 @@ Admin
                                         {
                                             data: 'address'
                                         },
+                                        {
+                                            data: 'creationDate'
+                                        },
+                                        {
+                                            data: 'updatedOn'
+                                        }
                                     ],
                                     columnDefs: [{
-                                        render: function(data, type, row) {
+                                        render: function (data, type, row)
+                                        {
+                                            const date = moment(data);
+
+                                            return date.isValid() ? date.format('DD/MM/YYYY') : '';
+                                        },
+                                        targets: [2, 3]
+                                    }, {
+                                        render: function (data, type, row)
+                                        {
                                             return `
                                                 <div>
                                                     <button class="btn btn-success text-uppercase" @click="group.update($event,${row.id})">update</button>
@@ -830,11 +789,12 @@ Admin
                                                 </div>
                                             `
                                         },
-                                        targets: 2
+                                        targets: 4
                                     }],
-                                    createdRow: function(row, data) {
+                                    createdRow: function(row, data, index) {
                                         $(row).attr('data-id', data.id);
-                                    },
+                                        $(row).attr('data-index', index);
+                                    }
                                 });
                                 $('.dataTables_length').addClass('bs-select');
                             }
@@ -846,38 +806,78 @@ Admin
                 create(event) {
                     event.preventDefault();
 
+                    this.data = {};
+
                     this.parent.modal.title = 'Create Group';
                     this.parent.modal.content = 'group_form';
                     this.parent.modal.submitHandler = (event) => {
-                        event.stopPropagation();
+                        const form = document.getElementById('group-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');   
 
-                        post('/group', this.data)
-                            .then((data) => console.log(data))
-                            .catch(error => alert('create failed'));
+                        post('/groupthearter', this.data)
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    this.listView.push(data.data);
+                                    this.table.row.add(data.data).draw();
+                                    this.data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    throw data.message;
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert(error);
+                            });
                     }
 
                     $('#modal').modal('show');
                 },
                 update(event, id, data) {
                     event.preventDefault();
-                    
-                    this.data = this.table.row($(`#list-group tr[data-id="${id}"]`)).data();
+                    const index = $(`#list-group tr[data-id="${id}"]`).data('index');
+                    if(index == undefined) {
+                        alert('data not exist');
+                        return;
+                    };
+
+                    this.data = this.listView[index];
                     this.parent.modal.title = 'Update group';
                     this.parent.modal.content = 'group_form';
                     this.parent.modal.submitHandler = (event) => {
-                        event.stopPropagation();
+                        const form = document.getElementById('group-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');   
 
-                        put('/group', { id, ...this.data })
+                        put(`/groupthearter/${id}`, { name: this.data.name, address: this.data.address })
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    data = {};
+                                    this.listView[index] = { ...this.data };
+                                    this.table.row($(`#list-group tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
                                 }
                                 else {
                                     alert('update failed');
                                 }   
                             })
-                            .catch(error => alert('update failed'));
+                            .catch (error => {
+                                console.log(error);
+                                alert('update failed');
+                            });
                     }
 
                     $('#modal').modal('show');
@@ -885,8 +885,18 @@ Admin
                 delete(event, id) {
                     event.preventDefault();
 
-                    destroy('/group', { id })
-                        .then((data) => console.log(data))
+                    destroy(`/groupthearter/${id}`, {})
+                        .then((data) => {
+                            if(data.isSuccess) {
+                                const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                                this.listView.splice(index, 1);
+                                this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
+                                alert('delete success');
+                            }
+                            else {
+                                throw "";
+                            }
+                        })
                         .catch(error => alert('delete failed'));
                 }
             },
@@ -910,7 +920,7 @@ Admin
                             {
                                 this.listView = response.data;
 
-                                this.table = $('#list-group').DataTable({
+                                this.table = $('#list-theater').DataTable({
                                     data: this.listView,
                                     columns: [
                                         {
@@ -920,10 +930,24 @@ Admin
                                             data: 'type'
                                         },
                                         {
-                                            data: 'group_id'
+                                            data: 'groupId'
+                                        },
+                                        {
+                                            data: 'creationDate'
+                                        },
+                                        {
+                                            data: 'updatedOn'
                                         }
                                     ],
                                     columnDefs: [{
+                                        render: function (data, type, row)
+                                        {
+                                            const date = moment(data);
+
+                                            return date.isValid() ? date.format('DD/MM/YYYY') : '';
+                                        },
+                                        targets: [3, 4]
+                                    },{
                                         render: function (data, type, row)
                                         {
                                             return `
@@ -933,12 +957,12 @@ Admin
                                                 </div>
                                             `
                                         },
-                                        targets: 3
+                                        targets: 5
                                     }],
-                                    createdRow: function (row, data)
-                                    {
+                                    createdRow: function(row, data, index) {
                                         $(row).attr('data-id', data.id);
-                                    },
+                                        $(row).attr('data-index', index);
+                                    }
                                 });
                                 $('.dataTables_length').addClass('bs-select');
                             }
@@ -947,42 +971,84 @@ Admin
                         {
                             console.log(error);
                         });
-                }
+                },
                 create(event) {
                     event.preventDefault();
+                    const firstGroup = this.parent.group.listView[0]?.id ?? '';
 
+                    this.data = {
+                        type: "2D",
+                        groupId: firstGroup
+                    };
                     this.parent.modal.title = 'Create Theater';
                     this.parent.modal.content = 'theater_form';
                     this.parent.modal.submitHandler = (event) => {
-                        event.stopPropagation();
+                        const form = document.getElementById('theater-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
 
-                        post('/group', this.data)
-                            .then((data) => console.log(data))
-                            .catch(error => alert('create failed'));
+                        post('/theater', this.data)
+                           .then((data) => {
+                                if(data.isSuccess) {
+                                    this.listView.push(data.data);
+                                    this.table.row.add(data.data).draw();
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    throw data.message;
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert(error);
+                            });
                     }
 
                     $('#modal').modal('show');
                 },
                 update(event, id, data) {
                     event.preventDefault();
-                    
-                    this.data = this.table.row($(`#list-theater tr[data-id="${id}"]`)).data();
+                    const index = $(`#list-theater tr[data-id="${id}"]`).data('index');
+                    if(index == undefined) {
+                        alert('data not exist');
+                        return;
+                    };
+
+                    this.data = this.listView[index];
                     this.parent.modal.title = 'Update theater';
                     this.parent.modal.content = 'theater_form';
                     this.parent.modal.submitHandler = (event) => {
-                        event.stopPropagation();
+                        const form = document.getElementById('theater-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
 
-                        put('/theater', { id, ...this.data })
+                        put(`/theater/${id}`, { name: this.data.name, type: this.data.type, groupId: this.data.groupId})
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    data = {};
+                                    this.listView[index] = { ...this.data };
+                                    this.table.row($(`#list-theater tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
                                 }
                                 else {
                                     alert('update failed');
                                 }   
                             })
-                            .catch(error => alert('update failed'));
+                            .catch(error => {
+                                console.log(error);
+                                alert('update failed');
+                            });
                     }
 
                     $('#modal').modal('show');
@@ -990,11 +1056,404 @@ Admin
                 delete(event, id) {
                     event.preventDefault();
 
-                    destroy('/theater', { id })
-                        .then((data) => console.log(data))
+                    destroy(`/theater/${id}`, {})
+                        .then((data) => {
+                            if(data.isSuccess) {
+                                const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                                this.listView.splice(index, 1);
+                                this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
+                                alert('delete success');
+                            }
+                            else {
+                                throw "";
+                            }
+                                
+                        })
                         .catch(error => alert('delete failed'));
                 }
             },
+            room: {
+                table: undefined,
+                data: {},
+                listView: [],
+                addRow() {
+                    table.row.add()
+                },
+                fetchData() {
+                    if($.fn.dataTable.isDataTable('#list-room')) {
+                        return false;
+                    }
+                    fetch('/room')
+                        .then((raw) => raw.json())
+                        .then((response) => {
+                            if(response.isSuccess) {
+                                this.listView = response.data;
+
+                                this.table = $('#list-room').DataTable({
+                                    data: this.listView,
+                                    columns: [
+                                        {
+                                            data: 'name'
+                                        },
+                                        {
+                                            data: 'rows'
+                                        },
+                                        {
+                                            data: 'columns'
+                                        },
+                                        {
+                                            data: 'theater'
+                                        },
+                                        {
+                                            data: 'creationDate'
+                                        },
+                                        {
+                                            data: 'updatedOn'
+                                        }
+                                    ],
+                                    columnDefs: [{
+                                        render: function (data, type, row) {
+                                            return row.theater.name;
+                                        },
+                                        targets: [3]
+                                    },{
+                                        render: function (data, type, row) {
+                                            const date = moment(data);
+
+                                            return date.isValid() ? date.format('DD/MM/YYYY') : '';
+                                        },
+                                        targets: [4,5]
+                                    }, {
+                                        render: function(data, type, row) {
+                                            return `
+                                                <div>
+                                                    <button class="btn btn-success text-uppercase" @click="room.update($event,${row.id})">update</button>
+                                                    <button class="btn btn-danger text-uppercase" @click="room.delete($event,${row.id})">delete</button>
+                                                </div>
+                                            `
+                                        },
+                                        targets: 6
+                                    }],
+                                    createdRow: function(row, data, index) {
+                                        $(row).attr('data-id', data.id);
+                                        $(row).attr('data-index', index);
+                                    }
+                                });
+                                $('.dataTables_length').addClass('bs-select');
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                },
+                create(event) {
+                    event.preventDefault();
+                    this.data = {};
+                    this.parent.modal.title = 'Create Room';
+                    this.parent.modal.content = 'room_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+                        const form = document.getElementById('room-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
+
+                        post('/room', this.data)
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    this.listView.push(data.data);
+                                    this.table.row.add(data.data).draw();
+                                    this.data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    throw data.message;
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert(error);
+                            });
+                    }
+
+                    $('#modal').modal('show');
+                },
+                update(event, id, data) {
+                    event.preventDefault();
+                    const index = $(`#list-room tr[data-id="${id}"]`).data('index');
+                    if(index == undefined) {
+                        alert('data not exist');
+                        return;
+                    };
+
+                    this.data = this.listView[index];
+                    this.parent.modal.title = 'Update Room';
+                    this.parent.modal.content = 'room_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        event.stopPropagation();
+                        const form = document.getElementById('room-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');
+
+                        put(`/room/${id}`, { name: this.data.name, level: this.data.level })
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    this.listView[index] = { ...this.data };
+                                    this.table.row($(`#list-room tr[data-id="${id}"]`)).data(this.data).draw();
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    alert('update failed');
+                                }   
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert('update failed');
+                            });
+                    }
+
+                    $('#modal').modal('show');
+                },
+                delete(event, id) {
+                    event.preventDefault();
+
+                    destroy(`/room/${id}`, {})
+                        .then((data) => {   
+                            if(data.isSuccess) {
+                                const index = $(`#list-room tr[data-id="${id}"]`).data('index');
+                                this.listView.splice(index, 1);
+                                this.table.row($(`#list-room tr[data-id="${id}"]`)).remove().draw();
+                                alert('delete success');
+                            }
+                            else {
+                                throw "";
+                            }
+                        })
+                        .catch(error => alert('delete failed'));
+                }
+            },
+            showTime: {
+                table: undefined,
+                data: {},
+                listView: [],
+                rangeTime: ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
+                addRow() {
+                    table.row.add()
+                },
+                fetchData() {
+                    if($.fn.dataTable.isDataTable('#list-showtime')) {
+                        return false;
+                    }
+                    fetch('/api/showtime')
+                        .then((raw) => raw.json())
+                        .then((response) => {
+                            if(response.isSuccess) {
+                                this.listView = response.data;
+
+                                this.table = $('#list-showtime').DataTable({
+                                    data: this.listView,
+                                    scrollX: true,
+                                    columns: [
+                                        {
+                                            data: 'id'
+                                        },
+                                        {
+                                            data: 'date'
+                                        },
+                                        {
+                                            data: 'start'
+                                        },
+                                        {
+                                            data: 'end'
+                                        },
+                                        {
+                                            data: 'price'
+                                        },
+                                        {
+                                            data: 'room'
+                                        },
+                                        {
+                                            data: 'movie'
+                                        },
+                                        {
+                                            data: 'theater'
+                                        },
+                                        {
+                                            data: 'creationDate'
+                                        },
+                                        {
+                                            data: 'updatedOn'
+                                        }
+                                    ],
+                                    columnDefs: [{
+                                        render: function (data, type, row)
+                                        {
+                                            const date = moment(data);
+
+                                            return date.isValid() ? date.format('DD/MM/YYYY') : '';
+                                        },
+                                        targets: [1, 8, 9]
+                                    },{
+                                        render: function (data, type, row)
+                                        {
+                                            return row.room.name
+                                        },
+                                        targets: 5
+                                    },{
+                                        render: function (data, type, row)
+                                        {
+                                           return row.movie.name;
+                                        },
+                                        targets: 6
+                                    },{
+                                        render: function (data, type, row)
+                                        {
+                                           return row.room.theater.name;
+                                        },
+                                        targets: 7
+                                    }, {
+                                        render: function (data, type, row)
+                                        {
+                                            return `
+                                                <div>
+                                                    <button class="btn btn-success text-uppercase" @click="showTime.update($event,${row.id})">update</button>
+                                                    <button class="btn btn-danger text-uppercase" @click="showTime.delete($event,${row.id})">delete</button>
+                                                </div>
+                                            `
+                                        },
+                                        targets: 10
+                                    }],
+                                    createdRow: function(row, data, index) {
+                                        $(row).attr('data-id', data.id);
+                                        $(row).attr('data-index', index);
+                                    }
+                                });
+                                $('.dataTables_length').addClass('bs-select');
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                },
+                create(event) {
+                    event.preventDefault();
+
+                    this.data = {};
+
+                    this.parent.modal.title = 'Create Show Time';
+                    this.parent.modal.content = 'showtime_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        const form = document.getElementById('showtime-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated')
+                        console.log(this.data);    
+                        if(this.data.start == this.data.end) {
+                            alert('start is equals end');
+                            return;
+                        }   
+
+                        post('api/showtime', this.data)
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    this.listView.push(data.data);
+                                    this.table.row.add(data.data).draw();
+                                    this.data = {};
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    throw data.message;
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert(error);
+                            });
+                    }
+
+                    $('#modal').modal('show');
+                },
+                update(event, id, data) {
+                    event.preventDefault();
+                    const index = $(`#list-showtime tr[data-id="${id}"]`).data('index');
+                    if(index == undefined) {
+                        alert('data not exist');
+                        return;
+                    };
+
+                    this.data = {...this.listView[index]};
+                    this.data.start = this.timeToPicklist(this.data.start);
+                    this.data.end = this.timeToPicklist(this.data.end);
+                    console.log(this.data);
+                    this.parent.modal.title = 'Update Show Time';
+                    this.parent.modal.content = 'showtime_form';
+                    this.parent.modal.submitHandler = (event) => {
+                        const form = document.getElementById('showtime-form');
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            form.classList.add('was-validated');   
+                            
+                            return false;
+                        }
+                        form.classList.remove('was-validated');   
+
+                        put(`api/showtime/${id}`, { name: this.data.name, address: this.data.address })
+                            .then((data) => {
+                                if(data.isSuccess) {
+                                    this.listView[index] = { ...this.data };
+                                    this.table.row($(`#list-showtime tr[data-id="${id}"]`)).data(this.data).draw();
+                                    $('#modal').modal('hide');
+                                }
+                                else {
+                                    alert('update failed');
+                                }   
+                            })
+                            .catch (error => {
+                                console.log(error);
+                                alert('update failed');
+                            });
+                    }
+
+                    $('#modal').modal('show');
+                },
+                delete(event, id) {
+                    event.preventDefault();
+
+                    destroy(`api/showtime/${id}`, {})
+                        .then((data) => {
+                            if(data.isSuccess) {
+                                const index = $(`#list-showtime tr[data-id="${id}"]`).data('index');
+                                this.listView.splice(index, 1);
+                                this.table.row($(`#list-showtime tr[data-id="${id}"]`)).remove().draw();
+                            }
+                            else {
+                                throw "";
+                            }
+                        })
+                        .catch(error => alert('delete failed'));
+                },
+                timeToPicklist(value) {
+                    return value ? `${value.split(':')[0]}:00` : '';
+                }
+            },
+            createArray(number) {
+				return Array.from({ length: number }, (_item, index) => index);
+			},
             section: 'dashboard',
             fetchReport() {
                
@@ -1013,12 +1472,187 @@ Admin
                 this.group.parent = this;
                 this.theater.fetchData();
                 this.theater.parent = this;
+                this.room.fetchData();
+                this.room.parent = this;
+                this.showTime.fetchData();
+                this.showTime.parent = this;
             },
             loadDashBoard(){
                 this.section ='dashboard'
-            }
+            },
+            movieStatistical(event) {
+                event.preventDefault();
+                const form = document.getElementById('movie-chart-form');
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    form.classList.add('was-validated');   
+                    
+                    return false;
+                }
+                form.classList.remove('was-validated');
 
+                fetch(`/statistical/movie?start=${this.grantChart.movie.start}&end=${this.grantChart.movie.end}`)
+                    .then((raw) => raw.json())
+                    .then((response) => {
+                        if(response.isSuccess) {
+                            initChart(() => {
+                                this.grantChart.movie.data = response.data;
+                                console.log(this.grantChart);
+                                setContructChart('movie', 'grant-chart-movie', response.data);
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    }); 
+            },
+            groupStatistical(event) {
+                event.preventDefault();
+                const form = document.getElementById('group-chart-form');
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    form.classList.add('was-validated');   
+                    
+                    return false;
+                }
+                form.classList.remove('was-validated');
+
+                fetch(`/statistical/group?start=${this.grantChart.group.start}&end=${this.grantChart.group.end}`)
+                    .then((raw) => raw.json())
+                    .then((response) => {
+                        if(response.isSuccess) {
+                            initChart(() => {
+                                this.grantChart.group.data = response.data;
+                                console.log(this.grantChart);
+                                setContructChart('group', 'grant-chart-group', response.data);
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    }); 
+            },
+            createYear(start, end) {
+                return Array.from({ length: end }, (_item, index) => index + start);
+            }
 		}
 	}
+
+    function initChart(drawChart)
+    {
+        google.charts.load('current', { packages: ['corechart', 'bar'] });
+        google.charts.setOnLoadCallback(drawChart);
+    }
+
+    function setContructChart(typeChart, element, chartData)
+    {
+        let data = new google.visualization.DataTable();
+        let row = options = view = {};
+
+        switch (typeChart)
+        {
+            case 'movie':
+                data.addColumn('string', 'Movie Name');
+                data.addColumn('number', 'Annaul');
+                // data.addColumn('number', 'Product');
+
+                row = movieRow(chartData);
+                console.log(row);
+                options = movieOptions();
+                view = movieView(data);
+                break;
+            case 'group':
+                data.addColumn('string', 'Group Name');
+                data.addColumn('number', 'Annaul');
+                // data.addColumn('number', 'Product');
+
+                row = groupRow(chartData);
+                options = groupOptions();
+                view = groupView(data);
+                break;
+        }
+
+        data.addRows(row);
+
+        const chart = new google.charts.Bar(document.getElementById(element));
+        chart.draw(view, google.charts.Bar.convertOptions(options));
+    }
+
+    function movieOptions()
+    {
+        return {
+            height: grantChart.movie.height,
+            width: grantChart.movie.width,
+            chart: {
+                subtitle: `Annual Movie`
+            },
+            series: {
+                0: { axis: 'Annual' },
+            },
+            axes: {
+                y: {
+                    Amount: { label: 'Annual of movie' },
+                }
+            },
+            bars: 'vertical',
+            animation: {
+                startup: true
+            }
+        }
+    }
+
+    function movieView(data)
+    {
+        const view = new google.visualization.DataView(data);
+        view.setColumns([0, 1, { calc: 'stringify', sourceColumn: 1, type: 'string', role: 'annotation' }]);
+        return view;
+    }
+
+    function movieRow(data)
+    {
+        return Array.from({ length: data.length }, (value, i) =>
+        {
+            return [data[i].name, +data[i]['showTimes.tickets.total_price'] ];
+        });
+    }
+
+     function groupOptions()
+    {
+        return {
+            height: grantChart.group.height,
+            width: grantChart.group.width,
+            chart: {
+                subtitle: `Annual Group`
+            },
+            series: {
+                0: { axis: 'Annual' },
+            },
+            axes: {
+                y: {
+                    Amount: { label: 'Annual of group' },
+                }
+            },
+            bars: 'vertical',
+            animation: {
+                startup: true
+            }
+        }
+    }
+
+    function groupView(data)
+    {
+        const view = new google.visualization.DataView(data);
+        view.setColumns([0, 1, { calc: 'stringify', sourceColumn: 1, type: 'string', role: 'annotation' }]);
+        return view;
+    }
+
+    function groupRow(data)
+    {
+        return Array.from({ length: data.length }, (value, i) =>
+        {
+            console.log(data);
+            return [data[i].name, +data[i]['theaters.rooms.showTimes.tickets.total_price'] ];
+        });
+    }
 </script>
 {{/contentFor }}

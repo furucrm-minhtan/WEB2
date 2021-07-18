@@ -8,14 +8,19 @@ import { GroupTheaterOptions } from '../groupTheater/dto/groupTheater.dto';
 import { TheaterOptions } from '../theater/dto/theater.dto';
 import { MovieDetail, MovieItem } from './dto/movie.dto';
 import { User } from '../user/user.model';
-import { col, fn } from 'sequelize';
+import { col, fn, literal, Sequelize } from 'sequelize';
+import { TheaterMovieService } from '../theaterMovie/theatermovie.service';
+import { ShowTime } from '../showTime/showtime.model';
+import { Ticket } from '../ticket/ticket.model';
 const { $between, $eq } = operatorsAliases;
 
 @Injectable()
 export class MovieService {
   constructor(
     @Inject('MOVIES_REPOSITORY')
-    private movieRepository: typeof Movie
+    private movieRepository: typeof Movie,
+    private theaterMovieService: TheaterMovieService,
+    private squelize: Sequelize
   ) {}
 
   async count(options = {}) {
@@ -55,7 +60,7 @@ export class MovieService {
     });
   }
 
-  async topRatedMovie(limit: number): Promise<Movie[]> {
+  topRatedMovie(limit: number): Promise<Movie[]> {
     return this.movieRepository.findAll({
       attributes: ['id', 'name', 'poster', 'creationDate'],
       include: [
@@ -69,6 +74,30 @@ export class MovieService {
       ],
       group: ['id'],
       order: [[fn('AVG', col('rate')), 'DESC']],
+      limit,
+      raw: true,
+      subQuery: false
+    });
+  }
+
+  mostViewed(limit: number): Promise<Movie[]> {
+    return this.movieRepository.findAll({
+      attributes: ['id', 'name', 'poster', 'creationDate'],
+      include: [
+        {
+          attributes: ['id'],
+          model: ShowTime,
+          include: [
+            {
+              attributes: [[fn('SUM', col('user_id')), 'total_user']],
+              model: Ticket
+            }
+          ],
+          required: false
+        }
+      ],
+      group: ['id'],
+      order: [[literal('`showTimes.tickets.total_user`'), 'DESC']],
       limit,
       raw: true,
       subQuery: false
@@ -183,15 +212,64 @@ export class MovieService {
     return { ...movieDetail, releatedMovie };
   }
 
-  createMovie(data: Movie) {
+  createMovie(data: Movie): Promise<Movie> {
     return this.movieRepository.create(data);
   }
 
-  updateMovie(id: number, data: Movie) {
+  async createMovieWithTheaters(
+    data: Movie,
+    theaterIds: number[]
+  ): Promise<void> {
+    this.squelize.transaction().then((t) => {
+      return this.movieRepository
+        .create(data, { transaction: t })
+        .then((movie) => {
+          return this.theaterMovieService.createAssociationsTheater(
+            movie.id,
+            theaterIds,
+            { transaction: t }
+          );
+        })
+        .then(() => t.commit())
+        .catch((error) => {
+          t.rollback();
+          throw error;
+        });
+    });
+  }
+
+  updateMovie(id: number, data: Movie): Promise<[number, Movie[]]> {
     return this.movieRepository.update(data, {
       where: {
         id
       }
+    });
+  }
+
+  async updateMovieWithTheaters(
+    data: Movie,
+    theaterIds: number[]
+  ): Promise<void> {
+    this.squelize.transaction().then((t) => {
+      return this.movieRepository
+        .update(data, { where: { id: data.id }, transaction: t })
+        .then(async (result: [number, Movie[]]) => {
+          await this.theaterMovieService.delete({
+            movieId: result[1][0].id,
+            transaction: t
+          });
+
+          return this.theaterMovieService.createAssociationsTheater(
+            result[1][0].id,
+            theaterIds,
+            { transaction: t }
+          );
+        })
+        .then(() => t.commit())
+        .catch((error) => {
+          t.rollback();
+          throw error;
+        });
     });
   }
 

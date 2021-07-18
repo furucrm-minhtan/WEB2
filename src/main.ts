@@ -6,7 +6,7 @@ import {
 import * as express from 'express';
 import { AppModule } from './app.module';
 import { resolve } from 'path';
-import { urlencoded } from 'body-parser';
+import { urlencoded, json } from 'body-parser';
 import session from 'express-session';
 import { ConfigService } from '@nestjs/config';
 import moment from 'moment';
@@ -37,6 +37,7 @@ async function bootstrap() {
       }
     })
   );
+  app.use(json({ limit: '50mb' }));
   app.useStaticAssets(resolve('./src/public'));
   app.use(
     '/js/fontawesome',

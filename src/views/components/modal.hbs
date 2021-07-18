@@ -1,5 +1,5 @@
 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header" x-show="modal.show.header">
         <h5 class="modal-title" id="modal-label" x-text="modal.title"></h5>
@@ -19,6 +19,12 @@
           </div>
           <div x-show="modal.content === 'theater_form'">
               {{>theaterForm}}
+          </div>
+          <div x-show="modal.content === 'room_form'">
+              {{>roomForm}}
+          </div>
+          <div x-show="modal.content === 'showtime_form'">
+              {{>showtimeForm}}
           </div>
           <div x-show="modal.content === 'category_form'">
               {{>categoryForm}}

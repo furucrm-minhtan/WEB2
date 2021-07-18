@@ -7,8 +7,7 @@ import {
   DataType,
   Default,
   AllowNull,
-  BelongsToMany,
-  Unique
+  BelongsToMany
 } from 'sequelize-typescript';
 import { BaseModel } from '../../model/base.model';
 import { Bookmark } from '../bookmark/bookmark.model';

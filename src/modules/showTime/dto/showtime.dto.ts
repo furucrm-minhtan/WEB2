@@ -1,4 +1,4 @@
-export interface GenerateShowTime {
+export class GenerateShowTime {
   start: Date;
   end: Date;
   date: Date;
@@ -6,3 +6,5 @@ export interface GenerateShowTime {
   roomId: number;
   movieId: number;
 }
+
+export class UpdateShowTime extends GenerateShowTime {}

@@ -13,7 +13,6 @@ import { GroupTheaterService } from '../groupTheater/grouptheater.service';
 import { Movie } from '../movie/movie.model';
 import { SearchService } from '../search/search.service';
 import { MovieListService } from './movietlist.service';
-import helper from '../../helper/helper';
 
 @Controller('movie-list')
 export class MovieListController {
@@ -28,45 +27,21 @@ export class MovieListController {
   @Get(':cateId')
   @Render('movielist')
   async root(
-    @Param('cateId', ParseIntPipe) cateId: number,
-    @Query('name') name: string,
-    @Query('release') releaseDate: string,
-    @Query('group') group: string,
-    @Query('theater') theater: string,
-    @Query('showtime') showTime: string
+    @Param('cateId', ParseIntPipe) cateId: number
   ): Promise<Record<string, any>> {
     try {
-      // const totalMovie: number = await this.movieListService.countMovie(cateId);
-      // const movies: Movie[] = await this.searchService.movie({
-      //   cateId,
-      //   name,
-      //   releaseDate,
-      //   group,
-      //   theater,
-      //   showTime,
-      //   order: {
-      //     field: 'name',
-      //     order: 'DESC'
-      //   }
-      // });
       const groups: GroupTheater[] = await this.groupTheaterService.findAll({
-        raw: true
-      });
-      const categories = await this.cateService.fetchCategory({
-        order: [['level', 'DESC']],
-        limit: 5,
         raw: true
       });
       return {
         cateId,
-        groups: JSON.stringify(groups),
-        categories
+        groups: JSON.stringify(groups)
       };
     } catch (error) {
       console.log(error);
     }
 
-    return { cateId, groups: '', categories: [] };
+    return { cateId, groups: '' };
   }
 
   @Get(':cateId/fetch')
