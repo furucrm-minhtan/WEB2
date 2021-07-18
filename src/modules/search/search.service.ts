@@ -61,7 +61,7 @@ export class SearchService {
     }
 
     if (group) {
-      defineQuery.whereAnd.push(where(col('theaters.groupId'), group));
+      defineQuery.whereAnd.push(where(literal('"theaters.groupId"'), group));
     }
 
     if (releaseDate) {
@@ -88,12 +88,13 @@ export class SearchService {
           required: false
         },
         {
-          attributes: ['groupId'],
+          attributes: [],
           model: Theater,
+          through: { attributes: [] },
           ...defineQuery.subQuery.theater
         },
         {
-          attributes: ['start', 'date'],
+          attributes: [],
           model: ShowTime,
           ...defineQuery.subQuery.showTime
         }
@@ -102,7 +103,7 @@ export class SearchService {
         [$and]: [...defineQuery.whereAnd]
       },
       ...defineQuery.mainQuery,
-      group: ['Movie.id'],
+      group: ['Movie.id', col('userReviews.Review.id')],
       raw: true,
       subQuery: false
     });
