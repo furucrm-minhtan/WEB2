@@ -126,6 +126,7 @@ export class MovieService {
       },
       group: ['Movie.id', col('userReviews.id'), col('userReviews.Review.id')],
       limit,
+      raw: true,
       subQuery: false
     });
   }
