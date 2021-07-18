@@ -185,12 +185,13 @@ export class MovieService {
       },
       include: [
         {
+          attributes: ['id', 'avatar', 'name'],
           model: User,
           as: 'userReviews',
           through: { attributes: ['rate'] }
         }
       ],
-      group: ['Movie.name'],
+      group: ['Movie.name', 'Movie.id'],
       raw: true
     };
     userId &&
