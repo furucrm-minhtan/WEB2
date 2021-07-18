@@ -8,5 +8,4 @@ export interface UserSession {
   user_name: string;
   password: string;
   is_admin: boolean;
-  avatar: string;
 }

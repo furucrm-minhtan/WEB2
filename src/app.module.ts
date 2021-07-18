@@ -36,6 +36,7 @@ import { AuthenMiddleware } from './middleware/authen.middleware';
 import { UserController } from './modules/user/user.controller';
 import { AdminMiddleware } from './middleware/admin.middleware';
 import { AdminController } from './modules/admin/admin.controller';
+import { CustomerMiddleware } from './middleware/customer.middleware';
 
 @Module({
   imports: [
@@ -72,14 +73,14 @@ export class AppModule implements NestModule {
     consumer
       .apply(GolobalMiddleware)
       .forRoutes({ path: '*', method: RequestMethod.ALL })
-      .apply(AuthenMiddleware)
+      .apply(AuthenMiddleware, CustomerMiddleware)
       .exclude(
         { path: 'forgot-password', method: RequestMethod.ALL },
         { path: 'registration', method: RequestMethod.ALL },
         { path: 'reset-password', method: RequestMethod.ALL }
       )
       .forRoutes(UserController)
-      .apply(AdminMiddleware)
+      .apply(AuthenMiddleware, AdminMiddleware)
       .forRoutes(AdminController);
   }
 }
