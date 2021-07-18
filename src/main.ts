@@ -94,10 +94,8 @@ async function bootstrap() {
     }
   );
   hbs.registerHelper('formatDecimal', function (value: string, fix: number) {
-    try {
-      isNaN(Number(value)) ? 0 : parseFloat(value).toFixed(fix);
-    } catch (error) {}
-    return 0;
+    const rate = parseFloat(value).toFixed(fix);
+    return isNaN(+rate) ? 0 : rate;
   });
   hbs.registerHelper({
     eq: (v1, v2) => v1 === v2,
