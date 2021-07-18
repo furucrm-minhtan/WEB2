@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7 no-js" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8 no-js" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) | !(IE 8)  ]><!-->
+<html lang="en" class="no-js">
+
+
+<head>
+    <title>
+        {{{block "title"}}}
+    </title>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <link rel="profile" href="#">
+
+    <!--Google Font-->
+    <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Dosis:400,700,500|Nunito:300,400,600' />
+    <!-- Mobile specific meta -->
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone-no">
+
+    <!-- CSS files -->
+    <link rel="stylesheet" href="/css/plugins.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/fontawesome/all.min.css" />
+    <style>
+        .search {
+            position: relative;
+            width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            display: flex;
+        }
+
+        .search-input input[type=text] {
+            border: none;
+            border-bottom: 1px solid;
+            background: transparent;
+            color: #fff;
+        }
+
+        .search-result {
+            position: absolute;
+            top: 10;
+            left: 0;
+            right: 0;
+            z-index: 1000; 
+            display: flex;
+            background: #0A1931;
+        }
+
+        .search-image {
+            max-width: 100px;
+        }
+
+        .search-content {
+            margin-left: 10px;
+            margin-top: 10px;
+            border-bottom: 1px solid;
+        }
+
+        .search-content h4 {
+            color: #fff;
+        }
+
+        .search-content P:last-child {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            width: 250px;
+        }
+
+        .search-result .search-content, .search-result .search-image {
+            flex: 1 1 auto;   
+            margin-top: 10px;
+        }
+
+        .search-result {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-item {
+            display: flex;
+        }
+    </style>
+
+    {{{block "style"}}}
+</head>
+
+<body>
+    <div class="login-wrapper" id="forgot-password-content" x-data="{ email: '' }">
+        <div class="login-content">
+            <a href="#" class="close">x</a>
+            <h3>Forgot Password</h3>
+            <form method="post">
+                <div class="row">
+                    <label for="username">
+                        Email:
+                        <input x-model="email" type="text" name="email" id="username"
+                            pattern="^[^\s@]+@[^\s@]+$" required="required" />
+                    </label>
+                </div>
+                <div class="row">
+                    <button x-on:click="forgotPassword($event, email)">submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="login-wrapper" id="login-content" x-data="{ userName: '', password: ''}">
+        <div class="login-content">
+            <a href="#" class="close">x</a>
+            <h3>Login</h3>
+            <form method="post">
+                <div class="row">
+                    <label for="username">
+                        Username:
+                        <input x-model="userName" type="text" name="username" id="username"
+                            pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{8,20}$" required="required" />
+                    </label>
+                </div>
+
+                <div class="row">
+                    <label for="password">
+                        Password:
+                        <input x-model="password" type="password" name="password" id="password"
+                            pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
+                            required="required" />
+                    </label>
+                </div>
+                <div class="row">
+                    <div class="remember">
+                        {{!-- <div>
+                            <input type="checkbox" name="remember" value="Remember me"><span>Remember me</span>
+                        </div> --}}
+                        <a href="#" class="forgotPasswordLink">Forget password ?</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <button  x-on:click="loginHandler($event, { userName, password })">Login</button>
+                </div>
+            </form>
+            {{!-- <div class="row">
+                <p>Or via social</p>
+                <div class="social-btn-2">
+                    <a class="fb" href="#"><i class="ion-social-facebook"></i>Facebook</a>
+                    <a class="tw" href="#"><i class="ion-social-twitter"></i>twitter</a>
+                </div>
+            </div> --}}
+        </div>
+    </div>
+
+    <div class="login-wrapper" id="signup-content" x-data="{ user_name: '', email: '', password: '', confPassword: '' }">
+        <div class="login-content">
+            <a href="#" class="close">x</a>
+            <h3>sign up</h3>
+            <form method="post" action="#">
+                  <div class="row">
+                    <label for="username-2">
+                        Full Name:
+                        <input x-model="name" type="text" name="name" id="full-name"
+                            required="required" />
+                    </label>
+                </div>
+
+                <div class="row">
+                    <label for="username-2">
+                        Username:
+                        <input x-model="user_name" type="text" name="username" id="username-2"
+                            pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{8,20}$" required="required" />
+                    </label>
+                </div>
+
+                <div class="row">
+                    <label for="email-2">
+                        your email:
+                        <input x-model="email" type="text" name="email" id="email-2"
+                            pattern="^[^\s@]+@[^\s@]+$"
+                            required="required" />
+                    </label>
+                </div>
+                <div class="row">
+                    <label for="password-2">
+                        Password:
+                        <input x-model="password" type="password" name="password" id="password-registrantion"
+                            pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
+                            required="required" />
+                    </label>
+                </div>
+                <div class="row">
+                    <label for="repassword-2">
+                        re-type Password:
+                        <input x-model="confPassword" type="password" name="password" id="repassword-registration"
+                            pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
+                            required="required" />
+                    </label>
+                </div>
+                <div class="row">
+                    <button type="submit" @click="registration($event, { user_name, email, password, name}, confPassword)">sign up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <header class="ht-header">
+        <div class="container">
+            <nav class="navbar navbar-default navbar-custom">
+                <div class="navbar-header logo">
+                    <div class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <div id="nav-icon1">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <a href="/"><img class="logo" src="/images/logo1.png" alt="" width="119" height="58"></a>
+                </div>
+                <div class="collapse navbar-collapse flex-parent" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav flex-child-menu menu-left">
+                        <li class="hidden">
+                            <a href="#page-top"></a>
+                        </li>
+                        <li class="dropdown first">
+                            <a class="btn btn-default dropdown-toggle lv1" data-toggle="dropdown">
+                                Category <i class="fa fa-angle-down" aria-hidden="true"></i>
+                            </a>
+                            <ul class="dropdown-menu level1">
+                                {{#each categories}}
+                                    <li>
+                                        <a href="/movie-list/{{ id }}" style="color: #000">{{name}}</a>
+                                    </li>
+                                {{/each  }}
+                            </ul>
+                        </li>
+                        <li class="search" x-data="initSearch()">
+                            <div class="search-input">
+                                <input type="text" x-on:input.debound.500="fetchMovies($event.target.value)"/>
+                                <i class="icon-search"></i>
+                            </div>
+                            <div class="search-result" x-show="movies.length">
+                                <template x-for="movie in movies" :key="movie.id">
+                                    <div class="search-item">
+                                        <div class="search-image">
+                                            <img x-bind:src="movie.poster" />
+                                        </div>
+                                        <div class="search-content">
+                                            <h4 x-text="movie.name"></h4>
+                                            <p><i class="ion-android-star"></i><span x-text="decimalFix(movie['userReviews.movie_rate'] ?? '0')"></span> /10
+                                            </p>
+                                            {{!-- <p>Deleniti tempora eos doloremque in pariatur debitis blanditiis delectus cumque. Repellendus dolorum
+                                                fugiat rerum accusantium magnam pariatur consequatur ad mollitia. Beatae commodi nam. Omnis cumque vitae
+                                                pariatur maiores incidunt laudantium consectetur voluptatibus fuga. Officia consequatur quia necessitatibus
+                                                maxime aperiam non sit vel.</p> --}}
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav flex-child-menu menu-right">
+                        {{#if user}}
+                            {{#if user.is_admin}}
+                            <li><a href="/admin">Admin</a></li>
+                            {{else  }}
+                            <li class="dropdown first">
+                                <a class="btn btn-default dropdown-toggle lv1" data-toggle="dropdown" data-hover="dropdown">
+                                    user <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                </a>
+                                <ul class="dropdown-menu level1">
+                                    <li><a href="/dashboard">Profile</a></li>
+                                    <li><a href="/authen/logout">Logout</a></li>
+                                </ul>
+                            </li>
+                            {{/if  }}
+                        {{else}}
+                            <li class="loginLink"><a href="#">Log In</a></li>
+                            <li class="btn signupLink"><a href="#">sign up</a></li>
+                        {{/if}}
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    {{{ body }}}
+
+    <footer class="ht-footer">
+        <div class="container">
+            <div class="flex-parent-ft">
+                <div class="flex-child-ft item1">
+                    <a href="/"><img class="logo" src="images/logo1.png" alt=""></a>
+                    <p>5th Avenue st, manhattan<br>
+                        New York, NY 10001</p>
+                    <p>Call us: <a href="#">(+01) 202 342 6789</a></p>
+                </div>
+                <div class="flex-child-ft item2">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Blockbuster</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Forums</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Help Center</a></li>
+                    </ul>
+                </div>
+                <div class="flex-child-ft item3">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Terms of Use</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+                <div class="flex-child-ft item4">
+                    <h4>Account</h4>
+                    <ul>
+                        <li><a href="#">My Account</a></li>
+                        <li><a href="#">Watchlist</a></li>
+                        <li><a href="#">Collections</a></li>
+                        <li><a href="#">User Guide</a></li>
+                    </ul>
+                </div>
+                <div class="flex-child-ft item5">
+                    <h4>Newsletter</h4>
+                    <p>Subscribe to our newsletter system now <br> to get latest news from us.</p>
+                    <form action="#">
+                        <input type="text" placeholder="Enter your email...">
+                    </form>
+                    <a href="#" class="btn">Subscribe now <i class="ion-ios-arrow-forward"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="ft-copyright">
+            <div class="ft-left">
+                <p><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></p>
+            </div>
+            <div class="backtotop">
+                <p><a href="#" id="back-to-top">Back to top <i class="ion-ios-arrow-thin-up"></i></a></p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+<footer>
+    <script src="/js/jquery.js"></script>
+    <script src="/js/plugins.js"></script>
+    <script src="/js/plugins2.js"></script>
+    <script src="/js/custom.js"></script>
+    <script src="/js/alpine.min.js"></script>
+    <script src="/js/axios.min.js"></script>
+    <script src="https://kit.fontawesome.com/4316af07bc.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" defer>
+        function loginHandler(event, data) {
+            event.preventDefault();
+            
+            axios.post('/authen/login', data)
+                .then((response) => response.data)
+                .then((data) => {
+                    if(data.isSuccess) {
+                        location.reload();
+                    }
+                    else {
+                        alert(data.message); 
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+
+        function forgotPassword(event, email) {
+            event.preventDefault();
+
+             axios.post('/forgot-password', { email })
+                .then((response) => response.data)
+                .then((data) => {
+                    if(data.isSuccess) {
+                        alert(data.message);
+                    }
+                    else {
+                        alert(data.message); 
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+
+        function registration(event, postData, confPassword) {
+            event.preventDefault();
+
+            if(postData.password !== confPassword) {
+                alert('confirm password is wrong');
+                return;
+            }
+
+            axios.post('/registration', postData)
+                .then((response) => response.data)
+                .then((data) => {
+                    if(data.isSuccess) {
+                        alert(data.message);
+                        $('.overlay').find($('#signup-content'))
+                            .each(function() {
+                                $(this).removeClass('openform');
+                            });
+                         setTimeout(function () {
+                            $('.overlay').removeClass('openform');
+                        }, 350);
+                    }
+                    else {
+                        alert(data.message); 
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+
+        function initSearch() {
+            return {
+                movies: [],
+                loading: false,
+                fetchMovies(key) {
+                    fetch(`/search/movie?name=${key}`)    
+                    .then((raw) => raw.json())
+                    .then((data) => {
+                       if(data.isSuccess) {
+                            this.movies = data.data;
+                       }
+                    })
+                    .catch((error) => console.log(error));
+                },
+			    decimalFix(value, fix = 2) {
+         			return Number(value) ? parseFloat(value).toFixed(fix) : 0;
+                }
+            }
+        }
+    </script>
+    {{{block "scripts"}}}
+</footer>
+
+</html>

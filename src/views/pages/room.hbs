@@ -1,0 +1,308 @@
+{{#contentFor 'title'}}
+Booking Ticket
+{{/contentFor}}
+
+{{> loading }}
+
+{{#contentFor 'style'}}
+<style>
+    .page-single * {
+        color: #fff;
+    }
+
+    .theater_group {
+        display: flex;
+        justify-content: space-around;
+        margin: auto;
+        border: none;
+    }
+
+    .theater_group .group, .theater_group l.movie {
+         flex: 0 1 auto;
+    }
+
+    .theater_group > .group, .theater_group > .theater {
+        margin: 15px;
+        width: 20%;
+    }
+
+    .margin_t20 {
+        margin-top: 20px;
+    }
+
+    .showtime {
+        display: flex;
+    }
+
+    .showtime .showtime_item {
+        display: flex;
+        flex: 0 1 auto;
+        flex-direction: column;
+        margin-right: 20px;
+    }
+
+    .showtime_date, .single-room {
+        margin: 10px;
+        padding: 5px;
+    }
+
+    .showtime_item .single-room {
+        border: 1px solid #074ce0;
+        background: transparent;
+        padding: 10px;
+    }
+
+    .showtime_item .single-room:hover {
+        background-color: #074ce0;
+    } 
+
+    .booking-wrapper {
+        width: 100%;
+        margin: auto;
+    }
+
+    .single-seat .sit-num {
+        height: 42px;
+        line-height: 42px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        text-transform: uppercase;
+        font-size: 14px;
+    }
+
+    @media(min-width: 768px) {
+        .booking-wrapper {
+            width: 80%;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .single-seat .sit-num {
+            width: 100%;
+            font-size: 12px;
+            text-align: center;
+        }
+    }
+</style>
+{{/contentFor}}
+
+<div x-data="init()">
+    <div class="hero user-hero">
+		<div class="container">
+			<div class="col-md-12">
+               <div class="hero-ct">
+                   <h1 class="mr_0 mb_10">{{name}}</h1>
+               </div>
+	        </div>
+		</div>
+	</div>
+	<div class="page-single">
+		<div class="container">
+            <div class="booking-wrapper">
+                <div class="theater_group topbar-filter">
+                    <div class="group">
+                        <label class="group_title">Group</label>
+                        <select x-model="groupSelected">
+                            <option value="">--None--</option>
+                            <template x-for="(item, index) in groups">
+                                <option x-bind:value="item.id" x-text="item.name"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <template x-if="groupSelected">
+                        <div class="theater">
+                            <label class="theater_title">Theater</label>
+                            <select x-model="theaterSelected" @change="get" x-on:change="fetchShowTimes()">
+                                <option value="">--None--</option>
+                                <template x-for="(item, index) in theaters[groupSelected]">
+                                    <option x-bind:value="item.id" x-text="item.name"></option>
+                                </template>
+                            </select>
+                        </div>
+                    </template>
+                </div>
+            <template x-if="theaterSelected">
+                    <div class="row ipad-width">
+                        <div class="screen-wrapper showtime">
+                            <template x-for="[date, items] in Object.entries(showTimes)">
+                                <div class="showtime_item">
+                                    <div class="showtime_date" x-text="getDay(date)"></div>
+                                    <template x-for="(showTime, index) in items" :key="index">
+                                        <button class="single-room" x-text="showTime.room.name" @click="formatSeatsData(showTime)"></button>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+                <template x-if="seats">
+                    <div class="row ipad-width margin_t20">
+                        <div class="screen-wrapper">
+                            <template x-for="[key, row] in Object.entries(seats)" :key="key">
+                                <ul class="seat-area">
+                                    <li class="seat-line">
+                                        <span x-text="key"></span>
+                                        <ul class="seat--area">
+                                            <li class="front-seat">
+                                                <ul>
+                                                    <template x-for="(col, index) in row" :key="index">
+                                                        <li class="single-seat">
+                                                            <img x-bind:src="showStatusSeat(col)" alt="seat" x-bind:data-seat="key + '-' + col.id" @click="bookingSeat(event.target, col, key + '-' + col.id)">
+                                                            <span class="sit-num" x-show="!col.isBooked" x-text="col.position"></span>
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                        <span x-text="key"></span>
+                                    </li>
+                                </ul>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+		</div>
+	</div>
+</div>
+
+{{#contentFor "scripts"}}
+<script type="text/javascript" defer>
+    function init() {
+        const groups = JSON.parse('{{{ groups }}}');
+        const theaters = JSON.parse('{{{ theaters }}}');
+        const rowName = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
+        return {
+            groupSelected: '',
+            theaterSelected: '',
+            showSelected: '',
+            seats: [],
+            showTimes: [],
+            bookedByUser: [],
+            rowName,
+            groups,
+            theaters,
+            bookingSeat(el, seat, seatPosition) {
+                if(seat.isBooked && seat.ticket.user_id == '{{userId}}') {
+                    alert('You booked this seat');
+                    return false;
+                }
+                else if(seat.isBooked) {
+                    alert('this seat show is booked');
+                    return false;   
+                }
+               
+                
+                axios.post('/ticket', { seatId: seat.id, show: this.showSelected, movieName:' {{name}}', seatPosition, theaterAddress: this.getTheaterAddress(), price: this.showSelected.price })
+                    .then((data) => {
+                        if(data.status === 201 && data.data.isSuccess) {
+                            alert(data.data.message);
+                            $(el).attr('src', '/images/seat01-booked.png')
+                        }
+                        else if(data.status === 201 && !data.isSuccess) {
+                            alert(data.data.message);
+                        }
+                        
+                    })
+                    .catch(() => {
+                        alert('falied')
+                    });
+            },
+            fetchGroups() {
+                fetch('/group-theater')
+                    .then((raw) => raw.json())
+                    .then((response) => {
+                        if(response.isSuccess) {
+                            this.listGroup = response.data;
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            fetchTheaters() {
+                fetch('/theater')
+                    .then((raw) => raw.json())
+                    .then((response) => {
+                        if(response.isSuccess) {
+                            this.listTheater = response.data;
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            },
+            fetchShowTimes() {
+                if(this.theaterSelected) {
+                    fetch(`/api/showtime/${this.theaterSelected}?movie={{id}}`)
+                        .then((raw) => raw.json())
+                        .then((response) => {
+                            if(response.isSuccess) {
+                                this.showTimes = response.data;
+                            } 
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        })
+                }
+            },
+            formatSeatsData(showTime) {
+                this.showSelected = showTime;
+                const row = showTime.room.rows;
+                const seats = showTime.room.seats;
+                this.getTicketInShowTime();
+                console.log(this.bookedByUser);
+                formatSeat = {};
+                if(seats.length) {
+                    for(i = 1; i <= row; i++) {
+                        formatSeat[rowName[i]] = seats.filter((seat) => {
+                                                    seat.ticket = showTime.tickets.find(ticket => ticket.seat_id == seat.id);
+                                                    seat.isBooked = seat.ticket != undefined;
+                                                    return seat.row === i
+                                                 });
+                    
+                    }
+                }
+                this.seats = formatSeat;      
+            },
+            showStatusSeat(seat) {
+                if(seat.isBooked && seat.ticket.user_id == '{{userId}}') {
+                    return '/images/seat01-booked.png'
+                }
+                else if(seat.isBooked) {
+                    return '/images/seat01.png';
+                }
+                else {
+                    return '/images/seat01-free.png'
+                }
+            },
+            getTicketInShowTime() {
+                fetch(`/ticket/${this.showSelected.id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if(data.isSuccess) {
+                        this.bookedByUser = data.data;
+                        console.log(this.bookedByUser);
+                    }
+                })
+                .catch((error) => console.log(error))
+            },
+            getDay(string) {
+                const date = new Date(string);
+
+                return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+            },
+            getTheaterAddress() {
+                const group = groups.find((item) => item.id == this.groupSelected);
+                const theater = theaters[this.groupSelected].find((item) => item.id == this.theaterSelected);
+
+                return `${group.address} ${theater.name} ${this.showSelected.room.name}`;
+            }
+        }
+    }
+</script>
+{{/contentFor  }}

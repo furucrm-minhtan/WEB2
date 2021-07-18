@@ -1,0 +1,316 @@
+{{#contentFor  'title'}}
+Movie List
+{{/contentFor}}
+
+{{>loading  }}
+
+{{#contentFor  'style'}}
+<style>
+	.showtime-from input:first-child, .showtime-to input:first-child {
+		margin-right: 8px;
+		flex: 1 1 auto
+	}
+
+	.showtime-from input:last-child, .showtime-to input:last-child {
+		flex: 1 1 auto;
+	}	
+
+	.showtime-from, .showtime-to {
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.showtime-from > div, .showtime-to > div{
+		display: flex;
+	}
+
+	.search-button {
+		background: #dd003f;
+		border-radius: 15px;
+		color: #fff;
+		padding: 10px 30px 10px 30px;
+		width: 200px;
+		margin: auto;
+		display: block;
+		border: 1px solid #dd003f; 
+		text-transform: uppercase;	
+	}
+	
+	@media(min-width: 992px) {
+		.showtime-from input:last-child, .showtime-to input:last-child {
+			flex: 1 1 200px;
+		}
+	}
+
+</style>
+{{/contentFor}}
+
+<div x-data="init()" x-init="loadingMovie(); setWatch($watch)">
+	<div class="hero common-hero">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="hero-ct">
+						<h1> movie listing - list</h1>
+						<ul class="breadcumb">
+							<li class="active"><a href="/">Home</a></li>
+							<li><span class="ion-ios-arrow-right"></span> movie listing
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="page-single movie_list">
+		<div class="container">
+			<div class="row ipad-width2">
+				<div class="col-md-8 col-sm-12 col-xs-12">
+					<div class="topbar-filter">
+						<p>Found <span x-text="movieData.total"></span> movies in total</p>
+						<label>Sort by:</label>
+						<select x-model="movieData.sort">
+				            <template x-for="(option, index) in Object.values(sortType)" :key="index">
+                                <option x-bind:value="option.value" x-text="option.label"></option>
+                            </template>
+                        </select>
+						{{!-- <a href="movielist.html" class="list"><i
+								class="ion-ios-list-outline active"></i></a>
+						<a href="moviegrid.html" class="grid"><i class="ion-grid"></i></a> --}}
+					</div>
+					<template x-for="(movie, index) in movieData.movies" :key="index">
+						<div class="movie-item-style-2">
+							<img x-bind:src="movie.poster" alt="">
+							<div class="mv-item-infor">
+								<h6><a x-bind:href="'/movie/' + movie.id" x-text="movie.name"></a>
+								</h6>
+								<p class="rate"><i class="ion-android-star"></i><span x-text="decimalFix(movie['userReviews.movie_rate'] ?? '0')"></span>
+									/10</p>
+								<p class="describe" x-text="movie.describe"></p>
+								<p class="run-time"> Run Time: <span x-text="movie.run_time"></span> . MMPA: <span x-text="movie.MMPA_rating"></span>
+									. Release: <span x-text="getDate(movie.publish)"></span></p>
+								<p>Director: <a href="#" x-text="movie.director">Joss Whedon</a></p>
+								{{!-- <p>Stars: <a href="#">Robert Downey Jr.,</a> <a href="#">Chris
+										Evans,</a> <a href="#"> Chris Hemsworth</a></p> --}}
+							</div>	
+						</div>
+					</template>
+					<div class="topbar-filter">
+						<label>Movies per page:</label>
+						<select x-model="movieData.numberShow">
+							<option value="5">5</option>
+							<option value="10">10</option>
+						</select>
+					
+						<div class="pagination2">
+							<span>Page <span style="margin-right: 0" x-text="movieData.currentPage + 1"></span> of <span
+									x-text="movieData.page"></span>:</span>
+							<template x-for="(page, index) in createArray(movieData.page)">
+								<a x-bind:class="(movieData.currentPage == index) ? 'active' : '' " href="javascript:void(0)"
+									x-text="index + 1" @click="fetchMovieDataPage(index)"></a>
+							</template>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-12 col-xs-12">
+					<div class="sidebar">
+						<div class="searh-form">
+							<h4 class="sb-title">Search for movie</h4>
+							<form class="form-style-1" action="#">
+								<div class="row">
+									<div class="col-md-12 form-it">
+										<label>Movie name</label>
+										<input type="text"
+											placeholder="" x-model="searchParams.name">
+									</div>
+									<div class="col-md-12 form-it">
+										<label>Groups</label>
+										<select name="skills" x-model="searchParams.group">
+											<option value="">--None--</option>
+											<template x-for="(group, index) in groupTheaters" :key="index">
+												<option x-bind:value="group.id" x-text="group.name"></option>
+											</template>
+										</select>
+
+									</div>
+									<div class="col-md-12 form-it">
+										<label>Rating Range</label>
+
+										<select x-model="searchParams.rating">
+											<template x-for="(value, index) in createArray(11)" :key="index">
+												<option x-bind:value="index" x-text="index"></option>
+											</template>	
+										</select>
+
+									</div>
+									<div class="col-md-12 form-it">
+										<label>ShowTime</label>
+										<div class="showtime-from">
+											<label>From</label>
+											<div>
+												<input id="show-date-from" type="date"/>
+												<input id="show-time-from" type="time"/>	
+											</div>
+										</div>	
+										{{!-- <div class="showtime-to">
+											<label>To</label>
+											<div>
+												<input id="show-date-to" type="date" x-on:change="updateShowTime('to')"/>
+												<input id="show-time-to" type="time" x-on:change="updateShowTime('to')"/>
+											</div>
+										</div> --}}
+									</div>
+									<button class="search-button" type="button" @click="searchMovie()">Search</button>
+							</form>
+						</div>
+						<div class="ads">
+							<img src="images/uploads/ads1.png" alt="">
+						</div>
+						<div class="sb-facebook sb-it">
+							<h4 class="sb-title">Find us on Facebook</h4>
+							<iframe src="#"
+								data-src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftemplatespoint.net%2F%3Ffref%3Dts&tabs=timeline&width=340&height=315px&small_header=true&adapt_container_width=false&hide_cover=false&show_facepile=true&appId"
+								height="315"
+								style="width:100%;border:none;overflow:hidden"></iframe>
+						</div>
+						<div class="sb-twitter sb-it">
+							<h4 class="sb-title">Tweet to us</h4>
+							<div class="slick-tw">
+								<div class="tweet item" id="">
+									<!-- Put your twiter id here -->
+								</div>
+								<div class="tweet item" id="">
+									<!-- Put your 2nd twiter account id here -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{{#contentFor "scripts"}}
+<script>
+	function init() {
+		const cateId = '{{cateId}}';
+		let searchURL = `/movie-list/${cateId}/fetch`;
+		const fetchMovies = function(offset, limit, sort) {
+			return new Promise((resolve, reject) => {
+				fetch(`${searchURL}?offset=${offset}&limit=${limit}&sortField=${sort.field}&sortType=${sort.order}`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							resolve(data);
+						}
+						else {
+							throw data.message;
+						}
+					})
+					.catch(function(error) {
+						throw error;
+					})
+			});
+		};
+
+		function capitalizeFirstLetter(string) {
+		  return string.charAt(0).toUpperCase() + string.slice(1);
+		}
+
+		return {
+			searchParams: { rating: 0 },
+			groupTheaters: JSON.parse('{{{groups}}}'),
+			movieData: {
+				total: 0,
+				page: 1,
+				currentPage: 0,
+				sort: 'name',
+				movies: [],
+				numberShow: 5
+			},
+			sortType: [
+				{ value: 'name', label: 'name' },
+				{ value: 'publish', label: 'publish date' }
+			],
+			searchMovie() {
+				const params = [];
+				this.searchParams.showTimeFrom = this.getShowTime('#show-date-from, #show-time-from', 2);
+				//this.searchParams.showTimeTo = getShowTime('#show-date-to, #show-time-to')
+
+				for(const [key, value] of Object.entries(this.searchParams)) {
+					params.push(`${key}=${value}`);
+				}
+				searchURL = `/search/movie-full?cateId=${cateId}&${params.join('&')}&`;
+				this.loadingMovie();
+			},
+			getShowTime(element, inputNumber) {
+				const fields = $(element)
+				if(fields.filter( function() {
+					return this.value.length > 0;
+				}).length != inputNumber) return '';
+
+				return `${fields[0].value}T${fields[1].value}`;
+			},
+			updateShowTime(input) {
+				let dateTime = '';
+
+				$(`#show-date-${input}`, `#show-time-${input}`)
+					.each(function(element) {
+						dateTime += $(element).val() + ' ';
+					});
+				console.log(dateTime);
+				this.searchParams[`showTime${capitalizeFirstLetter(input)}`] = dateTime;
+			},
+			fetchMovieDataPage(page) {
+				this.movieData.currentPage = page;
+
+				fetchMovies(this.movieData.currentPage * this.movieData.numberShow, this.movieData.numberShow, { field: this.movieData.sort, order: 'DESC' })
+					.then((data) => {
+						this.movieData.movies = data.data;	
+					})
+					.catch((error) => {
+						console.log(error);
+					})	
+			},
+			loadingMovie() {
+				fetch(`${searchURL}?offset=0&limit=1000&sortField=${this.movieData.sort}&sortType=`)
+					.then(function(response) { 
+						return response.json();
+					})
+					.then((data) => {
+						if(data.isSuccess) {
+							this.movieData.page = 1;
+							this.movieData.currentPage = 0;
+							this.movieData.total = data.data.length;
+							this.movieData.page = Math.ceil(data.data.length / this.movieData.numberShow);
+							this.movieData.movies = data.data.slice(0, this.movieData.numberShow);
+						}
+					})
+					.catch(function(error) {
+						console.log(error);
+					})	
+				
+			
+			},
+			getDate(string) {
+				const date = new Date(string);
+
+				return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+			},
+			createArray(number) {
+				return Array.from({ length: number }, (_item, index) => index);
+			},
+			decimalFix(value, fix = 2) {
+    			return Number(value) ? parseFloat(value).toFixed(fix) : 0;
+			},
+			setWatch(watch) {
+				watch('movieData.sort', () => this.loadingMovie());
+				watch('movieData.numberShow', () => this.loadingMovie());
+			}
+		}
+	}
+</script>
+{{/contentFor }}

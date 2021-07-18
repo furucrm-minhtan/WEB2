@@ -1,0 +1,17 @@
+<div class="slide-it">
+    <div class="movie-item">
+        <div class="mv-img">
+            <img src="{{ poster }}" alt="" width="185"
+                height="284">
+        </div>
+        <div class="hvr-inner">
+            <a href="/movie/{{ id }}"> Read more <i
+                    class="ion-android-arrow-dropright"></i> </a>
+        </div>
+        <div class="title-in">
+            <h6><a href="/movie/{{ id }}" tabindex="0">{{name}}</a></h6>
+            <p><i class="ion-android-star"></i><span>{{formatDecimal movie_rate 1}}</span> /10</p>
+        </div>
+    </div>
+</div>
+        

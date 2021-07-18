@@ -1,0 +1,28 @@
+<form id="theater-form" class="needs-validation" novalidate>
+	<h4 class="text-center">Add Theater</h4>
+	<div class="row mt-2">
+		<div class="col-12">
+			<label>Name</label>
+			<input class="form-control" type="text" x-model="theater.data.name" required/>
+			<div class="invalid-feedback">Name is required</div>
+		</div>
+	</div>
+	<div class="row mt-2">
+		<div class="col-12 col-md-6">
+			<label>Type</label>
+			<select class="custom-select" x-model="theater.data.type">
+				<option value="2D">2D</option>
+				<option value="3D">3D</option>
+				<option value="4D">4D</option>
+			</select>
+		</div>
+		<div class="col-12 col-md-6">
+			<label>Group</label>
+			<select class="custom-select" x-model="theater.data.groupId">
+				<template x-for="(item, index) in group.listView" :key="index">
+					<option x-bind:value="item.id" x-text="item.name"></option>
+				</template>
+			</select>
+		</div>
+	</div>
+</form>
