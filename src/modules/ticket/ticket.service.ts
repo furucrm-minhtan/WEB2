@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Sequelize } from 'sequelize-typescript';
 import { Movie } from '../movie/movie.model';
+import { ShowTime } from '../showTime/showtime.model';
 import { TicketBooking } from './dto/ticket.dto';
 import { Ticket } from './ticket.model';
 
@@ -32,10 +33,11 @@ export class TicketService {
       where: {
         userId: id
       },
-      include: [{ model: Movie, order: [sort] }],
+      include: [
+        { model: ShowTime, include: [{ model: Movie, order: [sort] }] }
+      ],
       offset,
-      limit,
-      order: [[{ model: Movie, as: 'movie' }, sort, 'DESC']]
+      limit
     });
   }
 }

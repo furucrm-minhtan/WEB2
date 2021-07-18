@@ -78,14 +78,13 @@ export class UserService {
     { oldPassword, newPassword }: ChangePassword
   ): Promise<[number, User[]]> {
     const user: User = await this.getUser(id);
-
+    console.log(newPassword, user);
     if (!Helper.comparePassword(oldPassword, user.password)) {
       throw 'password not match';
     }
-    newPassword = Helper.hashPassword(newPassword);
-
+    const password = Helper.hashPassword(newPassword);
     return this.usersRepository.update(
-      { password: newPassword },
+      { password },
       {
         where: { id }
       }

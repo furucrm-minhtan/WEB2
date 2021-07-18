@@ -9,6 +9,7 @@ import {
   Headers,
   Put
 } from '@nestjs/common';
+import session from 'express-session';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
 import { UserSession } from '../authen/dto/authen.dto';
 import { BookmarkService } from '../bookmark/bookmark.service';
@@ -33,11 +34,7 @@ export class UserController {
   @Get('/dashboard')
   @Render('userprofile')
   async root(@Session() session: Record<string, any>): Promise<UserProfile> {
-    // console.log(session);
     const { id }: UserProfile = session.user;
-    // const bookmarks: Bookmark[] = await this.bookmarkService.getFavoriteMovie(
-    //   1
-    // );
     const user: UserProfile = await this.userService.loadProfileView(id);
 
     return { ...user };
@@ -71,18 +68,34 @@ export class UserController {
 
   @Post('/change-password')
   async updatePassword(
-    @Session() { id }: UserSession,
+    @Session() session: Record<string, any>,
     @Body() password: ChangePassword
-  ): Promise<boolean> {
+  ): Promise<ActionResponseService> {
     try {
-      await this.userService.updatePassword(id, password);
+      if (!session?.user) {
+        return this.actionResponseService.responseApi(
+          true,
+          '',
+          'user need authen'
+        );
+      }
 
-      return true;
+      await this.userService.updatePassword(session.user.id, password);
+
+      return this.actionResponseService.responseApi(
+        true,
+        '',
+        'change password success'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return false;
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'change password failed'
+    );
   }
 
   @Post('/forgot-password')
@@ -174,10 +187,6 @@ export class UserController {
 
     try {
       const userSession: UserSession = session?.user;
-
-      if (!userSession) {
-        throw new Error('user not authen');
-      }
 
       this.userService.uploadAvatar(userSession.id, avatar);
 

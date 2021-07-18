@@ -113,19 +113,19 @@ Profile
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Old Password</label>
-									<input type="text" x-model="passwordForm.oldPassword">
+									<input type="password" x-model="passwordForm.oldPassword">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>New Password</label>
-									<input type="text" x-model="passwordForm.newPassword">
+									<input type="password" x-model="passwordForm.newPassword">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-6 form-it">
 									<label>Confirm New Password</label>
-									<input type="text" x-model="passwordForm.confPassword">
+									<input type="password" x-model="passwordForm.confPassword">
 								</div>
 							</div>
 							<div class="row">
@@ -203,7 +203,9 @@ Profile
 											{{!-- <p class="time sm-text">your reviews:</p>
 											<h6>Best Marvel movie in my opinion</h6> --}}
 											<p class="time sm" x-text="getDate(review.creationDate)"></p>
-											<p x-text="review.movie.content"></p>
+											<p x-text="review.movie.describe"></p>
+											<p class="time sm-text">your review:</p>
+											<p x-text="review.context"></p>
 										</div>
 									</div>
 								</template>
@@ -238,15 +240,16 @@ Profile
 							<div>
 								<template x-for="(ticket, index) in ticketData.movies">
 									<div class="movie-item-style-2 userrate">
-										<img x-bind:src="ticket.movie.poster" alt="">
+										<img x-bind:src="ticket.show.movie.poster" alt="">
 										<div class="mv-item-infor">
-											<h6><a x-bind:href="'/movie/'+ ticket.movie.id" x-text="ticket.movie.name"></a></h6>
-											<p class="time sm-text">your rate:</p>
-											<p class="rate"><i class="ion-android-star"></i><span x-text="ticket.rate"></span> /10</p>
+											<h6><a x-bind:href="'/movie/'+ ticket.show.movie.id" x-text="ticket.show.movie.name"></a></h6>
+											<p class="time sm-text">start time:</p>
+											<p class="rate"><span x-text="getDate(ticket.show.date)"></span> <span x-text="ticket.show.start"></span></p>
 											{{!-- <p class="time sm-text">your reviews:</p>
 											<h6>Best Marvel movie in my opinion</h6> --}}
-											<p class="time sm" x-text="getDate(ticket.creationDate)"></p>
-											<p x-text="ticket.movie.content"></p>
+											<p class="time sm-text">price:</p>
+											<p class="rate"><span x-text="formatMoney(ticket.show.price)"></span></p>
+											<p x-text="ticket.show.movie.describe"></p>
 										</div>
 									</div>
 								</template>
@@ -325,7 +328,7 @@ Profile
 					})
 					.then((data) => {
 						if(data.isSuccess) {
-							resolve(data);
+							resolve(data.data);
 						}
 						else {
 							throw data.message;
@@ -340,7 +343,7 @@ Profile
 
 		return {
 			sheet: 'profile',
-			avatar: '{{avatar}}', 
+			avatar: '{{{avatar}}}', 
 			favoriteData: {
 				total: 0,
 				page: 1,
@@ -388,7 +391,7 @@ Profile
 				axios.put('/profile', this.userForm)
 					.then(function (response)
 					{
-						alert(response.message);
+						alert(response.data.message);
 					})
 					.catch(function (error)
 					{
@@ -407,7 +410,8 @@ Profile
 				axios.post('/change-password', this.passwordForm)
 					.then(function (response)
 					{
-
+						console.log(response);
+						alert(response.data.message);
 					})
 					.catch(function (error)
 					{
@@ -507,16 +511,21 @@ Profile
 						}
 					})
 					.then((data) => {
-						this.ticketData.movies = data.data;
+						this.ticketData.movies = data;
 					})
 					.catch(function(error) {
 						console.log(error);
 					})
 			},
 			getDate(string) {
+				if(!string) return '';
 				const date = new Date(string);
 
 				return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+			},
+			formatMoney(money) {
+				if(!money) return '';
+				return `$${money}`;
 			},
 			createArray(number) {
 				return Array.from({ length: number }, (_item, index) => index);
@@ -530,8 +539,9 @@ Profile
 				}
 
 				const render = new FileReader();
-				render.onload = function() {
-					$('avatar').attr('src', this.result);
+				render.onload = () => {
+					$('#avatar').attr('src', render.result);
+					this.avatar = render.result;
 				}
 				render.onerror = function(event) {
 					alert("Failed to read file!\n\n" + reader.error);;

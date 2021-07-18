@@ -35,9 +35,9 @@ export class TicketController {
   async fetchUserTicketInformation(@Session() { user }: { user: UserSession }) {
     try {
       const id: number = user?.id;
-      const totalTocket: number = await this.ticketService.countTicketUser(id);
+      const totalTicket: number = await this.ticketService.countTicketUser(id);
 
-      return this.actionResponseService.responseApi(true, { totalTocket }, '');
+      return this.actionResponseService.responseApi(true, { totalTicket }, '');
     } catch (error) {
       console.log(error);
     }
@@ -55,8 +55,8 @@ export class TicketController {
       const id: number = user?.id;
       const data: Ticket[] = await this.ticketService.getTicketMovie(
         id,
-        offset,
-        limit,
+        +offset,
+        +limit,
         sort
       );
 
