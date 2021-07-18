@@ -770,6 +770,7 @@ Detail
 					.then((response) => {
 						if(response.status === 201) {
 							alert(response.data.message);
+							this.isBookmark = true;
 						}
 						else {
 							alert('bookmark failed');
@@ -781,11 +782,12 @@ Detail
 			},
 			uploadReview(movieId) {
 				const rate = $('.write_review_wrapper i[class="ion-android-star selected"]').length;
-				axios.post('/review', { content: this.reviewForm.content, movieId, rate })
+				axios.post('/review', { context: this.reviewForm.content, movieId, rate })
 					.then((response) => {
 						console.log(response);
 						if(response.status === 201) {
 							alert(response.data.message);
+							location.reload();
 						}
 						else {
 							alert('upload review failed');

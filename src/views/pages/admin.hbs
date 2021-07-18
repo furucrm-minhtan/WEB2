@@ -86,7 +86,7 @@ Admin
                                     <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Activity Log
                                 </a> --}}
-                                <a class="dropdown-item" href="/authen/logout" data-toggle="modal" data-target="#logoutModal">
+                                <a class="dropdown-item" href="/authen/logout">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
                                 </a>
@@ -492,7 +492,7 @@ Admin
                     this.data = this.listView[index];
                     this.selectedTheaters = this.data.theaters;
                     $.each(this.selectedTheaters, (key, element) => this.theaterIds.add($(element).val()));
-                    this.theaters = this.parent.theater.listView.filter((theater) => !this.theaterIds.includes(theater.id));
+                    this.theaters = this.theaterIds.length ? this.parent.theater.listView.filter((theater) => !this.theaterIds.includes(theater.id)) : this.parent.theater.listView;
                     this.parent.modal.title = 'Update Movie';
                     this.parent.modal.content = 'movie_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -513,7 +513,8 @@ Admin
                         put('/movie', { data: this.data, theaterIds: Array.from(this.theaterIds) })
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    data = {};
+                                    this.listView[index] = { ...this.data };
+                                    this.table.row($(`#list-movie tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
                                 }
                                 else {

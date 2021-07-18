@@ -204,8 +204,9 @@ export class MovieService {
       fetchOptions.include.push({
         attributes: ['id'],
         model: User,
+        through: { attributes: ['id'], where: { userId } },
         as: 'userFavorites',
-        where: { id: userId }
+        require: false
       });
 
     const movieDetail: MovieDetail = await this.findMovie(id, fetchOptions);
@@ -227,21 +228,21 @@ export class MovieService {
     data: Movie,
     theaterIds: number[]
   ): Promise<void> {
-    this.squelize.transaction().then((t) => {
-      return this.movieRepository
-        .create(data, { transaction: t })
-        .then((movie) => {
-          return this.theaterMovieService.createAssociationsTheater(
-            movie.id,
-            theaterIds,
-            { transaction: t }
-          );
-        })
-        .then(() => t.commit())
-        .catch((error) => {
-          t.rollback();
-          throw error;
+    this.squelize.transaction().then(async (t) => {
+      try {
+        const movie: Movie = await this.movieRepository.create(data, {
+          transaction: t
         });
+        this.theaterMovieService.createAssociationsTheater(
+          movie.id,
+          theaterIds,
+          { transaction: t }
+        );
+        t.commit();
+      } catch (error) {
+        t.rollback();
+        throw error;
+      }
     });
   }
 
@@ -257,26 +258,27 @@ export class MovieService {
     data: Movie,
     theaterIds: number[]
   ): Promise<void> {
-    this.squelize.transaction().then((t) => {
-      return this.movieRepository
-        .update(data, { where: { id: data.id }, transaction: t })
-        .then(async (result: [number, Movie[]]) => {
-          await this.theaterMovieService.delete({
-            movieId: result[1][0].id,
-            transaction: t
-          });
-
-          return this.theaterMovieService.createAssociationsTheater(
-            result[1][0].id,
-            theaterIds,
-            { transaction: t }
-          );
-        })
-        .then(() => t.commit())
-        .catch((error) => {
-          t.rollback();
-          throw error;
+    this.squelize.transaction().then(async (t) => {
+      try {
+        await this.movieRepository.update(data, {
+          where: { id: data.id },
+          transaction: t
         });
+        await this.theaterMovieService.delete({
+          movieId: data.id,
+          transaction: t
+        });
+
+        await this.theaterMovieService.createAssociationsTheater(
+          data.id,
+          theaterIds,
+          { transaction: t }
+        );
+        t.commit();
+      } catch (error) {
+        t.rollback();
+        throw error;
+      }
     });
   }
 
