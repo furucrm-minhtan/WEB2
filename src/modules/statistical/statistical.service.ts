@@ -46,7 +46,7 @@ export class StatisticalService {
         }
       ],
       limit,
-      group: ['id'],
+      group: ['Movie.id'],
       having: where(col('showTimes.date'), { [$between]: [start, end] }),
       order: [[literal('`showTimes.tickets.total_price`'), 'DESC']],
       raw: true,
@@ -82,7 +82,7 @@ export class StatisticalService {
         }
       ],
       limit,
-      group: ['id'],
+      group: ['Movie.id'],
       having: where(col('theaters.rooms.showTimes.date'), {
         [$between]: [start, end]
       }),

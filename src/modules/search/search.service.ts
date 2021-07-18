@@ -102,7 +102,7 @@ export class SearchService {
         [$and]: [...defineQuery.whereAnd]
       },
       ...defineQuery.mainQuery,
-      group: ['id'],
+      group: ['Movie.id'],
       raw: true,
       subQuery: false
     });

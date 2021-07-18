@@ -104,7 +104,7 @@ Detail
 					<div class="movie-btn">	
 						<div class="btn-transform transform-vertical red">
 							<div><a href="#" class="item item-1 redbtn"> <i class="ion-play"></i> Watch Trailer</a></div>
-							<div><a href="https://www.youtube.com/embed/o-0hcF97wy0" class="item item-2 redbtn fancybox-media hvr-grow"><i class="ion-play"></i></a></div>
+							<div><a href="{{trailer}}" class="item item-2 redbtn fancybox-media hvr-grow"><i class="ion-play"></i></a></div>
 						</div>
 						<div class="btn-transform transform-vertical">
 							<div><a href="/movie/{{id}}/booking" class="item item-1 yellowbtn"> <i class="ion-card"></i> Buy ticket</a></div>
@@ -311,7 +311,11 @@ Detail
 							            	</div>
 											<div class="write_review_wrapper">
 												<div class="review_rating">
-													<img class="avatar" src='https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light' width="50" height="50"/>
+													{{#if user.avatar}}
+														<img class="avatar" src="{{user.avatar}}" width="50" height="50"/>
+													{{else}}
+														<img class="avatar" src="https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light" width="50" height="50"/>
+													{{/if}}
 													<div class="no-star">
 														<template x-for="(item, index) in createArray(10)">
 															<i class="ion-android-star" @click="fillStart(index)"></i>
@@ -329,13 +333,13 @@ Detail
 						            	</div>
 						            	<div class="topbar-filter">
 											{{!-- <p>Found <span x-text="reviews.length"> </span>reviews in total</p> --}}
-											<label>Filter by:</label>
+											{{!-- <label>Filter by:</label>
 											<select x-model="reviewData.sort" x-on:change="sortRate()">
 												<option value="rate,desc">Rating Descending</option>
 												<option value="rate,asc">Rating Ascending</option>
 												<option value="createtionDate,desc">Release date Descending</option>
 												<option value="createtionDate,asc">Release date Ascending</option>
-											</select>
+											</select> --}}
 										</div>
 										<template x-for="(user, index) in reviewData.show" :key="index">
 											<div>
