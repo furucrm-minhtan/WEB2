@@ -52,7 +52,7 @@ export class MovieService {
           required: false
         }
       ],
-      group: ['id'],
+      group: ['Movie.id', col('userReviews.id'), col('userReviews.Review.id')],
       order: ['creationDate'],
       limit,
       raw: true,
@@ -124,7 +124,7 @@ export class MovieService {
           ]
         }
       },
-      group: ['id'],
+      group: ['Movie.id', col('userReviews.id'), col('userReviews.Review.id')],
       limit,
       subQuery: false
     });
