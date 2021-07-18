@@ -190,7 +190,7 @@ export class MovieService {
           through: { attributes: ['rate'] }
         }
       ],
-      group: ['name'],
+      group: ['Movie.name'],
       raw: true
     };
     userId &&

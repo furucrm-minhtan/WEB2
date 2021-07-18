@@ -42,7 +42,7 @@ export class MovieListService {
       where: {
         category_id: cateId
       },
-      group: ['id'],
+      group: ['Movie.id'],
       order: [sort],
       offset,
       limit,
