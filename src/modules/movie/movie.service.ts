@@ -191,7 +191,7 @@ export class MovieService {
           through: { attributes: ['rate'] }
         }
       ],
-      group: ['Movie.name', 'Movie.id'],
+      group: ['Movie.name', 'Movie.id', 'userReviews.id', 'userReviews.Review.id'],
       raw: true
     };
     userId &&
