@@ -72,7 +72,7 @@ export class MovieService {
           required: false
         }
       ],
-      group: ['id'],
+      group: ['Movie.id', col('userReviews.Review.id')],
       order: [[fn('AVG', col('rate')), 'DESC']],
       limit,
       raw: true,
@@ -96,7 +96,7 @@ export class MovieService {
           required: false
         }
       ],
-      group: ['id'],
+      group: ['Movie.id', col('showTimes.id'), col('showTimes.tickets.id')],
       order: [[literal('`showTimes.tickets.total_user`'), 'DESC']],
       limit,
       raw: true,
