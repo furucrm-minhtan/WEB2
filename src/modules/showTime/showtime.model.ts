@@ -37,7 +37,7 @@ export class ShowTime extends BaseModel<ShowTime> {
   @Column({ type: DataType.DATEONLY, allowNull: false })
   date: Date;
 
-  @Column({ type: DataType.DECIMAL(undefined, 2), allowNull: false })
+  @Column({ type: DataType.DECIMAL(10, 2), allowNull: false })
   price: number;
 
   @ForeignKey(() => Room)

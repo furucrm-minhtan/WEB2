@@ -543,10 +543,9 @@ Admin
                     destroy(`/movie/${id}`, {})
                         .then((data) => {
                             if(data.isSuccess) {
-                                const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                                const index = $(`#list-movie tr[data-id="${id}"]`).data('index');
                                 this.listView.splice(index, 1);
-                                this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
-                                alert('delete success');
+                                this.table.row($(`#list-movie tr[data-id="${id}"]`)).remove().draw();
                             }
                         })
                         .catch(error => alert('delete failed'));
@@ -729,7 +728,6 @@ Admin
                                 const index = $(`#list-category tr[data-id="${id}"]`).data('index');
                                 this.listView.splice(index, 1);
                                 this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
-                                alert('delete success');
                             }
                             else {
                                 throw "";
@@ -888,9 +886,9 @@ Admin
                     destroy(`/groupthearter/${id}`, {})
                         .then((data) => {
                             if(data.isSuccess) {
-                                const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                                const index = $(`#list-group tr[data-id="${id}"]`).data('index');
                                 this.listView.splice(index, 1);
-                                this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
+                                this.table.row($(`#list-group tr[data-id="${id}"]`)).remove().draw();
                                 alert('delete success');
                             }
                             else {
@@ -1059,9 +1057,9 @@ Admin
                     destroy(`/theater/${id}`, {})
                         .then((data) => {
                             if(data.isSuccess) {
-                                const index = $(`#list-category tr[data-id="${id}"]`).data('index');
+                                const index = $(`#list-theater tr[data-id="${id}"]`).data('index');
                                 this.listView.splice(index, 1);
-                                this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
+                                this.table.row($(`#list-theater tr[data-id="${id}"]`)).remove().draw();
                                 alert('delete success');
                             }
                             else {
