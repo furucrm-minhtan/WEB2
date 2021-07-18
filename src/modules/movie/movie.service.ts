@@ -97,7 +97,7 @@ export class MovieService {
         }
       ],
       group: ['Movie.id', col('showTimes.id'), col('showTimes.tickets.id')],
-      order: [[literal('`showTimes.tickets.total_user`'), 'DESC']],
+      order: [[literal('"showTimes.tickets.total_user"'), 'DESC']],
       limit,
       raw: true,
       subQuery: false
