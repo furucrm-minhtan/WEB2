@@ -11,6 +11,7 @@ import {
   Render
 } from '@nestjs/common';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
+import { Theater } from '../theater/theater.model';
 import { CreateRoom, UpdateRoom } from './dto/room.dto';
 import { Room } from './room.model';
 import { RoomService } from './room.service';
@@ -45,16 +46,30 @@ export class RoomController {
     );
   }
 
-  @Post()
-  async create(@Body() data: CreateRoom) {
+  @Get()
+  async fetchRoom() {
     try {
-      await this.roomService.create(data as Room);
+      const rooms: Room[] = await this.roomService.findAll({
+        include: Theater
+      });
 
-      return this.actionResponseService.responseApi(true, '', '');
+      return this.actionResponseService.responseApi(true, rooms, '');
     } catch (error) {
       console.log(error);
     }
     return this.actionResponseService.responseApi(false, [], '');
+  }
+
+  @Post()
+  async create(@Body() data: CreateRoom) {
+    try {
+      const room: Room = await this.roomService.create(data as Room);
+
+      return this.actionResponseService.responseApi(true, room, '');
+    } catch (error) {
+      console.log(error);
+    }
+    return this.actionResponseService.responseApi(false, '', 'create failed');
   }
 
   @Put(':id')

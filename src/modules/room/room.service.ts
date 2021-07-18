@@ -5,6 +5,7 @@ import { ShowTime } from '../showTime/showtime.model';
 import { Room } from './room.model';
 import { Sequelize } from 'sequelize';
 import { SeatService } from '../seat/seat.service';
+import { Theater } from '../theater/theater.model';
 const { $between } = operatorsAliases;
 
 @Injectable()
@@ -20,6 +21,10 @@ export class RoomService {
       where: { id },
       plain: true
     });
+  }
+
+  findAll(options: Record<string, any>) {
+    return this.roomRepository.findAll(options);
   }
 
   showMovie(theaterId: number, movieId, day: number): Promise<Room[]> {
@@ -47,25 +52,27 @@ export class RoomService {
     });
   }
 
-  async create(data: Room): Promise<void> {
-    this.sequelize.transaction().then((t) => {
-      return this.roomRepository
-        .create(data, { transaction: t })
-        .then((room) => {
-          return this.seatService.createSeatsForRoom(
-            {
-              id: room.id,
-              row: room.rows,
-              col: room.columns
-            },
-            { transaction: t }
-          );
-        })
-        .then(() => t.commit())
-        .catch((error) => {
-          t.rollback();
-          throw error;
+  async create(data: Room): Promise<Room> {
+    return this.sequelize.transaction().then(async (t) => {
+      try {
+        const room: Room = await this.roomRepository.create(data, {
+          transaction: t
         });
+        await this.seatService.createSeatsForRoom(
+          {
+            id: room.id,
+            row: room.rows,
+            col: room.columns
+          },
+          { transaction: t }
+        );
+
+        t.commit();
+        return room.reload({ include: Theater });
+      } catch (error) {
+        t.rollback();
+        throw error;
+      }
     });
   }
 

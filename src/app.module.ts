@@ -1,3 +1,4 @@
+import { StatisticalModule } from './modules/statistical/statistical.module';
 import { TheaterMovieModule } from './modules/theaterMovie/theatermovie.module';
 import { SearchModule } from './modules/search/search.module';
 import { MovieListModule } from './modules/movietList/movielist.module';
@@ -33,9 +34,12 @@ import { mailerConfigOptionsAsync } from './core/config/mailer.config';
 import { MailService } from './modules/mail/mail.service';
 import { AuthenMiddleware } from './middleware/authen.middleware';
 import { UserController } from './modules/user/user.controller';
+import { AdminMiddleware } from './middleware/admin.middleware';
+import { AdminController } from './modules/admin/admin.controller';
 
 @Module({
   imports: [
+    StatisticalModule,
     TheaterMovieModule,
     SearchModule,
     MovieListModule,
@@ -74,6 +78,8 @@ export class AppModule implements NestModule {
         { path: 'registration', method: RequestMethod.ALL },
         { path: 'reset-password', method: RequestMethod.ALL }
       )
-      .forRoutes(UserController);
+      .forRoutes(UserController)
+      .apply(AdminMiddleware)
+      .forRoutes(AdminController);
   }
 }

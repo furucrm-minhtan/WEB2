@@ -1,7 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import moment from 'moment';
-import { where } from 'sequelize';
-import { col, fn } from 'sequelize';
 import { Sequelize } from 'sequelize';
 import { operatorsAliases } from 'src/core/config/sequelize.config';
 import Helper from 'src/helper/helper';
@@ -9,7 +7,6 @@ import { Seat } from 'src/modules/seat/seat.model';
 import { Ticket } from 'src/modules/ticket/ticket.model';
 import { Movie } from '../movie/movie.model';
 import { Room } from '../room/room.model';
-import { GenerateShowTime } from './dto/showtime.dto';
 import { ShowTime } from './showtime.model';
 const { $between } = operatorsAliases;
 
@@ -18,6 +15,10 @@ export class ShowTimeService {
   constructor(
     @Inject('SHOWTIMES_REPOSITORY') private showTimeRepository: typeof ShowTime
   ) {}
+
+  findAll(options = {}) {
+    return this.showTimeRepository.findAll(options);
+  }
 
   async topMovie(): Promise<ShowTime[]> {
     return this.showTimeRepository.findAll({

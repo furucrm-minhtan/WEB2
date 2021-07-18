@@ -20,6 +20,12 @@
           <div x-show="modal.content === 'theater_form'">
               {{>theaterForm}}
           </div>
+          <div x-show="modal.content === 'room_form'">
+              {{>roomForm}}
+          </div>
+          <div x-show="modal.content === 'showtime_form'">
+              {{>showtimeForm}}
+          </div>
           <div x-show="modal.content === 'category_form'">
               {{>categoryForm}}
           </div>

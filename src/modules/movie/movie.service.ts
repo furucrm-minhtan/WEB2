@@ -8,8 +8,10 @@ import { GroupTheaterOptions } from '../groupTheater/dto/groupTheater.dto';
 import { TheaterOptions } from '../theater/dto/theater.dto';
 import { MovieDetail, MovieItem } from './dto/movie.dto';
 import { User } from '../user/user.model';
-import { col, fn, Sequelize } from 'sequelize';
+import { col, fn, literal, Sequelize } from 'sequelize';
 import { TheaterMovieService } from '../theaterMovie/theatermovie.service';
+import { ShowTime } from '../showTime/showtime.model';
+import { Ticket } from '../ticket/ticket.model';
 const { $between, $eq } = operatorsAliases;
 
 @Injectable()
@@ -58,7 +60,7 @@ export class MovieService {
     });
   }
 
-  async topRatedMovie(limit: number): Promise<Movie[]> {
+  topRatedMovie(limit: number): Promise<Movie[]> {
     return this.movieRepository.findAll({
       attributes: ['id', 'name', 'poster', 'creationDate'],
       include: [
@@ -72,6 +74,30 @@ export class MovieService {
       ],
       group: ['id'],
       order: [[fn('AVG', col('rate')), 'DESC']],
+      limit,
+      raw: true,
+      subQuery: false
+    });
+  }
+
+  mostViewed(limit: number): Promise<Movie[]> {
+    return this.movieRepository.findAll({
+      attributes: ['id', 'name', 'poster', 'creationDate'],
+      include: [
+        {
+          attributes: ['id'],
+          model: ShowTime,
+          include: [
+            {
+              attributes: [[fn('SUM', col('user_id')), 'total_user']],
+              model: Ticket
+            }
+          ],
+          required: false
+        }
+      ],
+      group: ['id'],
+      order: [[literal('`showTimes.tickets.total_user`'), 'DESC']],
       limit,
       raw: true,
       subQuery: false

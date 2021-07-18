@@ -1,6 +1,6 @@
 <form id="movie-form" class="needs-validation" novalidate>
 	<h4 class="text-center">Add Movie For Theater</h4>
-	<div class="row mt-5">
+	<div class="row mt-2">
 		<div class="col-12">
 			<label>Name</label>
 			<input class="form-control" type="text" x-model="movie.data.name" required>
@@ -27,7 +27,7 @@
 	<div class="row">
 		<template x-if="movie.data.poster">
 			<div class="my-3 mx-auto">
-				<image class="w-100" height="400" x-bind:src="'data:image/jpg;base64,' + movie.data.poster" />
+				<image class="w-100" height="400" x-bind:src="movie.data.poster" />
 			</div>
 		</template>
 		<div class="col-12">
@@ -54,7 +54,7 @@
 		<textarea id="describe" class="form-control" rows="10" x-model="movie.data.describe" required></textarea>
 		<div class="invalid-feedback">Describe is required</div>
 	</div>
-	<div class="row mt-5">
+	<div class="row mt-2">
 		<div class="col-12 col-md-6">
 			<label for="director">Director</label>
 			<input id="director" class="form-control " type="text" x-model="movie.data.director" required/>
@@ -66,7 +66,7 @@
 			<div class="invalid-feedback">Writer is required</div>
 		</div>
 	</div>
-	<div class="row mt-5">
+	<div class="row mt-2">
 		<div class="col-12 col-md-6">
 			<label for="MMPA_rate">MMPA Rating</label>
 			<select class="custom-select" x-model="movie.data.MMPA_rating">

@@ -41,9 +41,15 @@ export class Room extends BaseModel<Room> {
   @BelongsTo(() => Theater, 'theater_id')
   theater: Theater;
 
-  @HasMany(() => Seat)
+  @HasMany(() => Seat, {
+    onDelete: 'CASCADE',
+    hooks: true
+  })
   seats: Seat[];
 
-  @HasMany(() => ShowTime)
+  @HasMany(() => ShowTime, {
+    onDelete: 'CASCADE',
+    hooks: true
+  })
   showTimes: ShowTime[];
 }

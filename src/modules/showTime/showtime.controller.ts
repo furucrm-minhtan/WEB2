@@ -10,6 +10,9 @@ import {
   Query
 } from '@nestjs/common';
 import { ActionResponseService } from '../actionResponse/actionresponse.service';
+import { Movie } from '../movie/movie.model';
+import { Room } from '../room/room.model';
+import { Theater } from '../theater/theater.model';
 import { GenerateShowTime, UpdateShowTime } from './dto/showtime.dto';
 import { ShowTime } from './showtime.model';
 import { ShowTimeService } from './showtime.service';
@@ -45,15 +48,47 @@ export class ShowTimeController {
     );
   }
 
+  @Get()
+  async fetchRoom() {
+    try {
+      const showTimes: ShowTime[] = await this.showTimeService.findAll({
+        include: [
+          {
+            model: Room,
+            include: Theater
+          },
+          Movie
+        ]
+      });
+
+      return this.actionResponseService.responseApi(true, showTimes, '');
+    } catch (error) {
+      console.log(error);
+    }
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'fetch data failed'
+    );
+  }
+
   @Post()
-  async create(@Body() data: GenerateShowTime) {
+  async create(@Body() data: GenerateShowTime): Promise<ActionResponseService> {
     let errorMessage = '';
     try {
       const showTime: ShowTime = await this.showTimeService.create(
         data as ShowTime
       );
-
-      return this.actionResponseService.responseApi(true, showTime, '');
+      const showTimeReload: ShowTime = await showTime.reload({
+        include: [
+          {
+            model: Room,
+            include: [Theater]
+          },
+          Movie
+        ]
+      });
+      return this.actionResponseService.responseApi(true, showTimeReload, '');
     } catch (error) {
       errorMessage = 'create failed';
       console.log(error);
