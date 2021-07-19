@@ -5660,19 +5660,23 @@ ul {
 .mv-single-hero {
   background: url('../images/uploads/hero-bg.jpg') no-repeat;
   height: 598px;
+  background-size: cover;
 }
 /*series single hero*/
 .sr-single-hero {
   background: url('../images/uploads/sr-single.jpg') no-repeat;
   height: 598px;
+  background-size: cover;
 }
 .hero3 {
   background: url('../images/uploads/celeb-hero-single.jpg') no-repeat;
   height: 538px;
+  background-size: cover;
 }
 .common-hero {
   height: 385px;
   background: url('../images/uploads/user-hero-bg.jpg') no-repeat;
+  background-size: cover;
 }
 .common-hero:before {
   background-color: rgba(0, 0, 0, 0.4);
@@ -5680,6 +5684,7 @@ ul {
 .user-hero {
   height: 385px;
   background: url('../images/uploads/user-hero-bg.jpg') no-repeat;
+  background-size: cover;
 }
 .user-hero .hero-ct {
   padding-top: 225px;

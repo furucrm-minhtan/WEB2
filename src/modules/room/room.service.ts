@@ -68,7 +68,7 @@ export class RoomService {
         );
 
         t.commit();
-        return room.reload({ include: Theater });
+        return room.reload();
       } catch (error) {
         t.rollback();
         throw error;
@@ -76,32 +76,35 @@ export class RoomService {
     });
   }
 
-  update(id: number, data: Room): void {
-    this.sequelize.transaction().then((t) => {
-      return this.roomRepository
-        .update(data, {
+  update(id: number, data: Room): Promise<Room> {
+    return this.sequelize.transaction().then(async (t) => {
+      try {
+        const [, room] = await this.roomRepository.update(data, {
           where: {
             id
           },
+          returning: true,
           transaction: t
-        })
-        .then(async (room) => {
-          await this.seatService.delete({
-            roomId: room[1][0].id,
-            transaction: t
-          });
-
-          return this.seatService.createSeatsForRoom({
-            id: data.id,
-            row: data.rows,
-            col: data.columns
-          });
-        })
-        .then(() => t.commit())
-        .catch((error) => {
-          t.rollback();
-          throw error;
         });
+        await this.seatService.delete({
+          where: {
+            roomId: id
+          },
+          transaction: t
+        });
+
+        await this.seatService.createSeatsForRoom({
+          id,
+          row: data.rows,
+          col: data.columns
+        });
+        t.commit();
+
+        return room[0].reload();
+      } catch (error) {
+        t.rollback();
+        throw error;
+      }
     });
   }
 

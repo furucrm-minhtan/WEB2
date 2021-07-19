@@ -53,11 +53,19 @@ export class RoomController {
         include: Theater
       });
 
-      return this.actionResponseService.responseApi(true, rooms, '');
+      return this.actionResponseService.responseApi(
+        true,
+        rooms,
+        'fetch data success'
+      );
     } catch (error) {
       console.log(error);
     }
-    return this.actionResponseService.responseApi(false, [], '');
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'fetch data failed'
+    );
   }
 
   @Post()
@@ -65,7 +73,11 @@ export class RoomController {
     try {
       const room: Room = await this.roomService.create(data as Room);
 
-      return this.actionResponseService.responseApi(true, room, '');
+      return this.actionResponseService.responseApi(
+        true,
+        room,
+        'create success'
+      );
     } catch (error) {
       console.log(error);
     }
@@ -78,13 +90,17 @@ export class RoomController {
     @Body() data: UpdateRoom
   ) {
     try {
-      await this.roomService.update(id, data as Room);
+      const room: Room = await this.roomService.update(id, data as Room);
 
-      return this.actionResponseService.responseApi(true, '', '');
+      return this.actionResponseService.responseApi(
+        true,
+        room,
+        'create failed'
+      );
     } catch (error) {
       console.log(error);
     }
-    return this.actionResponseService.responseApi(false, [], '');
+    return this.actionResponseService.responseApi(false, '', 'update failed');
   }
 
   @Delete(':id')
@@ -92,10 +108,14 @@ export class RoomController {
     try {
       const deleted: number = await this.roomService.deleteWithId(id);
 
-      return this.actionResponseService.responseApi(true, deleted, '');
+      return this.actionResponseService.responseApi(
+        true,
+        deleted,
+        'delete success'
+      );
     } catch (error) {
       console.log(error);
     }
-    return this.actionResponseService.responseApi(false, [], '');
+    return this.actionResponseService.responseApi(false, '', 'delete failed');
   }
 }

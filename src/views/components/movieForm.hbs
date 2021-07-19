@@ -38,7 +38,7 @@
 				</div>
 				<div class="custom-file">
 					<input type="file" class="custom-file-input" id="poster"
-						aria-describedby="inputGroupFileAddon01" x-on:change="movie.readFileUpload(event)" required />
+						aria-describedby="inputGroupFileAddon01" x-on:change="movie.readFileUpload(event)" />
 					<label class="custom-file-label" for="poster">Choose file</label>
 				</div>
 				<div class="invalid-feedback">Poster is required</div>
@@ -77,7 +77,7 @@
 		</div>
 		<div class="col-12 col-md-6">
 			<label for="publish">Publish</label>
-			<input id="publish" class="form-control" type="date" x-bind:value="formatDate(movie.data.publish, 'YYYY-MM-DD')" x-model="movie.data.publish" required/>
+			<input id="publish" class="form-control" type="date" x-model="movie.data.publish" required/>
 			<div class="invalid-feedback">Publish is required</div>
 		</div>
 	</div>
@@ -96,12 +96,11 @@
 				<button type="button" class="btn btn-primary px-3" @click="movie.moveRightTheater(event)"><i class="fas fa-chevron-right"></i></button>
 			</div>
 			<div class="col-12 col-md-5">
-				<select id="selected-theaters" class="custom-select" multiple required>
+				<select id="selected-theaters" class="custom-select" multiple>
 					<template x-for="(item, index) in movie.selectedTheaters" :key="index">
-						<option x-bind:value="item.id" x-text="item.name" selected></option>
+						<option x-bind:value="item.id" x-text="item.name"></option>
 					</template>
 				</select>
-				<div id="theaters-error" class="invalid-feedback">Theaters is required</div>
 			</div>
 		</div>
 	</div>

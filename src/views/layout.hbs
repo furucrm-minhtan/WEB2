@@ -387,6 +387,13 @@
                 .then((data) => {
                     if(data.isSuccess) {
                         alert(data.message);
+                        $('.overlay').find($('#signup-content'))
+                            .each(function() {
+                                $(this).removeClass('openform');
+                            });
+                         setTimeout(function () {
+                            $('.overlay').removeClass('openform');
+                        }, 350);
                     }
                     else {
                         alert(data.message); 

@@ -125,9 +125,12 @@ export class UserController {
   @Get('reset-password')
   @Render('resetPassword')
   async renderResetPassword(
+    @Session() session: Record<string, any>,
     @Query('token') token: string
   ): Promise<Record<string, any>> {
-    return { token, resetCompleted: true };
+    const resetCompleted = session?.resetPassword?.token != undefined;
+
+    return { token, resetCompleted };
   }
 
   @Post('reset-password')

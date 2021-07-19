@@ -23,7 +23,8 @@ export class GroupTheaterService {
     return this.groupTheaterRepository.update(groupData, {
       where: {
         id
-      }
+      },
+      returning: true
     });
   }
 

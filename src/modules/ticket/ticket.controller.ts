@@ -60,12 +60,20 @@ export class TicketController {
         sort
       );
 
-      return this.actionResponseService.responseApi(true, data, '');
+      return this.actionResponseService.responseApi(
+        true,
+        data,
+        'fetch data success'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(true, [], 'error');
+    return this.actionResponseService.responseApi(
+      true,
+      [],
+      'fetch data failed'
+    );
   }
 
   @Post()

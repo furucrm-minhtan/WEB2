@@ -90,7 +90,8 @@ export class ShowTimeService {
     return this.showTimeRepository.update(data, {
       where: {
         id
-      }
+      },
+      returning: true
     });
   }
 

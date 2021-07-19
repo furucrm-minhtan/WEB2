@@ -18,13 +18,16 @@ Verify Register
 </style>
 {{/contentFor}}
 <div>
-    <div class="hero user-hero">
-        <div class="container">
-            <div class="col-md-12">
-            </div>
-        </div>
-    </div>
-    <div class="page-single">
+    <div class="hero common-hero">
+		<div class="container">
+			<div class="col-md-12">
+               <div class="hero-ct">
+                   <h1 class="mr_0 mb_10">Verify Register Page</h1>
+               </div>
+	        </div>
+		</div>
+	</div>
+    <div class="page-single" style="height: 500px;">
         <div class="container">
             <div class="row ipad-width content_center">
                 <div class="col-md-6 col-sm-12 col-xs-12">
@@ -34,7 +37,7 @@ Verify Register
                         {{else}}
                             <form class="user" action="/authen/verify-register?token={{token}}" method="POST">
                                 <h3 style="color: #fff;">Verify Register</h3>
-                                <div class="row mt-2">
+                                <div class="row" style="margin-top: 10px;">
                                     <div class="col-12">
                                         <input class="submit" type="submit" value="verify" />
                                     </div>
