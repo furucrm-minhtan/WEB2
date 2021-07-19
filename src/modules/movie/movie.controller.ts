@@ -89,11 +89,19 @@ export class MovieController {
         include: Theater
       });
 
-      return this.actionResponseService.responseApi(true, movies, '');
+      return this.actionResponseService.responseApi(
+        true,
+        movies,
+        'fetch data success'
+      );
     } catch (error) {
       console.log(error);
     }
-    return this.actionResponseService.responseApi(false, [], '');
+    return this.actionResponseService.responseApi(
+      false,
+      [],
+      'fetch data failed'
+    );
   }
 
   @Post()
@@ -101,15 +109,19 @@ export class MovieController {
     @Body() { data, theaterIds }: { data: CreateMovie; theaterIds: number[] }
   ) {
     try {
-      await this.movieService.createMovieWithTheaters(
+      const movie: Movie = await this.movieService.createMovieWithTheaters(
         data as Movie,
         theaterIds
       );
-      return this.actionResponseService.responseApi(true, '', '');
+      return this.actionResponseService.responseApi(
+        true,
+        movie,
+        'create success'
+      );
     } catch (error) {
       console.log(error);
     }
-    return this.actionResponseService.responseApi(false, [], 'create failed');
+    return this.actionResponseService.responseApi(false, '', 'create failed');
   }
 
   @Put(':id')
@@ -118,16 +130,20 @@ export class MovieController {
     @Body() { data, theaterIds }: { data: UpdateMovie; theaterIds: number[] }
   ) {
     try {
-      await this.movieService.updateMovieWithTheaters(
+      const movie: Movie = await this.movieService.updateMovieWithTheaters(
         data as Movie,
         theaterIds
       );
 
-      return this.actionResponseService.responseApi(true, '', '');
+      return this.actionResponseService.responseApi(
+        true,
+        movie,
+        'update success'
+      );
     } catch (error) {
       console.log(error);
     }
-    return this.actionResponseService.responseApi(false, [], 'update failed');
+    return this.actionResponseService.responseApi(false, '', 'update failed');
   }
 
   @Delete(':id')
@@ -135,10 +151,14 @@ export class MovieController {
     try {
       const deleted: number = await this.movieService.deleteMovie(id);
 
-      return this.actionResponseService.responseApi(true, deleted, '');
+      return this.actionResponseService.responseApi(
+        true,
+        deleted,
+        'delete success'
+      );
     } catch (error) {
       console.log(error);
     }
-    return this.actionResponseService.responseApi(false, [], 'delete failed');
+    return this.actionResponseService.responseApi(false, '', 'delete failed');
   }
 }

@@ -28,12 +28,20 @@ export class GroupthearterController {
         attributes: ['id', 'name', 'address', 'creationDate', 'updatedOn']
       });
 
-      return this.actionResponseService.responseApi(true, groups, '');
+      return this.actionResponseService.responseApi(
+        true,
+        groups,
+        'fetch data success'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'fetch data falied'
+    );
   }
 
   @Post()
@@ -44,7 +52,11 @@ export class GroupthearterController {
         (data as unknown) as GroupTheater
       );
 
-      return this.actionResponseService.responseApi(true, group, '');
+      return this.actionResponseService.responseApi(
+        true,
+        group,
+        'create success'
+      );
     } catch (error) {
       if (error instanceof ValidationError) {
         errorMessage = error.errors[0].message;
@@ -61,15 +73,16 @@ export class GroupthearterController {
   ): Promise<ActionResponseService> {
     let errorMessage = '';
     try {
-      const group: [
-        number,
-        GroupTheater[]
-      ] = await this.groupthearterService.updateGroupTheater(
+      const [, group] = await this.groupthearterService.updateGroupTheater(
         id,
         (data as unknown) as GroupTheater
       );
 
-      return this.actionResponseService.responseApi(true, group, '');
+      return this.actionResponseService.responseApi(
+        true,
+        group,
+        'update success'
+      );
     } catch (error) {
       if (error instanceof ValidationError) {
         errorMessage = error.errors[0].message;
@@ -89,11 +102,15 @@ export class GroupthearterController {
         id
       );
 
-      return this.actionResponseService.responseApi(true, deleted, '');
+      return this.actionResponseService.responseApi(
+        true,
+        deleted,
+        'delete success'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(false, '', 'delete falied');
   }
 }

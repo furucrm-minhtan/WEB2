@@ -8,11 +8,19 @@ Admin
     input[type="date"] {
         color: #000 !important;
     }
+
+    .alert-expand {
+        display: none; 
+        font-family: "Roboto",sans-serif;
+        font-weight: 300;
+    }
 </style>
 {{/contentFor}}
 
 
 <div x-cloak x-data="init()" x-init="loadDashBoard()">
+    <div class="w-25 text-capitalize text-center fixed-top alert alert-expand mx-auto" role="alert"></div>
+
 	<!-- Page Wrapper -->
     <div id="wrapper">
 
@@ -297,11 +305,13 @@ Admin
                 axios.post(url, data)
                 .then((response) => {
                     if(response.status === 201) {
+                        showAlert(response.data.message, response.data.isSuccess ? 'success' : 'danger');
                         resolve(response.data);
                     }
                 })
                 .catch((error) => {
                     console.log(error.response);
+                    showAlert(error.response.message, 'danger');
                     reject(error.response);
                 });
            });
@@ -312,11 +322,13 @@ Admin
                 axios.put(url, data)
                 .then((response) => {
                     if(response.status === 200) {
+                        showAlert(response.data.message, response.data.isSuccess ? 'success' : 'danger');
                         resolve(response.data);
                     }
                 })
                 .catch((error) => {
                     console.log(error.response);
+                    showAlert(error.response.message, 'danger');
                     reject(error.response);
                 });
            });
@@ -327,14 +339,23 @@ Admin
                 axios.delete(url, data)
                 .then((response) => {
                     if(response.status === 200) {
+                        showAlert(response.data.message, response.data.isSuccess ? 'success' : 'danger');
                         resolve(response.data);
                     }
                 })
                 .catch((error) => {
                     console.log(error.response);
+                    showAlert(error.response.message, 'danger');
                     reject(error.response);
                 });
            })
+        }
+
+        const showAlert = (text, type) => {
+            const alert = $('.alert');
+            alert.removeClass('alert-danger, alert-success').addClass(`alert-${type}`).text(text);
+            alert.show();
+            setTimeout(() => alert.hide(), 5000);
         }
 
         return {
@@ -472,13 +493,10 @@ Admin
                                     this.data = {};
                                     $('#modal').modal('hide');
                                 }
-                                else {
-                                    throw data.message;
-                                }
                             })
                             .catch(error => {
                                 console.log(error);
-                                alert(error);
+                                
                             });
                     }
 
@@ -516,12 +534,9 @@ Admin
                                     this.listView[index] = { ...this.data };
                                     this.table.row($(`#list-movie tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
-                                }
-                                else {
-                                    alert('update failed');
-                                }   
+                                } 
                             })
-                            .catch(error => alert('update failed'));
+                            .catch(error => console.log(error));
                     }
 
                     $('#modal').modal('show');
@@ -545,11 +560,11 @@ Admin
                         .then((data) => {
                             if(data.isSuccess) {
                                 const index = $(`#list-movie tr[data-id="${id}"]`).data('index');
-                                this.listView.splice(index, 1);
+                                
                                 this.table.row($(`#list-movie tr[data-id="${id}"]`)).remove().draw();
                             }
                         })
-                        .catch(error => alert('delete failed'));
+                        .catch(error => console.log(error));
                 },
                 moveRightTheater(event) {
                     event.preventDefault();
@@ -667,13 +682,11 @@ Admin
                                     this.data = {};
                                     $('#modal').modal('hide');
                                 }
-                                else {
-                                    throw data.message;
-                                }
+                                
                             })
                             .catch(error => {
                                 console.log(error);
-                                alert(error);
+                                
                             });
                     }
 
@@ -708,13 +721,10 @@ Admin
                                     this.table.row($(`#list-category tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
                                 }
-                                else {
-                                    alert('update failed');
-                                }   
                             })
                             .catch(error => {
                                 console.log(error);
-                                alert('update failed');
+                               
                             });
                     }
 
@@ -727,14 +737,12 @@ Admin
                         .then((data) => {   
                             if(data.isSuccess) {
                                 const index = $(`#list-category tr[data-id="${id}"]`).data('index');
-                                this.listView.splice(index, 1);
+                                
                                 this.table.row($(`#list-category tr[data-id="${id}"]`)).remove().draw();
                             }
-                            else {
-                                throw "";
-                            }
+                        
                         })
-                        .catch(error => alert('delete failed'));
+                        .catch(error => console.log(error));
                 }
             },
             group: {
@@ -828,13 +836,11 @@ Admin
                                     this.data = {};
                                     $('#modal').modal('hide');
                                 }
-                                else {
-                                    throw data.message;
-                                }
+                                
                             })
                             .catch(error => {
                                 console.log(error);
-                                alert(error);
+                                
                             });
                     }
 
@@ -869,13 +875,11 @@ Admin
                                     this.table.row($(`#list-group tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
                                 }
-                                else {
-                                    alert('update failed');
-                                }   
+                              
                             })
                             .catch (error => {
                                 console.log(error);
-                                alert('update failed');
+                               
                             });
                     }
 
@@ -888,15 +892,13 @@ Admin
                         .then((data) => {
                             if(data.isSuccess) {
                                 const index = $(`#list-group tr[data-id="${id}"]`).data('index');
-                                this.listView.splice(index, 1);
+                                
                                 this.table.row($(`#list-group tr[data-id="${id}"]`)).remove().draw();
                                 alert('delete success');
                             }
-                            else {
-                                throw "";
-                            }
+                           
                         })
-                        .catch(error => alert('delete failed'));
+                        .catch(error => console.log(error));
                 }
             },
             theater: {
@@ -999,13 +1001,11 @@ Admin
                                     this.table.row.add(data.data).draw();
                                     $('#modal').modal('hide');
                                 }
-                                else {
-                                    throw data.message;
-                                }
+                              
                             })
                             .catch(error => {
                                 console.log(error);
-                                alert(error);
+                                
                             });
                     }
 
@@ -1040,13 +1040,11 @@ Admin
                                     this.table.row($(`#list-theater tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
                                 }
-                                else {
-                                    alert('update failed');
-                                }   
+                             
                             })
                             .catch(error => {
                                 console.log(error);
-                                alert('update failed');
+                               
                             });
                     }
 
@@ -1059,16 +1057,14 @@ Admin
                         .then((data) => {
                             if(data.isSuccess) {
                                 const index = $(`#list-theater tr[data-id="${id}"]`).data('index');
-                                this.listView.splice(index, 1);
+                                
                                 this.table.row($(`#list-theater tr[data-id="${id}"]`)).remove().draw();
                                 alert('delete success');
                             }
-                            else {
-                                throw "";
-                            }
+                          
                                 
                         })
-                        .catch(error => alert('delete failed'));
+                        .catch(error => console.log(error));
                 }
             },
             room: {
@@ -1169,13 +1165,11 @@ Admin
                                     this.data = {};
                                     $('#modal').modal('hide');
                                 }
-                                else {
-                                    throw data.message;
-                                }
+                               
                             })
                             .catch(error => {
                                 console.log(error);
-                                alert(error);
+                                
                             });
                     }
 
@@ -1210,34 +1204,31 @@ Admin
                                     this.table.row($(`#list-room tr[data-id="${id}"]`)).data(this.data).draw();
                                     $('#modal').modal('hide');
                                 }
-                                else {
-                                    alert('update failed');
-                                }   
+                                
                             })
                             .catch(error => {
                                 console.log(error);
-                                alert('update failed');
+                               
                             });
                     }
 
                     $('#modal').modal('show');
                 },
                 delete(event, id) {
+                    console.log(event.target);
                     event.preventDefault();
 
                     destroy(`/room/${id}`, {})
                         .then((data) => {   
                             if(data.isSuccess) {
                                 const index = $(`#list-room tr[data-id="${id}"]`).data('index');
-                                this.listView.splice(index, 1);
+                                
                                 this.table.row($(`#list-room tr[data-id="${id}"]`)).remove().draw();
                                 alert('delete success');
                             }
-                            else {
-                                throw "";
-                            }
+                          
                         })
-                        .catch(error => alert('delete failed'));
+                        .catch(error => console.log(error));
                 }
             },
             showTime: {
@@ -1374,13 +1365,11 @@ Admin
                                     this.data = {};
                                     $('#modal').modal('hide');
                                 }
-                                else {
-                                    throw data.message;
-                                }
+                               
                             })
                             .catch(error => {
                                 console.log(error);
-                                alert(error);
+                                
                             });
                     }
 
@@ -1419,12 +1408,12 @@ Admin
                                     $('#modal').modal('hide');
                                 }
                                 else {
-                                    alert('update failed');
+                                   
                                 }   
                             })
                             .catch (error => {
                                 console.log(error);
-                                alert('update failed');
+                               
                             });
                     }
 
@@ -1437,14 +1426,12 @@ Admin
                         .then((data) => {
                             if(data.isSuccess) {
                                 const index = $(`#list-showtime tr[data-id="${id}"]`).data('index');
-                                this.listView.splice(index, 1);
+                                
                                 this.table.row($(`#list-showtime tr[data-id="${id}"]`)).remove().draw();
                             }
-                            else {
-                                throw "";
-                            }
+                          
                         })
-                        .catch(error => alert('delete failed'));
+                        .catch(error => console.log(error));
                 },
                 timeToPicklist(value) {
                     return value ? `${value.split(':')[0]}:00` : '';
@@ -1496,7 +1483,6 @@ Admin
                         if(response.isSuccess) {
                             initChart(() => {
                                 this.grantChart.movie.data = response.data;
-                                console.log(this.grantChart);
                                 setContructChart('movie', 'grant-chart-movie', response.data);
                             });
                         }

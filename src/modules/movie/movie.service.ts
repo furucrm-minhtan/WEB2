@@ -227,8 +227,8 @@ export class MovieService {
   async createMovieWithTheaters(
     data: Movie,
     theaterIds: number[]
-  ): Promise<void> {
-    this.squelize.transaction().then(async (t) => {
+  ): Promise<Movie> {
+    return this.squelize.transaction().then(async (t) => {
       try {
         const movie: Movie = await this.movieRepository.create(data, {
           transaction: t
@@ -239,6 +239,8 @@ export class MovieService {
           { transaction: t }
         );
         t.commit();
+
+        return movie.reload({ include: Theater });
       } catch (error) {
         t.rollback();
         throw error;
@@ -257,10 +259,10 @@ export class MovieService {
   async updateMovieWithTheaters(
     data: Movie,
     theaterIds: number[]
-  ): Promise<void> {
-    this.squelize.transaction().then(async (t) => {
+  ): Promise<Movie> {
+    return this.squelize.transaction().then(async (t) => {
       try {
-        await this.movieRepository.update(data, {
+        const [, [movie]] = await this.movieRepository.update(data, {
           where: { id: data.id },
           transaction: t
         });
@@ -275,6 +277,8 @@ export class MovieService {
           { transaction: t }
         );
         t.commit();
+
+        return movie.reload({ include: Theater });
       } catch (error) {
         t.rollback();
         throw error;

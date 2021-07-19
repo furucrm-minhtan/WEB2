@@ -24,7 +24,7 @@ export class TheaterController {
   @Get()
   async fetchTheater(): Promise<ActionResponseService> {
     try {
-      const categories: Theater[] = await this.theaterService.findAll({
+      const theater: Theater[] = await this.theaterService.findAll({
         attributes: [
           'id',
           'name',
@@ -35,12 +35,20 @@ export class TheaterController {
         ]
       });
 
-      return this.actionResponseService.responseApi(true, categories, '');
+      return this.actionResponseService.responseApi(
+        true,
+        theater,
+        'fetch data success'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'fetch data failed'
+    );
   }
 
   @Post()
@@ -50,7 +58,11 @@ export class TheaterController {
       const theater: Theater = await this.theaterService.createTheater(
         (data as unknown) as Theater
       );
-      return this.actionResponseService.responseApi(true, theater, '');
+      return this.actionResponseService.responseApi(
+        true,
+        theater,
+        'create success'
+      );
     } catch (error) {
       errorMessage = 'create failed';
       if (error instanceof ValidationError) {
@@ -69,16 +81,18 @@ export class TheaterController {
   ): Promise<ActionResponseService> {
     let errorMessage = '';
     try {
-      const theater: [
-        number,
-        Theater[]
-      ] = await this.theaterService.updateTheater(
+      const [, [theater]] = await this.theaterService.updateTheater(
         id,
         (data as unknown) as Theater
       );
 
-      return this.actionResponseService.responseApi(true, theater, '');
+      return this.actionResponseService.responseApi(
+        true,
+        theater,
+        'update success'
+      );
     } catch (error) {
+      errorMessage = 'update failed';
       if (error instanceof ValidationError) {
         errorMessage = error.errors[0].message;
       }

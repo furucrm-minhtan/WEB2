@@ -27,12 +27,20 @@ export class CategoryController {
         attributes: ['id', 'name', 'level', 'creationDate', 'updatedOn']
       });
 
-      return this.actionResponseService.responseApi(true, categories, '');
+      return this.actionResponseService.responseApi(
+        true,
+        categories,
+        'fetch data success'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(
+      false,
+      '',
+      'fetch data failed'
+    );
   }
 
   @Post()
@@ -42,12 +50,16 @@ export class CategoryController {
         (data as unknown) as Category
       );
 
-      return this.actionResponseService.responseApi(true, cate, '');
+      return this.actionResponseService.responseApi(
+        true,
+        cate,
+        'create success'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(false, '', 'create failed');
   }
 
   @Put(':id')
@@ -64,7 +76,11 @@ export class CategoryController {
         (data as unknown) as Category
       );
 
-      return this.actionResponseService.responseApi(true, cate, '');
+      return this.actionResponseService.responseApi(
+        true,
+        cate,
+        'update success'
+      );
     } catch (error) {
       console.log(error);
     }
@@ -79,11 +95,15 @@ export class CategoryController {
     try {
       const deleted: number = await this.categoryService.deleteCategory(id);
 
-      return this.actionResponseService.responseApi(true, deleted, '');
+      return this.actionResponseService.responseApi(
+        true,
+        deleted,
+        'delete success'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(false, '', 'delete failed');
   }
 }
