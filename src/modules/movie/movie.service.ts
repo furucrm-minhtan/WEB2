@@ -257,28 +257,31 @@ export class MovieService {
   }
 
   async updateMovieWithTheaters(
+    id: number,
     data: Movie,
     theaterIds: number[]
   ): Promise<Movie> {
     return this.squelize.transaction().then(async (t) => {
       try {
-        const [, [movie]] = await this.movieRepository.update(data, {
-          where: { id: data.id },
+        await this.movieRepository.update(data, {
+          where: { id },
           transaction: t
         });
         await this.theaterMovieService.delete({
-          movieId: data.id,
+          where: {
+            movieId: id
+          },
           transaction: t
         });
 
         await this.theaterMovieService.createAssociationsTheater(
-          data.id,
+          id,
           theaterIds,
           { transaction: t }
         );
         t.commit();
 
-        return movie.reload({ include: Theater });
+        return this.movieRepository.findByPk(id, { include: Theater });
       } catch (error) {
         t.rollback();
         throw error;

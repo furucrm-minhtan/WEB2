@@ -81,14 +81,14 @@ export class TheaterController {
   ): Promise<ActionResponseService> {
     let errorMessage = '';
     try {
-      const [, [theater]] = await this.theaterService.updateTheater(
+      const [, theater] = await this.theaterService.updateTheater(
         id,
         (data as unknown) as Theater
       );
 
       return this.actionResponseService.responseApi(
         true,
-        theater,
+        theater[0],
         'update success'
       );
     } catch (error) {
@@ -109,11 +109,15 @@ export class TheaterController {
     try {
       const deleted: number = await this.theaterService.deleteTheater(id);
 
-      return this.actionResponseService.responseApi(true, deleted, '');
+      return this.actionResponseService.responseApi(
+        true,
+        deleted,
+        'delete success'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(false, '', 'delete failed');
   }
 }

@@ -32,7 +32,10 @@ export class Theater extends BaseModel<Theater> {
   @Column({ type: DataType.ENUM('2D', '3D') })
   type: TheaterType;
 
-  @HasMany(() => Room)
+  @HasMany(() => Room, {
+    onDelete: 'CASCADE',
+    hooks: true
+  })
   rooms: Room[];
 
   @ForeignKey(() => GroupTheater)

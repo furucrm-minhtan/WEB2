@@ -79,25 +79,28 @@ export class RoomService {
   update(id: number, data: Room): Promise<Room> {
     return this.sequelize.transaction().then(async (t) => {
       try {
-        const [, [room]] = await this.roomRepository.update(data, {
+        const [, room] = await this.roomRepository.update(data, {
           where: {
             id
           },
+          returning: true,
           transaction: t
         });
         await this.seatService.delete({
-          roomId: room[1][0].id,
+          where: {
+            roomId: id
+          },
           transaction: t
         });
 
         await this.seatService.createSeatsForRoom({
-          id: data.id,
+          id,
           row: data.rows,
           col: data.columns
         });
         t.commit();
 
-        return room.reload();
+        return room[0].reload();
       } catch (error) {
         t.rollback();
         throw error;

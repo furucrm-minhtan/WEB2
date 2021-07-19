@@ -19,7 +19,7 @@ Admin
 
 
 <div x-cloak x-data="init()" x-init="loadDashBoard()">
-    <div class="w-25 text-capitalize text-center fixed-top alert alert-expand mx-auto" role="alert"></div>
+    <div style="z-index: 9999;" class="w-25 text-capitalize text-center fixed-top alert alert-expand mx-auto" role="alert"></div>
 
 	<!-- Page Wrapper -->
     <div id="wrapper">
@@ -353,7 +353,7 @@ Admin
 
         const showAlert = (text, type) => {
             const alert = $('.alert');
-            alert.removeClass('alert-danger, alert-success').addClass(`alert-${type}`).text(text);
+            alert.removeClass('alert-danger alert-success').addClass(`alert-${type}`).text(text);
             alert.show();
             setTimeout(() => alert.hide(), 5000);
         }
@@ -375,8 +375,9 @@ Admin
                 this.modal = Object.assign(this.modal, settings);
             },
             formatDate(value, format) {
+                console.log(value);
                 const date = moment(value);
-
+                console.log(date.isValid() ? date.format(format) : '');
                 return date.isValid() ? date.format(format) : ''; 
             },
             movie: {
@@ -508,8 +509,9 @@ Admin
                     if(index == undefined) return;
 
                     this.data = this.listView[index];
+                    this.data.publish = this.parent.formatDate(this.data.publish, 'YYYY-MM-DD');                  
                     this.selectedTheaters = this.data.theaters;
-                    $.each(this.selectedTheaters, (key, element) => this.theaterIds.add($(element).val()));
+                    this.selectedTheaters.forEach(theater => this.theaterIds.add(theater.id));
                     this.theaters = this.theaterIds.length ? this.parent.theater.listView.filter((theater) => !this.theaterIds.includes(theater.id)) : this.parent.theater.listView;
                     this.parent.modal.title = 'Update Movie';
                     this.parent.modal.content = 'movie_form';
@@ -524,15 +526,19 @@ Admin
                             return false;
                         }
                         form.classList.remove('was-validated');
-                        const selectedTheaters = $('#selected-theaters option:selected');
-                        
-                        $.each(selectedTheaters, (key, element) => this.theaterIds.add($(element).val()));
-
-                        put('/movie', { data: this.data, theaterIds: Array.from(this.theaterIds) })
+                        if(!this.data.poster) {
+                            showAlert('Poster is mandatory', 'danger');
+                            return;
+                        }
+                        const selectedTheaters = $('#selected-theaters option');
+                         
+                        $.each(selectedTheaters, (key, element) => this.theaterIds.add(Number($(element).val())));
+                        console.log(this.theaterIds);
+                        put(`/movie/${this.data.id}`, { data: this.data, theaterIds: Array.from(this.theaterIds) })
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    this.listView[index] = { ...this.data };
-                                    this.table.row($(`#list-movie tr[data-id="${id}"]`)).data(this.data).draw();
+                                    this.listView[index] = data.data;
+                                    this.table.row($(`#list-movie tr[data-id="${id}"]`)).data(data.data).draw();
                                     $('#modal').modal('hide');
                                 } 
                             })

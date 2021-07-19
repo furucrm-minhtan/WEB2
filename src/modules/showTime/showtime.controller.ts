@@ -118,7 +118,7 @@ export class ShowTimeController {
 
       return this.actionResponseService.responseApi(
         true,
-        showTime,
+        showTime[0],
         'update success'
       );
     } catch (error) {

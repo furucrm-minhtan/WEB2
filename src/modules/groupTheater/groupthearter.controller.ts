@@ -80,7 +80,7 @@ export class GroupthearterController {
 
       return this.actionResponseService.responseApi(
         true,
-        group,
+        group[0],
         'update success'
       );
     } catch (error) {

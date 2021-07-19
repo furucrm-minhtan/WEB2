@@ -131,6 +131,7 @@ export class MovieController {
   ) {
     try {
       const movie: Movie = await this.movieService.updateMovieWithTheaters(
+        id,
         data as Movie,
         theaterIds
       );

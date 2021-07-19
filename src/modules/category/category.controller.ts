@@ -68,17 +68,14 @@ export class CategoryController {
     @Body() data: UpdateCategory
   ): Promise<ActionResponseService> {
     try {
-      const cate: [
-        number,
-        Category[]
-      ] = await this.categoryService.updateCategory(
+      const [, cate] = await this.categoryService.updateCategory(
         id,
         (data as unknown) as Category
       );
 
       return this.actionResponseService.responseApi(
         true,
-        cate,
+        cate[0],
         'update success'
       );
     } catch (error) {
