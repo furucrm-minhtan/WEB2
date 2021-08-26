@@ -15,7 +15,7 @@ export class TicketService {
     return this.ticketRepository.findAll(options);
   }
 
-  booking(ticketBooking: TicketBooking) {
+  booking(ticketBooking: any) {
     return this.ticketRepository.create(ticketBooking as Ticket);
   }
 
