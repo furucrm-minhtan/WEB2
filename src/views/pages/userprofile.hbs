@@ -551,6 +551,11 @@ Profile
 				render.readAsDataURL(files[0]);
 			},
 			uploadAvatar() {
+				if(!this.avatar) {
+					alert('please choose avatar to upload');
+					return;
+				}
+
 				axios.put('/user/avatar', { avatar: this.avatar })
 					.then((response) => {
 						alert(response.data.message);
