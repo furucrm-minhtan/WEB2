@@ -196,9 +196,7 @@ export class MovieService {
         'Movie.name',
         'Movie.id',
         'userReviews.id',
-        'userReviews.Review.id',
-        "userFavorites.id",
-        "userFavorites.Bookmark.id"
+        'userReviews.Review.id'
       ],
       raw: true
     };
