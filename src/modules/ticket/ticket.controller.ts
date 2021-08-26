@@ -96,12 +96,11 @@ export class TicketController {
         throw new Error('you neeed authen');
       }
       const showId: number = show?.id;
-      // const ticket = await this.ticketService.booking({
-      //   seatId,
-      //   showId,
-      //   userId
-      // });
-      // console.log(ticket);
+      const ticket = await this.ticketService.booking({
+        seatId,
+        showId,
+        userId
+      });
       const user: User = await this.userService.getUser(userId);
       if (user?.phone) {
         this.smsService

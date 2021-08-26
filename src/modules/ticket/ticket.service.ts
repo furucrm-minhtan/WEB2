@@ -15,8 +15,12 @@ export class TicketService {
     return this.ticketRepository.findAll(options);
   }
 
-  booking(ticketBooking: any) {
-    return this.ticketRepository.create(ticketBooking as Ticket);
+  booking(ticketBooking: TicketBooking) {
+    return this.ticketRepository.create({
+      userId: 1,
+      showId: 1,
+      seatId: 1
+    } as Ticket);
   }
 
   async countTicketUser(userId: number): Promise<number> {
