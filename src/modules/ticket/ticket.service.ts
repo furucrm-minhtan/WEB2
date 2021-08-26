@@ -16,11 +16,7 @@ export class TicketService {
   }
 
   booking(ticketBooking: TicketBooking) {
-    return this.ticketRepository.create({
-      userId: 1,
-      showId: 1,
-      seatId: 1
-    } as Ticket);
+    return this.ticketRepository.create(ticketBooking as Ticket);
   }
 
   async countTicketUser(userId: number): Promise<number> {
