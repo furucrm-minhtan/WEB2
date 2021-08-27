@@ -68,7 +68,7 @@ export class RoomService {
         );
 
         t.commit();
-        return room.reload();
+        return room.reload({ include: Theater });
       } catch (error) {
         t.rollback();
         throw error;
@@ -100,7 +100,7 @@ export class RoomService {
         });
         t.commit();
 
-        return room[0].reload();
+        return room[0].reload({ include: Theater });
       } catch (error) {
         t.rollback();
         throw error;

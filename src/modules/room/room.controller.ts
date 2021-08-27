@@ -95,7 +95,7 @@ export class RoomController {
       return this.actionResponseService.responseApi(
         true,
         room,
-        'create failed'
+        'update success'
       );
     } catch (error) {
       console.log(error);

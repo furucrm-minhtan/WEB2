@@ -245,7 +245,7 @@ export class MovieService {
         const movie: Movie = await this.movieRepository.create(data, {
           transaction: t
         });
-        this.theaterMovieService.createAssociationsTheater(
+        await this.theaterMovieService.createAssociationsTheater(
           movie.id,
           theaterIds,
           { transaction: t }

@@ -396,7 +396,6 @@ Admin
                         .then((response) => {
                             if(response.isSuccess) {
                                 this.listView = response.data;
-                                console.log(response.data);
                                 this.table = $('#list-movie').DataTable({
                                     data: this.listView,
                                     columns: [
@@ -466,8 +465,10 @@ Admin
                 },
                 create(event) {
                     event.preventDefault();
+                    $('#select-theaters').val();
                     this.data = { MMPA_rating: 'PA-13' };
                     this.theaters = this.parent.theater.listView;
+                    this.selectedTheaters = [];
                     this.parent.modal.title = 'Create Movie';
                     this.parent.modal.content = 'movie_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -481,17 +482,17 @@ Admin
                             return false;       
                         }
                         form.classList.remove('was-validated');
-                        const selectedTheaters = $('#selected-theaters option:selected');
+                        const selectedTheaters = $('#selected-theaters option');
                         
                         $.each(selectedTheaters, (key, element) => this.theaterIds.add($(element).val()));
 
                         post('/movie', { data: this.data, theaterIds: Array.from(this.theaterIds) })
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    this.data.theaters = [...this.selectedTheaters];
-                                    this.listView.push(this.data);
-                                    this.table.row.add(this.data).draw();
+                                    this.listView.push(data.data);
+                                    this.table.row.add(data.data).draw();
                                     this.data = {};
+                                    $(`#list-movie tr[data-id="${data.data.id}"]`).attr('data-index', this.listView.length - 1);
                                     $('#modal').modal('hide');
                                 }
                             })
@@ -507,12 +508,12 @@ Admin
                     event.preventDefault();
                     const index = $(`#list-movie tr[data-id="${id}"]`).data('index');
                     if(index == undefined) return;
-
+                    this.theaterIds = new Set();
                     this.data = this.listView[index];
                     this.data.publish = this.parent.formatDate(this.data.publish, 'YYYY-MM-DD');                  
                     this.selectedTheaters = this.data.theaters;
                     this.selectedTheaters.forEach(theater => this.theaterIds.add(theater.id));
-                    this.theaters = this.theaterIds.length ? this.parent.theater.listView.filter((theater) => !this.theaterIds.includes(theater.id)) : this.parent.theater.listView;
+                    this.theaters = this.theaterIds.size ? this.parent.theater.listView.filter((theater) => !this.theaterIds.has(theater.id)) : this.parent.theater.listView;
                     this.parent.modal.title = 'Update Movie';
                     this.parent.modal.content = 'movie_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -686,6 +687,7 @@ Admin
                                     this.listView.push(data.data);
                                     this.table.row.add(data.data).draw();
                                     this.data = {};
+                                    $(`#list-category tr[data-id="${data.data.id}"]`).attr('data-index', this.listView.length - 1);
                                     $('#modal').modal('hide');
                                 }
                                 
@@ -840,6 +842,7 @@ Admin
                                     this.listView.push(data.data);
                                     this.table.row.add(data.data).draw();
                                     this.data = {};
+                                    $(`#list-group tr[data-id="${data.data.id}"]`).attr('data-index', this.listView.length - 1);
                                     $('#modal').modal('hide');
                                 }
                                 
@@ -897,10 +900,8 @@ Admin
                     destroy(`/groupthearter/${id}`, {})
                         .then((data) => {
                             if(data.isSuccess) {
-                                const index = $(`#list-group tr[data-id="${id}"]`).data('index');
-                                
+                                const index = $(`#list-group tr[data-id="${id}"]`).data('index');    
                                 this.table.row($(`#list-group tr[data-id="${id}"]`)).remove().draw();
-                                alert('delete success');
                             }
                            
                         })
@@ -1005,6 +1006,9 @@ Admin
                                 if(data.isSuccess) {
                                     this.listView.push(data.data);
                                     this.table.row.add(data.data).draw();
+                                    this.data = {};
+                                    $(`#list-theater tr[data-id="${data.data.id}"]`).attr('data-index', this.listView.length - 1);
+                                    
                                     $('#modal').modal('hide');
                                 }
                               
@@ -1063,9 +1067,7 @@ Admin
                         .then((data) => {
                             if(data.isSuccess) {
                                 const index = $(`#list-theater tr[data-id="${id}"]`).data('index');
-                                
                                 this.table.row($(`#list-theater tr[data-id="${id}"]`)).remove().draw();
-                                alert('delete success');
                             }
                           
                                 
@@ -1138,6 +1140,7 @@ Admin
                                     createdRow: function(row, data, index) {
                                         $(row).attr('data-id', data.id);
                                         $(row).attr('data-index', index);
+                                        console.log(index);
                                     }
                                 });
                                 $('.dataTables_length').addClass('bs-select');
@@ -1169,6 +1172,8 @@ Admin
                                     this.listView.push(data.data);
                                     this.table.row.add(data.data).draw();
                                     this.data = {};
+                                    $(`#list-room tr[data-id="${data.data.id}"]`).attr('data-index', this.listView.length - 1);
+
                                     $('#modal').modal('hide');
                                 }
                                
@@ -1190,6 +1195,7 @@ Admin
                     };
 
                     this.data = this.listView[index];
+                    console.log(this.data);
                     this.parent.modal.title = 'Update Room';
                     this.parent.modal.content = 'room_form';
                     this.parent.modal.submitHandler = (event) => {
@@ -1203,11 +1209,11 @@ Admin
                         }
                         form.classList.remove('was-validated');
 
-                        put(`/room/${id}`, { name: this.data.name, level: this.data.level })
+                        put(`/room/${id}`, { name: this.data.name, rows: this.data.rows, columns: this.data.columns, theaterId: this.data.theaterId })
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    this.listView[index] = { ...this.data };
-                                    this.table.row($(`#list-room tr[data-id="${id}"]`)).data(this.data).draw();
+                                    this.listView[index] = data.data;
+                                    this.table.row($(`#list-room tr[data-id="${id}"]`)).data(data.data).draw();
                                     $('#modal').modal('hide');
                                 }
                                 
@@ -1230,7 +1236,6 @@ Admin
                                 const index = $(`#list-room tr[data-id="${id}"]`).data('index');
                                 
                                 this.table.row($(`#list-room tr[data-id="${id}"]`)).remove().draw();
-                                alert('delete success');
                             }
                           
                         })
@@ -1369,6 +1374,7 @@ Admin
                                     this.listView.push(data.data);
                                     this.table.row.add(data.data).draw();
                                     this.data = {};
+                                    $(`#list-showtime tr[data-id="${data.data.id}"]`).attr('data-index', this.listView.length - 1);
                                     $('#modal').modal('hide');
                                 }
                                
@@ -1389,7 +1395,7 @@ Admin
                         return;
                     };
 
-                    this.data = {...this.listView[index]};
+                    this.data = this.listView[index];
                     this.data.start = this.timeToPicklist(this.data.start);
                     this.data.end = this.timeToPicklist(this.data.end);
                     console.log(this.data);
@@ -1406,11 +1412,11 @@ Admin
                         }
                         form.classList.remove('was-validated');   
 
-                        put(`api/showtime/${id}`, { name: this.data.name, address: this.data.address })
+                        put(`api/showtime/${id}`, { date: this.data.date, start: this.data.start, end: this.data.end, movieId: this.data.movieId, roomId: this.data.roomId })
                             .then((data) => {
                                 if(data.isSuccess) {
-                                    this.listView[index] = { ...this.data };
-                                    this.table.row($(`#list-showtime tr[data-id="${id}"]`)).data(this.data).draw();
+                                    this.listView[index] = data.data;
+                                    this.table.row($(`#list-showtime tr[data-id="${id}"]`)).data(data.data).draw();
                                     $('#modal').modal('hide');
                                 }
                                 else {

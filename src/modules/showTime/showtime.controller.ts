@@ -116,9 +116,13 @@ export class ShowTimeController {
         data as ShowTime
       );
 
+      const result: ShowTime = await showTime[0].reload({
+        include: [Movie, { model: Room, include: [Theater] }]
+      });
+
       return this.actionResponseService.responseApi(
         true,
-        showTime[0],
+        result,
         'update success'
       );
     } catch (error) {
