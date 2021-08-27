@@ -244,7 +244,7 @@
                         </li>
                         <li class="search" x-data="initSearch()">
                             <div class="search-input">
-                                <input type="text" x-on:input.debound.500="fetchMovies($event.target.value)"/>
+                                <input type="text" x-on:input.debound.500="fetchMovies($event.target.value)" x-on:blur="setTimeout(() => movies = [], 500)"/>
                                 <i class="icon-search"></i>
                             </div>
                             <div class="search-result" x-show="movies.length">
@@ -254,7 +254,7 @@
                                             <img x-bind:src="movie.poster" />
                                         </div>
                                         <div class="search-content">
-                                            <h4 x-text="movie.name"></h4>
+                                            <h4><a x-bind:href="'/movie/' + movie.id" x-text="movie.name"></a></h4>
                                             <p><i class="ion-android-star"></i><span x-text="decimalFix(movie['userReviews.movie_rate'] ?? '0')"></span> /10
                                             </p>
                                             {{!-- <p>Deleniti tempora eos doloremque in pariatur debitis blanditiis delectus cumque. Repellendus dolorum
@@ -439,6 +439,9 @@
                 movies: [],
                 loading: false,
                 fetchMovies(key) {
+                    if(key.length < 3) {
+                        return;
+                    }
                     fetch(`/search/movie?name=${key}`)    
                     .then((raw) => raw.json())
                     .then((data) => {
@@ -452,6 +455,14 @@
          			return Number(value) ? parseFloat(value).toFixed(fix) : 0;
                 }
             }
+        }
+
+        function hideSearchResult() {
+            let el = $(this);
+
+            setTimeout(function() {
+                el.hide();
+            }, 500)
         }
     </script>
     {{{block "scripts"}}}

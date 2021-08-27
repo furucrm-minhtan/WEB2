@@ -12,6 +12,7 @@ import { col, fn, literal, Sequelize } from 'sequelize';
 import { TheaterMovieService } from '../theaterMovie/theatermovie.service';
 import { ShowTime } from '../showTime/showtime.model';
 import { Ticket } from '../ticket/ticket.model';
+import { Category } from '../category/category.model';
 const { $between, $eq } = operatorsAliases;
 
 @Injectable()
@@ -50,9 +51,18 @@ export class MovieService {
           as: 'userReviews',
           through: { attributes: ['rate'] },
           required: false
+        },
+        {
+          attributes: ['name'],
+          model: Category
         }
       ],
-      group: ['Movie.id', col('userReviews.id'), col('userReviews.Review.id')],
+      group: [
+        'Movie.id',
+        col('userReviews.id'),
+        col('userReviews.Review.id'),
+        'category.name'
+      ],
       order: ['creationDate'],
       limit,
       raw: true,
