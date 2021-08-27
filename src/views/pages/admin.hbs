@@ -1641,8 +1641,7 @@ Admin
     {
         return Array.from({ length: data.length }, (value, i) =>
         {
-            console.log(data);
-            return [data[i].name, +data[i]['theaters.rooms.showTimes.tickets.total_price'] ];
+            return [data[i]['theaters.group.name'], +data[i]['theaters.rooms.showTimes.tickets.total_price'] ];
         });
     }
 </script>

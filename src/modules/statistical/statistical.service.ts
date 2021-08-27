@@ -8,6 +8,7 @@ import { Ticket } from '../ticket/ticket.model';
 import { operatorsAliases } from 'src/core/config/sequelize.config';
 import { Theater } from '../theater/theater.model';
 import { Room } from '../room/room.model';
+import { GroupTheater } from '../groupTheater/groupTheater.model';
 const { $like, $between, $and } = operatorsAliases;
 
 @Injectable()
@@ -31,10 +32,10 @@ export class StatisticalService {
 
   annualMovie(limit: number, start: string, end: string) {
     return this.movieService.findAll({
-      attributes: ['id', 'name'],
+      attributes: [],
       include: [
         {
-          attributes: ['id', 'date'],
+          attributes: [],
           model: ShowTime,
           include: [
             {
@@ -42,13 +43,14 @@ export class StatisticalService {
               model: Ticket
             }
           ],
-          required: false
+          required: false,
+          raw: true
         }
       ],
+      where: where(col('showTimes.date'), { [$between]: [start, end] }),
       limit,
       group: ['Movie.id'],
-      having: where(col('showTimes.date'), { [$between]: [start, end] }),
-      order: [[literal('`showTimes.tickets.total_price`'), 'DESC']],
+      order: [[literal('"showTimes.tickets.total_price"'), 'DESC']],
       raw: true,
       subQuery: false
     });
@@ -56,38 +58,49 @@ export class StatisticalService {
 
   annualGroup(limit: number, start: string, end: string) {
     return this.movieService.findAll({
-      attributes: ['id', 'name'],
+      attributes: [],
       include: [
         {
-          attributes: ['id'],
+          attributes: [],
           model: Theater,
+          through: {
+            attributes: []
+          },
           include: [
             {
+              attributes: [],
               model: Room,
+              raw: true,
               include: [
                 {
-                  attributes: ['date'],
+                  attributes: [],
                   model: ShowTime,
                   include: [
                     {
                       attributes: [[fn('SUM', col('price')), 'total_price']],
                       model: Ticket
                     }
-                  ]
+                  ],
+                  raw: true
                 }
               ]
+            },
+            {
+              attributes: ['name'],
+              model: GroupTheater
             }
           ],
-          required: false
+          required: false,
+          raw: true
         }
       ],
-      limit,
-      group: ['Movie.id'],
-      having: where(col('theaters.rooms.showTimes.date'), {
+      where: where(col('theaters.rooms.showTimes.date'), {
         [$between]: [start, end]
       }),
+      limit,
+      group: ['theaters.group.name'],
       order: [
-        [literal('`theaters.rooms.showTimes.tickets.total_price`'), 'DESC']
+        [literal('"theaters.rooms.showTimes.tickets.total_price"'), 'DESC']
       ],
       raw: true,
       subQuery: false
