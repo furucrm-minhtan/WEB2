@@ -200,7 +200,7 @@ export class MovieService {
       ],
       raw: true
     };
-    userId &&
+    if(userId) {
       fetchOptions.include.push({
         attributes: ['id'],
         model: User,
@@ -208,6 +208,8 @@ export class MovieService {
         as: 'userFavorites',
         require: false
       });
+      fetchOptions.group.push("userFavorites.id", "userFavorites.Bookmark.id");
+    }
 
     const movieDetail: MovieDetail = await this.findMovie(id, fetchOptions);
     movieDetail.isBookmark = movieDetail['userFavorites.id'] != null;
