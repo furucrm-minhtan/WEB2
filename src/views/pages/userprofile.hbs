@@ -151,7 +151,7 @@ Profile
 							<div class="flex-wrap-movielist user-fav-list">
 								<template x-for="(item, index) in favoriteData.movies" :key="index">
 									<div class="movie-item-style-2">
-										<img x-bind:src="item.movie.poster" alt="">
+										<img x-bind:src="item.movie.poster" alt="" style="width: 100px;">
 										<div class="mv-item-infor">
 											<h6><a href="javascript:void(0)" x-text="item.movie.name">oblivion <span>(2012)</span></a></h6>
 											{{!-- <p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p> --}}
@@ -551,6 +551,11 @@ Profile
 				render.readAsDataURL(files[0]);
 			},
 			uploadAvatar() {
+				if(!this.avatar) {
+					alert('please choose avatar to upload');
+					return;
+				}
+
 				axios.put('/user/avatar', { avatar: this.avatar })
 					.then((response) => {
 						alert(response.data.message);

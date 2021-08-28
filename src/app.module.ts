@@ -80,7 +80,7 @@ export class AppModule implements NestModule {
         { path: 'reset-password', method: RequestMethod.ALL }
       )
       .forRoutes(UserController)
-      .apply(AuthenMiddleware, AdminMiddleware)
+      .apply(AdminMiddleware)
       .forRoutes(AdminController);
   }
 }

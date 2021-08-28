@@ -23,7 +23,8 @@ export class CategoryService {
     return this.categoryRepository.update(categoryData, {
       where: {
         id
-      }
+      },
+      returning: true
     });
   }
 

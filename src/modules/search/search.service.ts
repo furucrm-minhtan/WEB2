@@ -47,7 +47,7 @@ export class SearchService {
 
     if (name) {
       defineQuery.whereAnd.push(
-        this.whereLikeLowercase('Movie.name', `${name}%`)
+        this.whereLikeLowercase('Movie.name', `${name.toLocaleLowerCase()}%`)
       );
     }
 
@@ -68,10 +68,10 @@ export class SearchService {
       defineQuery.whereAnd.push({ release: releaseDate });
     }
 
-    if (rating != undefined) {
-      defineQuery.mainQuery['having'] = literal(
-        ' `userReviews.movie_rate` >= ' + rating
-      );
+    if (Number(rating) > 0) {
+      defineQuery.mainQuery['having'] = where(fn('AVG', col('rate')), {
+        [$gte]: rating
+      });
     }
 
     if (theater) {

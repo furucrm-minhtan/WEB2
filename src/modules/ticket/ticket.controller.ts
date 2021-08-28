@@ -60,12 +60,20 @@ export class TicketController {
         sort
       );
 
-      return this.actionResponseService.responseApi(true, data, '');
+      return this.actionResponseService.responseApi(
+        true,
+        data,
+        'fetch data success'
+      );
     } catch (error) {
       console.log(error);
     }
 
-    return this.actionResponseService.responseApi(true, [], 'error');
+    return this.actionResponseService.responseApi(
+      true,
+      [],
+      'fetch data failed'
+    );
   }
 
   @Post()
@@ -88,12 +96,11 @@ export class TicketController {
         throw new Error('you neeed authen');
       }
       const showId: number = show?.id;
-      const ticket = await this.ticketService.booking({
+      await this.ticketService.booking({
         seatId,
         showId,
         userId
       });
-      console.log(ticket);
       const user: User = await this.userService.getUser(userId);
       if (user?.phone) {
         this.smsService
@@ -121,7 +128,7 @@ export class TicketController {
         'booking success please check your mail and sms'
       );
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
       errorMessage = error.message;
     }
     return this.actionResponseService.responseApi(false, '', errorMessage);

@@ -61,7 +61,11 @@ export class ShowTimeController {
         ]
       });
 
-      return this.actionResponseService.responseApi(true, showTimes, '');
+      return this.actionResponseService.responseApi(
+        true,
+        showTimes,
+        'fetch data success'
+      );
     } catch (error) {
       console.log(error);
     }
@@ -88,7 +92,11 @@ export class ShowTimeController {
           Movie
         ]
       });
-      return this.actionResponseService.responseApi(true, showTimeReload, '');
+      return this.actionResponseService.responseApi(
+        true,
+        showTimeReload,
+        'create success'
+      );
     } catch (error) {
       errorMessage = 'create failed';
       console.log(error);
@@ -103,12 +111,20 @@ export class ShowTimeController {
   ) {
     let errorMessage = '';
     try {
-      const showTime: [number, ShowTime[]] = await this.showTimeService.update(
+      const [, showTime] = await this.showTimeService.update(
         id,
         data as ShowTime
       );
 
-      return this.actionResponseService.responseApi(true, showTime, '');
+      const result: ShowTime = await showTime[0].reload({
+        include: [Movie, { model: Room, include: [Theater] }]
+      });
+
+      return this.actionResponseService.responseApi(
+        true,
+        result,
+        'update success'
+      );
     } catch (error) {
       errorMessage = 'update failed';
       console.log(error);
@@ -123,10 +139,14 @@ export class ShowTimeController {
         where: { id }
       });
 
-      return this.actionResponseService.responseApi(true, deleted, '');
+      return this.actionResponseService.responseApi(
+        true,
+        deleted,
+        'delete success'
+      );
     } catch (error) {
       console.log(error);
     }
-    return this.actionResponseService.responseApi(false, '', '');
+    return this.actionResponseService.responseApi(false, '', 'delete failed');
   }
 }

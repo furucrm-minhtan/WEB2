@@ -11,7 +11,7 @@ declare module 'express-session' {
 @Injectable()
 export class AdminMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    if (!req.session.user.is_admin) {
+    if (!req.session?.user?.is_admin) {
       res.locals.errorMessage = 'You need admin user to access';
       res.redirect(`/`);
     }

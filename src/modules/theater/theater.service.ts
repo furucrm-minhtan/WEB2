@@ -18,7 +18,8 @@ export class TheaterService {
     return this.theaterRepository.update(data, {
       where: {
         id
-      }
+      },
+      returning: true
     });
   }
 

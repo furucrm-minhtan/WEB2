@@ -12,6 +12,7 @@ import { col, fn, literal, Sequelize } from 'sequelize';
 import { TheaterMovieService } from '../theaterMovie/theatermovie.service';
 import { ShowTime } from '../showTime/showtime.model';
 import { Ticket } from '../ticket/ticket.model';
+import { Category } from '../category/category.model';
 const { $between, $eq } = operatorsAliases;
 
 @Injectable()
@@ -50,9 +51,18 @@ export class MovieService {
           as: 'userReviews',
           through: { attributes: ['rate'] },
           required: false
+        },
+        {
+          attributes: ['name'],
+          model: Category
         }
       ],
-      group: ['Movie.id', col('userReviews.id'), col('userReviews.Review.id')],
+      group: [
+        'Movie.id',
+        col('userReviews.id'),
+        col('userReviews.Review.id'),
+        'category.name'
+      ],
       order: ['creationDate'],
       limit,
       raw: true,
@@ -200,13 +210,16 @@ export class MovieService {
       ],
       raw: true
     };
-    userId &&
+    if(userId) {
       fetchOptions.include.push({
         attributes: ['id'],
         model: User,
+        through: { attributes: ['id'], where: { userId } },
         as: 'userFavorites',
-        where: { id: userId }
+        require: false
       });
+      fetchOptions.group.push("userFavorites.id", "userFavorites.Bookmark.id");
+    }
 
     const movieDetail: MovieDetail = await this.findMovie(id, fetchOptions);
     movieDetail.isBookmark = movieDetail['userFavorites.id'] != null;
@@ -226,22 +239,24 @@ export class MovieService {
   async createMovieWithTheaters(
     data: Movie,
     theaterIds: number[]
-  ): Promise<void> {
-    this.squelize.transaction().then((t) => {
-      return this.movieRepository
-        .create(data, { transaction: t })
-        .then((movie) => {
-          return this.theaterMovieService.createAssociationsTheater(
-            movie.id,
-            theaterIds,
-            { transaction: t }
-          );
-        })
-        .then(() => t.commit())
-        .catch((error) => {
-          t.rollback();
-          throw error;
+  ): Promise<Movie> {
+    return this.squelize.transaction().then(async (t) => {
+      try {
+        const movie: Movie = await this.movieRepository.create(data, {
+          transaction: t
         });
+        await this.theaterMovieService.createAssociationsTheater(
+          movie.id,
+          theaterIds,
+          { transaction: t }
+        );
+        t.commit();
+
+        return movie.reload({ include: Theater });
+      } catch (error) {
+        t.rollback();
+        throw error;
+      }
     });
   }
 
@@ -254,29 +269,35 @@ export class MovieService {
   }
 
   async updateMovieWithTheaters(
+    id: number,
     data: Movie,
     theaterIds: number[]
-  ): Promise<void> {
-    this.squelize.transaction().then((t) => {
-      return this.movieRepository
-        .update(data, { where: { id: data.id }, transaction: t })
-        .then(async (result: [number, Movie[]]) => {
-          await this.theaterMovieService.delete({
-            movieId: result[1][0].id,
-            transaction: t
-          });
-
-          return this.theaterMovieService.createAssociationsTheater(
-            result[1][0].id,
-            theaterIds,
-            { transaction: t }
-          );
-        })
-        .then(() => t.commit())
-        .catch((error) => {
-          t.rollback();
-          throw error;
+  ): Promise<Movie> {
+    return this.squelize.transaction().then(async (t) => {
+      try {
+        await this.movieRepository.update(data, {
+          where: { id },
+          transaction: t
         });
+        await this.theaterMovieService.delete({
+          where: {
+            movieId: id
+          },
+          transaction: t
+        });
+
+        await this.theaterMovieService.createAssociationsTheater(
+          id,
+          theaterIds,
+          { transaction: t }
+        );
+        t.commit();
+
+        return this.movieRepository.findByPk(id, { include: Theater });
+      } catch (error) {
+        t.rollback();
+        throw error;
+      }
     });
   }
 
