@@ -128,8 +128,7 @@ export class UserController {
     @Session() session: Record<string, any>,
     @Query('token') token: string
   ): Promise<Record<string, any>> {
-    const resetCompleted = session?.resetPassword?.token != undefined;
-
+    const resetCompleted = session?.resetPassword?.token == undefined;
     return { token, resetCompleted };
   }
 
@@ -144,11 +143,11 @@ export class UserController {
     let message = '';
 
     try {
-      if (token !== user_token) {
+      if (token != user_token) {
         throw 'token is invalid';
       }
       await this.userService.resetPassword(email, password);
-
+      session.resetPassword = undefined; 
       return { resetCompleted: true };
     } catch (error) {
       console.log(error);
